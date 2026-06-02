@@ -13,21 +13,15 @@
     </div>
 
     <script>
-        // Le indicamos a EmulatorJS dónde renderizarse
         EJS_player = '#game';
-        
-        // El core 'gba' sirve para Game Boy Advance, Color y Clásica
         EJS_core = 'gba'; 
-        
-        // Configuraciones de rendimiento y optimización
         EJS_startOnLoaded = true; 
-        EJS_pathtodata = 'https://cdn.emulatorjs.org/stable/data/'; 
         
-        /* Dejamos la configuración sin 'EJS_gameUrl' definida de entrada.
-          Esto hace que el sistema muestre una pantalla limpia y hermosa 
-          para que el usuario arrastre y suelte (.drag & drop) cualquier ROM (.gb, .gbc, .gba).
-        */
+        // Cambiamos esta ruta por la versión fija de entrega (sin el 'stable' que a veces rompe)
+        EJS_pathtodata = 'https://cdn.emulatorjs.org/latest/data/'; 
     </script>
+    
+    <script src="https://cdn.emulatorjs.org/latest/data/loader.js"></script>
     
     <script src="https://cdn.emulatorjs.org/stable/data/loader.js"></script>
 
