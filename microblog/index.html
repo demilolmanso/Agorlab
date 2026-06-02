@@ -66,6 +66,18 @@
             white-space: pre-wrap;
         }
 
+        /* Estilo personalizado y hacker para tus links internos del texto */
+        .tweet-contenido a {
+            color: #ca630e;
+            text-decoration: underline dotted;
+            font-weight: bold;
+        }
+
+        .tweet-contenido a:hover {
+            background-color: #ca630e;
+            color: rgb(226, 226, 226);
+        }
+
         .tweet-foto {
             max-width: 100%;
             height: auto;
@@ -89,14 +101,7 @@
             width: 100%;
             display: block;
             border: none;
-            aspect-ratio: 16 / 9; /* Mantiene la proporción clásica */
-        }
-
-        /* Ajuste por si subís un video vertical (estilo Reel/Short) */
-        .video-vertical iframe, .video-vertical video {
-            aspect-ratio: 9 / 16;
-            max-height: 500px;
-            margin: 0 auto;
+            aspect-ratio: 16 / 9; /* Mantiene la proporción perfecta del reproductor */
         }
 
         .cargando {
@@ -122,6 +127,14 @@
 
         const contenedor = document.getElementById('feed-tweets');
 
+        // Convierte texto plano con http/https en links reales HTML automáticamente
+        function linkificarTexto(texto) {
+            const urlRegex = /(https?:\/\/[^\s]+)/g;
+            return texto.replace(urlRegex, function(url) {
+                return `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
+            });
+        }
+
         async function cargarTweets() {
             try {
                 const urlApi = `https://api.github.com/repos/${USUARIO_GITHUB}/${REPO_NAME}/contents/microblog/posts`;
@@ -145,7 +158,10 @@
                         const partes = textoRaw.split('---');
                         if (partes.length >= 3) {
                             const metadata = partes[1];
-                            const cuerpo = partes.slice(2).join('---').trim();
+                            const cuerpoRaw = partes.slice(2).join('---').trim();
+
+                            // Aplicamos la conversión de links al cuerpo de la publicación
+                            const cuerpo = linkificarTexto(cuerpoRaw);
 
                             // Extrae la fecha
                             const matchFecha = metadata.match(/date:\s*(.+)/);
@@ -169,23 +185,18 @@
                                 fotoHtml = `<img src="${matchFoto[1].trim()}" class="tweet-foto" alt="Imagen del laboratorio">`;
                             }
 
-                            // NUEVA LÓGICA DE DETECCIÓN DE VIDEO (Drive + IFrames + MP4s)
+                            // Extrae el video (Tu lógica funcional intacta para Drive, Iframes e Iframe de YouTube)
                             const matchVideo = metadata.match(/video:\s*["']?([\s\S]*?)["']?(?=\n\w+:|$)/);
                             let videoHtml = '';
-                            let esVertical = '';
 
                             if (matchVideo && matchVideo[1] && matchVideo[1].trim() !== "") {
                                 let urlVideo = matchVideo[1].trim();
 
-                                // Si pegaste un código de iframe completo (ej: de YouTube)
                                 if (urlVideo.includes('<iframe')) {
                                     videoHtml = `<div class="tweet-video-container">${urlVideo}</div>`;
                                 } 
-                                // Si es un link de Google Drive (¡Solución definitiva!)
                                 else if (urlVideo.includes('drive.google.com')) {
                                     let idDrive = '';
-                                    
-                                    // Extraemos el ID sin importar el formato de link de Drive que pegues
                                     if (urlVideo.includes('/d/')) {
                                         idDrive = urlVideo.split('/d/')[1].split('/')[0];
                                     } else if (urlVideo.includes('id=')) {
@@ -193,7 +204,6 @@
                                     }
 
                                     if (idDrive) {
-                                        // Lo incrustamos con el reproductor oficial de vista previa de Drive
                                         videoHtml = `
                                             <div class="tweet-video-container">
                                                 <iframe src="https://drive.google.com/file/d/${idDrive}/preview" allow="autoplay"></iframe>
@@ -201,7 +211,6 @@
                                         `;
                                     }
                                 } 
-                                // Si es un archivo de video directo clásico (.mp4)
                                 else {
                                     videoHtml = `
                                         <div class="tweet-video-container">
