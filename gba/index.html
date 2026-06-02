@@ -16,13 +16,12 @@
         EJS_player = '#game';
         EJS_core = 'gba'; 
         EJS_startOnLoaded = true; 
-        
-        // Usamos latest que ya vimos que conecta bien
         EJS_pathtodata = 'https://cdn.emulatorjs.org/latest/data/'; 
-        
-        // AGREGAMOS ESTAS LÍNEAS PARA DESTRABAR EL REPRODUCTOR:
-        EJS_language = 'en'; // Fuerza el idioma base para evitar que busque traducciones rotas
-        EJS_loadIcons = true; // Fuerza la carga de los botones de la interfaz
+        EJS_language = 'en';
+        EJS_loadIcons = true;
+
+        // AGREGAMOS ESTA LÍNEA (Un juego indie de naves súper liviano para activar el emulador):
+        EJS_gameUrl = 'https://raw.githubusercontent.com/VisualBoyAdvance-M/visualboyadvance-m/master/src/bready.gba';
     </script>
     
     <script src="https://cdn.emulatorjs.org/latest/data/loader.js"></script>
