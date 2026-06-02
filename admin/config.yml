@@ -16,4 +16,47 @@ collections:
     fields:
       - { label: "Título de control (No se ve en el tweet)", name: "title", widget: "string" }
       - { label: "Fecha", name: "date", widget: "datetime" }
+      - { label: "¿Qué estás rompiendo o arreglando hoy?", name: "body", widget: "text" }# ... (Dejá todo lo que ya tenías arriba igual)
+
+collections:
+  - name: "microblog"
+    label: "Mis Tweets"
+    folder: "microblog/posts"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    identifier_field: date
+    # ESTO GENERARÁ EL ARCHIVO JSON AUTOMÁTICAMENTE PARA TU INDEX
+    meta: { path: { label: "Tweets Index", name: "tweets-index", widget: "hidden", default: "/tweets-index.json" } }
+    fields:
+      - { label: "Título de control (No se ve en el tweet)", name: "title", widget: "string" }
+      - { label: "Fecha", name: "date", widget: "datetime" }
+      - { label: "¿Qué estás rompiendo o arreglando hoy?", name: "body", widget: "text" }# ... (Dejá todo lo que ya tenías arriba igual)
+
+collections:
+  - name: "microblog"
+    label: "Mis Tweets"
+    folder: "microblog/posts"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    identifier_field: date
+    # ESTO GENERARÁ EL ARCHIVO JSON AUTOMÁTICAMENTE PARA TU INDEX
+    meta: { path: { label: "Tweets Index", name: "tweets-index", widget: "hidden", default: "/tweets-index.json" } }
+    fields:
+      - { label: "Título de control (No se ve en el tweet)", name: "title", widget: "string" }
+      - { label: "Fecha", name: "date", widget: "datetime" }
+      - { label: "¿Qué estás rompiendo o arreglando hoy?", name: "body", widget: "text" }
+# ... (Dejá todo lo que ya tenías arriba igual)
+
+collections:
+  - name: "microblog"
+    label: "Mis Tweets"
+    folder: "microblog/posts"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    identifier_field: date
+    # ESTO GENERARÁ EL ARCHIVO JSON AUTOMÁTICAMENTE PARA TU INDEX
+    meta: { path: { label: "Tweets Index", name: "tweets-index", widget: "hidden", default: "/tweets-index.json" } }
+    fields:
+      - { label: "Título de control (No se ve en el tweet)", name: "title", widget: "string" }
+      - { label: "Fecha", name: "date", widget: "datetime" }
       - { label: "¿Qué estás rompiendo o arreglando hoy?", name: "body", widget: "text" }
