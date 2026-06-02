@@ -136,4 +136,142 @@
     </main>
 
     <script>
-        const USUARIO_GITHUB = '
+        const USUARIO_GITHUB = 'demilolmanso'; 
+        const REPO_NAME = 'Agorlab'; 
+
+        const contenedor = document.getElementById('feed-tweets');
+
+        async function cargarTweets() {
+            try {
+                const urlApi = `https://api.github.com/repos/${USUARIO_GITHUB}/${REPO_NAME}/contents/microblog/posts`;
+                const respuesta = await fetch(urlApi);
+                
+                if (!respuesta.ok) {
+                    contenedor.innerHTML = "<p class='cargando'>El silencio invadió todas las casas de Italia...</p>";
+                    return;
+                }
+
+                const archivos = await respuesta.json();
+                contenedor.innerHTML = '';
+
+                archivos.reverse();
+
+                for (let archivo of archivos) {
+                    if (archivo.name.endsWith('.md')) {
+                        const resPost = await fetch(archivo.download_url);
+                        const textoRaw = await resPost.text();
+
+                        const partes = textoRaw.split('---');
+                        if (partes.length >= 3) {
+                            const metadata = partes[1];
+                            const cuerpo = partes.slice(2).join('---').trim();
+
+                            // Extrae la fecha
+                            const matchFecha = metadata.match(/date:\s*(.+)/);
+                            let fechaFormateada = "Fecha desconocida";
+                            
+                            if (matchFecha) {
+                                const d = new Date(matchFecha[1]);
+                                fechaFormateada = d.toLocaleDateString('es-AR', {
+                                    day: '2-digit',
+                                    month: '2-digit',
+                                    year: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                });
+                            }
+
+                            // Extrae la foto
+                            const matchFoto = metadata.match(/foto:\s*["']?([^"'\n\r]+)["']?/);
+                            let fotoHtml = '';
+                            if (matchFoto && matchFoto[1]) {
+                                fotoHtml = `<img src="${matchFoto[1].trim()}" class="tweet-foto" alt="Imagen del laboratorio">`;
+                            }
+
+                            // Extrae el video (Correctamente anidado)
+                            const matchVideo = metadata.match(/video:\s*["']?([\s\S]*?)["']?(?=\n\w+:|$)/);
+                            let videoHtml = '';
+                            if (matchVideo && matchVideo[1] && matchVideo[1].trim() !== "") {
+                                videoHtml = `<div class="tweet-video-container">${matchVideo[1].trim()}</div>`;
+                            }
+
+                            // ID del post para los likes
+                            const postId = archivo.name.replace('.md', '');
+                            const haVotado = localStorage.getItem(`liked_${postId}`) ? 'liked' : '';
+
+                            // Inyecta la tarjeta inmediatamente a la pantalla
+                            const tweetHtml = `
+                                <article class="tweet-card">
+                                    <div class="tweet-fecha">${fechaFormateada} hs</div>
+                                    <div class="tweet-contenido">${cuerpo}</div>
+                                    ${fotoHtml}
+                                    ${videoHtml}
+                                    <div class="tweet-acciones">
+                                        <button class="btn-like ${haVotado}" id="btn-${postId}" onclick="presionarLike('${postId}')">
+                                            <span>❤</span> <span id="conteo-${postId}">0</span>
+                                        </button>
+                                    </div>
+                                </article>
+                            `;
+                            contenedor.innerHTML += tweetHtml;
+
+                            // Trae los likes de forma asíncrona para que NO bloquee la página
+                            obtenerLikesServer(postId);
+                        }
+                    }
+                }
+
+                if (contenedor.innerHTML === '') {
+                    contenedor.innerHTML = "<p class='cargando'>No se encontraron posteos válidos.</p>";
+                }
+
+            } catch (error) {
+                console.error(error);
+                contenedor.innerHTML = "<p class='cargando'>Error al conectar con la base de datos del laboratorio.</p>";
+            }
+        }
+
+        // Obtiene los datos acumulados de cada post de forma segura
+        function obtenerLikesServer(postId) {
+            fetch(`https://api.keyvalue.xyz/agorlab_v2_${postId}/likes`)
+                .then(res => {
+                    if (!res.ok) return "0";
+                    return res.text();
+                })
+                .then(val => {
+                    const limpio = val.replace(/["']/g, "").trim();
+                    const num = parseInt(limpio) || 0;
+                    const el = document.getElementById(`conteo-${postId}`);
+                    if (el) el.textContent = num;
+                })
+                .catch(() => {});
+        }
+
+        // Suma +1 y lo impacta en la nube de forma que todos los usuarios lo vean actualizado
+        function presionarLike(postId) {
+            const boton = document.getElementById(`btn-${postId}`);
+            const contadorTexto = document.getElementById(`conteo-${postId}`);
+            
+            if (localStorage.getItem(`liked_${postId}`)) {
+                alert("Ya le diste amor a este experimento.");
+                return;
+            }
+
+            let actual = parseInt(contadorTexto.textContent) || 0;
+            let nuevo = actual + 1;
+
+            // Bloqueo visual inmediato para dar feedback rápido
+            localStorage.setItem(`liked_${postId}`, 'true');
+            boton.classList.add('liked');
+            contadorTexto.textContent = nuevo;
+
+            // Se envía a la nube pública persistente
+            fetch(`https://api.keyvalue.xyz/agorlab_v2_${postId}/likes/${nuevo}`, { 
+                method: 'POST' 
+            }).catch(() => {});
+        }
+
+        cargarTweets();
+    </script>
+</body>
+</html>
