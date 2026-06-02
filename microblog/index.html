@@ -113,6 +113,7 @@
 
         async function cargarTweets() {
             try {
+                // Petición directa a la API pública de GitHub
                 const urlApi = `https://api.github.com/repos/${USUARIO_GITHUB}/${REPO_NAME}/contents/microblog/posts`;
                 const respuesta = await fetch(urlApi);
                 
@@ -124,19 +125,22 @@
                 const archivos = await respuesta.json();
                 contenedor.innerHTML = '';
 
+                // Ordenamos para que los tweets más nuevos aparezcan arriba
                 archivos.reverse();
 
                 for (let archivo of archivos) {
                     if (archivo.name.endsWith('.md')) {
+                        // Descarga el contenido del archivo de texto
                         const resPost = await fetch(archivo.download_url);
                         const textoRaw = await resPost.text();
 
+                        // Separa la metadata del cuerpo del posteo
                         const partes = textoRaw.split('---');
                         if (partes.length >= 3) {
                             const metadata = partes[1];
                             const cuerpo = partes.slice(2).join('---').trim();
 
-                            // Extrae la fecha del post
+                            // Extrae y formatea la fecha del post
                             const matchFecha = metadata.match(/date:\s*(.+)/);
                             let fechaFormateada = "Fecha desconocida";
                             
@@ -151,5 +155,46 @@
                                 });
                             }
 
-                            // Extrae la foto si existe
-                            const matchFoto = metadata.match(/foto:\s*
+                            // Extrae la ruta de la foto si existe
+                            const matchFoto = metadata.match(/foto:\s*["']?([^"'\n\r]+)["']?/);
+                            let fotoHtml = '';
+                            if (matchFoto && matchFoto[1]) {
+                                fotoHtml = `<img src="${matchFoto[1].trim()}" class="tweet-foto" alt="Imagen del laboratorio">`;
+                            }
+
+                            // Extrae el video (AHORA ADENTRO DEL BUCLE, solucionando la pantalla congelada)
+                            const matchVideo = metadata.match(/video:\s*["']?([\s\S]*?)["']?(?=\n\w+:|$)/);
+                            let videoHtml = '';
+                            if (matchVideo && matchVideo[1] && matchVideo[1].trim() !== "") {
+                                videoHtml = `<div class="tweet-video-container">${matchVideo[1].trim()}</div>`;
+                            }
+
+                            // Renderiza el posteo en el HTML sin botones rotos
+                            const tweetHtml = `
+                                <article class="tweet-card">
+                                    <div class="tweet-fecha">${fechaFormateada} hs</div>
+                                    <div class="tweet-contenido">${cuerpo}</div>
+                                    ${fotoHtml}
+                                    ${videoHtml}
+                                </article>
+                            `;
+                            contenedor.innerHTML += tweetHtml;
+                        }
+                    }
+                }
+
+                if (contenedor.innerHTML === '') {
+                    contenedor.innerHTML = "<p class='cargando'>No se encontraron posteos válidos.</p>";
+                }
+
+            } catch (error) {
+                console.error(error);
+                contenedor.innerHTML = "<p class='cargando'>Error al conectar con la base de datos del laboratorio.</p>";
+            }
+        }
+
+        // Ejecuta la función automáticamente
+        cargarTweets();
+    </script>
+</body>
+</html>
