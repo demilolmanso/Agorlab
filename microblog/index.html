@@ -88,7 +88,7 @@
             display: block;
         }
 
-        /* Botón de Likes interactivo */
+        /* Botón de Likes */
         .tweet-acciones {
             margin-top: 20px;
         }
@@ -139,8 +139,9 @@
         const USUARIO_GITHUB = 'demilolmanso'; 
         const REPO_NAME = 'Agorlab'; 
 
-        // Endpoint público alternativo para contadores rápidos libres de configuración
-        const API_LIKES = "https://api.countapi.xyz/hit/agorlab_blog"; 
+        // Credenciales públicas de la base de datos de contadores (Upstash Redis)
+        const REDIS_URL = "https://eu2-selected-marlin-32314.upstash.io";
+        const REDIS_TOKEN = "AXI6ASQgYjdiOTQxMzMtNzg0MC00MzhhLTg3ZTYtYWEzMGE0ZWRlNmYyNzUzNDNhMGI3ODMwNDkyNjg4OWFhYjFiMGM3MWZkOTY=";
 
         const contenedor = document.getElementById('feed-tweets');
 
@@ -169,7 +170,7 @@
                             const metadata = partes[1];
                             const cuerpo = partes.slice(2).join('---').trim();
 
-                            // Extrae la fecha del post
+                            // Extrae la fecha
                             const matchFecha = metadata.match(/date:\s*(.+)/);
                             let fechaFormateada = "Fecha desconocida";
                             
@@ -184,25 +185,25 @@
                                 });
                             }
 
-                            // Extrae la foto si existe
+                            // Extrae la foto
                             const matchFoto = metadata.match(/foto:\s*["']?([^"'\n\r]+)["']?/);
                             let fotoHtml = '';
                             if (matchFoto && matchFoto[1]) {
                                 fotoHtml = `<img src="${matchFoto[1].trim()}" class="tweet-foto" alt="Imagen del laboratorio">`;
                             }
 
-                            // Extrae el video si existe
+                            // Extrae el video (Corregido adentro del bucle)
                             const matchVideo = metadata.match(/video:\s*["']?([\s\S]*?)["']?(?=\n\w+:|$)/);
                             let videoHtml = '';
                             if (matchVideo && matchVideo[1] && matchVideo[1].trim() !== "") {
                                 videoHtml = `<div class="tweet-video-container">${matchVideo[1].trim()}</div>`;
                             }
 
-                            // Identificador limpio para los likes de este post
+                            // ID único para el contador de este post
                             const postId = archivo.name.replace('.md', '');
                             const haVotado = localStorage.getItem(`liked_${postId}`) ? 'liked' : '';
 
-                            // Renderiza el posteo con estructura corregida y botón de likes
+                            // Estructura limpia del Tweet
                             const tweetHtml = `
                                 <article class="tweet-card">
                                     <div class="tweet-fecha">${fechaFormateada} hs</div>
@@ -218,8 +219,8 @@
                             `;
                             contenedor.innerHTML += tweetHtml;
 
-                            // Carga los likes acumulados en segundo plano
-                            obtenerLikes(postId);
+                            // Consultamos a la base de datos cuántos likes tiene este post actualmente
+                            obtenerLikesRealtime(postId);
                         }
                     }
                 }
@@ -234,18 +235,21 @@
             }
         }
 
-        // Obtiene los likes usando un contador key-value abierto basado en tu ID de post
-        function obtenerLikes(postId) {
-            fetch(`https://api.keyvalue.xyz/agorlab_likes_${postId}/likes`)
-                .then(res => res.text())
-                .then(val => {
-                    const num = parseInt(val) || 0;
-                    document.getElementById(`conteo-${postId}`).textContent = num;
-                })
-                .catch(() => {});
+        // Lee el conteo real y público desde Redis
+        function obtenerLikesRealtime(postId) {
+            fetch(`${REDIS_URL}/get/likes:${postId}`, {
+                headers: { Authorization: `Bearer ${REDIS_TOKEN}` }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data && data.result !== null) {
+                    document.getElementById(`conteo-${postId}`).textContent = data.result;
+                }
+            })
+            .catch(err => console.error("Error al traer likes:", err));
         }
 
-        // Maneja el click del corazón y guarda en LocalStorage
+        // Registra el voto, le suma +1 de forma segura en la base de datos y bloquea localmente
         function presionarLike(postId) {
             const boton = document.getElementById(`btn-${postId}`);
             const contadorTexto = document.getElementById(`conteo-${postId}`);
@@ -255,25 +259,25 @@
                 return;
             }
 
-            let actual = parseInt(contadorTexto.textContent) || 0;
-            let nuevo = actual + 1;
-
-            // Guardamos el nuevo conteo de forma remota e invisible
-            fetch(`https://api.keyvalue.xyz/agorlab_likes_${postId}/likes/${nuevo}`, { method: 'POST' })
-                .then(() => {
+            // Usamos INCR de Redis. Suma 1 en la base de datos directamente y devuelve el nuevo total
+            fetch(`${REDIS_URL}/incr/likes:${postId}`, {
+                method: 'POST',
+                headers: { Authorization: `Bearer ${REDIS_TOKEN}` }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data && data.result !== null) {
                     localStorage.setItem(`liked_${postId}`, 'true');
                     boton.classList.add('liked');
-                    contadorTexto.textContent = nuevo;
-                })
-                .catch(() => {
-                    // Fallback visual si la red falla
-                    localStorage.setItem(`liked_${postId}`, 'true');
-                    boton.classList.add('liked');
-                    contadorTexto.textContent = nuevo;
-                });
+                    contadorTexto.textContent = data.result; // Muestra el número real actualizado
+                }
+            })
+            .catch(err => {
+                console.error("Error al procesar like:", err);
+            });
         }
 
-        // Ejecuta la carga inicial
+        // Lanzamos la carga de tweets
         cargarTweets();
     </script>
 </body>
