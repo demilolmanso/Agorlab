@@ -1,1 +1,35 @@
+/* Estilos aislados para la subweb de Game Boy */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
+body {
+    background-color: #0f0f11; /* Un color oscuro que encaje con la vibra Agorlab */
+    color: #ffffff;
+    font-family: system-ui, -apple-system, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+    padding: 20px;
+}
+
+.contenedor-emulador {
+    width: 100%;
+    max-width: 900px; /* Tamaño ideal para mantener la relación de aspecto del pixel-art */
+    height: 85vh;
+    max-height: 650px;
+    background: #000000;
+    border: 2px solid #2a2a30;
+    border-radius: 12px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+    overflow: hidden;
+}
+
+#game {
+    width: 100%;
+    height: 100%;
+}
