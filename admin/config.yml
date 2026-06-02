@@ -13,6 +13,6 @@ collections:
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     identifier_field: date
     fields:
-      - { label: "Título de control (No se ve)", name: "title", widget: "string" }
+      - { label: "Título de control (No se ve en el tweet)", name: "title", widget: "string" }
       - { label: "Fecha", name: "date", widget: "datetime" }
       - { label: "¿Qué estás rompiendo o arreglando hoy?", name: "body", widget: "text" }
