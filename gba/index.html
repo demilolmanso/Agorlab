@@ -1,1 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agorlab - GBA Station</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
 
+    <div class="contenedor-emulador">
+        <div id="game"></div>
+    </div>
+
+    <script>
+        // Le indicamos a EmulatorJS dónde renderizarse
+        EJS_player = '#game';
+        
+        // El core 'gba' sirve para Game Boy Advance, Color y Clásica
+        EJS_core = 'gba'; 
+        
+        // Configuraciones de rendimiento y optimización
+        EJS_startOnLoaded = true; 
+        EJS_pathtodata = 'https://cdn.emulatorjs.org/stable/data/'; 
+        
+        /* Dejamos la configuración sin 'EJS_gameUrl' definida de entrada.
+          Esto hace que el sistema muestre una pantalla limpia y hermosa 
+          para que el usuario arrastre y suelte (.drag & drop) cualquier ROM (.gb, .gbc, .gba).
+        */
+    </script>
+    
+    <script src="https://cdn.emulatorjs.org/stable/data/loader.js"></script>
+
+</body>
+</html>
