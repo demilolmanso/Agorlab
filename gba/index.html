@@ -17,13 +17,15 @@
         EJS_core = 'gba'; 
         EJS_startOnLoaded = true; 
         
-        // Cambiamos esta ruta por la versión fija de entrega (sin el 'stable' que a veces rompe)
+        // Usamos latest que ya vimos que conecta bien
         EJS_pathtodata = 'https://cdn.emulatorjs.org/latest/data/'; 
+        
+        // AGREGAMOS ESTAS LÍNEAS PARA DESTRABAR EL REPRODUCTOR:
+        EJS_language = 'en'; // Fuerza el idioma base para evitar que busque traducciones rotas
+        EJS_loadIcons = true; // Fuerza la carga de los botones de la interfaz
     </script>
     
     <script src="https://cdn.emulatorjs.org/latest/data/loader.js"></script>
-    
-    <script src="https://cdn.emulatorjs.org/stable/data/loader.js"></script>
 
 </body>
 </html>
