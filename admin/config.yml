@@ -5,11 +5,6 @@ backend:
 media_folder: "assets/uploads"
 public_folder: "/assets/uploads"
 
-# Activamos el modo que nos permite leer contenido sin la API de GitHub
-slug:
-  encoding: "ascii"
-  clean_accents: true
-
 collections:
   - name: "microblog"
     label: "Mis Tweets"
@@ -17,8 +12,6 @@ collections:
     create: true
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     identifier_field: date
-    # Esto genera un archivo JSON limpio en la raíz pública cada vez que publicás
-    meta: { path: { label: "Tweets Index", name: "tweets-index", widget: "hidden", default: "/tweets-index.json" } }
     fields:
       - { label: "Título de control (No se ve)", name: "title", widget: "string" }
       - { label: "Fecha", name: "date", widget: "datetime" }
