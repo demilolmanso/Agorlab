@@ -44,6 +44,7 @@
             margin: 0 auto;
         }
 
+        /* Estilo minimalista para cada tweet */
         .tweet-card {
             background-color: rgb(235, 235, 235);
             border-left: 4px solid #ca630e;
@@ -78,71 +79,83 @@
     </div>
 
     <main class="contenedor-tweets" id="feed-tweets">
-        <p class="cargando">Conectando con el laboratorio...</p>
+        <p class="cargando">Conectando con el laboratorio público...</p>
     </main>
 
     <script>
+        // Tus datos fijos de GitHub
+        const USUARIO_GITHUB = 'demilolmanso'; 
+        const REPO_NAME = 'Agorlab'; 
+
         const contenedor = document.getElementById('feed-tweets');
 
         async function cargarTweets() {
             try {
-                // Le pedimos a la API local de Git Gateway (Netlify) que nos traiga la lista de archivos
-                // Esto funciona siempre, sin importar si el repo de GitHub es privado
-                const respuesta = await fetch('/.netlify/git/gateway/entries');
+                // Petición directa a la API pública de GitHub
+                const urlApi = `https://api.github.com/repos/${USUARIO_GITHUB}/${REPO_NAME}/contents/microblog/posts`;
+                const respuesta = await fetch(urlApi);
                 
                 if (!respuesta.ok) {
-                    contenedor.innerHTML = "<p class='cargando'>Aún no hay publicaciones en la bitácora o necesitas iniciar sesión.</p>";
-                    return;
-                }
-
-                const datos = await respuesta.json();
-                
-                // Filtramos para quedarnos solo con los archivos que están dentro de microblog/posts
-                const posts = datos.filter(item => item.path.startsWith('microblog/posts/'));
-
-                if (posts.length === 0) {
                     contenedor.innerHTML = "<p class='cargando'>Aún no hay publicaciones en la bitácora. ¡Escribí la primera desde /admin!</p>";
                     return;
                 }
 
+                const archivos = await respuesta.json();
                 contenedor.innerHTML = '';
 
-                // Los ordenamos para que el más nuevo salga arriba de todo
-                posts.sort((a, b) => new Date(b.data.date) - new Date(a.data.date));
+                // Ordenamos para que los tweets más nuevos aparezcan arriba
+                archivos.reverse();
 
-                for (let post of posts) {
-                    // Decap CMS guarda los campos dentro del objeto 'data'
-                    const tweetTexto = post.data.body || '';
-                    const fechaRaw = post.data.date;
+                for (let archivo of archivos) {
+                    if (archivo.name.endsWith('.md')) {
+                        // Descarga el contenido del archivo de texto
+                        const resPost = await fetch(archivo.download_url);
+                        const textoRaw = await resPost.text();
 
-                    let fechaFormateada = "Fecha desconocida";
-                    if (fechaRaw) {
-                        const d = new Date(fechaRaw);
-                        fechaFormateada = d.toLocaleDateString('es-AR', {
-                            day: '2-digit',
-                            month: '2-digit',
-                            year: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit'
-                        });
+                        // Separa la metadata del cuerpo del posteo
+                        const partes = textoRaw.split('---');
+                        if (partes.length >= 3) {
+                            const metadata = partes[1];
+                            const cuerpo = partes.slice(2).join('---').trim();
+
+                            // Extrae y formatea la fecha del post
+                            const matchFecha = metadata.match(/date:\s*(.+)/);
+                            let fechaFormateada = "Fecha desconocida";
+                            
+                            if (matchFecha) {
+                                const d = new Date(matchFecha[1]);
+                                fechaFormateada = d.toLocaleDateString('es-AR', {
+                                    day: '2-digit',
+                                    month: '2-digit',
+                                    year: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                });
+                            }
+
+                            // Renderiza el posteo en el HTML
+                            const tweetHtml = `
+                                <article class="tweet-card">
+                                    <div class="tweet-fecha">${fechaFormateada} hs</div>
+                                    <div class="tweet-contenido">${cuerpo}</div>
+                                </article>
+                            `;
+                            contenedor.innerHTML += tweetHtml;
+                        }
                     }
+                }
 
-                    const tweetHtml = `
-                        <article class="tweet-card">
-                            <div class="tweet-fecha">${fechaFormateada} hs</div>
-                            <div class="tweet-contenido">${tweetTexto}</div>
-                        </article>
-                    `;
-                    contenedor.innerHTML += tweetHtml;
+                if (contenedor.innerHTML === '') {
+                    contenedor.innerHTML = "<p class='cargando'>No se encontraron posteos válidos.</p>";
                 }
 
             } catch (error) {
                 console.error(error);
-                contenedor.innerHTML = "<p class='cargando'>Error al conectar con el laboratorio.</p>";
+                contenedor.innerHTML = "<p class='cargando'>Error al conectar con la base de datos del laboratorio.</p>";
             }
         }
 
-        // Ejecutar la carga
+        // Ejecuta la función automáticamente
         cargarTweets();
     </script>
 </body>
