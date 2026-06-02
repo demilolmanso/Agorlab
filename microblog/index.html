@@ -178,6 +178,25 @@ contenedor.innerHTML += tweetHtml;
 
         // Ejecuta la función automáticamente
         cargarTweets();
+     // Extrae el campo de video
+const matchVideo = metadata.match(/video:\s*["']?([\s\S]*?)["']?(?=\n\w+:|$)/);
+let videoHtml = '';
+
+if (matchVideo && matchVideo[1]) {
+    const contenidoVideo = matchVideo[1].trim();
+    
+    // Si pegaste un iframe completo, lo renderiza directo. Si no, podrías envolverlo en un contenedor.
+    videoHtml = `<div class="tweet-video-container">${contenidoVideo}</div>`;
+}
+
+// Y lo sumás al render del HTML de tu tarjeta:
+const tweetHtml = `
+    <article class="tweet-card">
+        <div class="tweet-fecha">${fechaFormateada} hs</div>
+        <div class="tweet-contenido">${cuerpo}</div>
+        ${fotoHtml}
+        ${videoHtml} </article>
+`;   
     </script>
 </body>
 </html>
