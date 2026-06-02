@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agorlab - Bitácora</title>
+    <style>
+        body { 
+            background-color: rgb(226, 226, 226); 
+            font-family: 'Courier New', Courier, monospace;
+            color: #ca630e;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .header-blog {
+            text-align: center;
+            margin-top: 30px;
+            margin-bottom: 50px;
+        }
+
+        .header-blog h1 {
+            font-size: 2.2rem;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+
+        .btn-volver {
+            color: #ca630e;
+            text-decoration: none;
+            font-weight: bold;
+            border: 1px dashed #ca630e;
+            padding: 5px 10px;
+        }
+
+        .btn-volver:hover {
+            background-color: #ca630e;
+            color: rgb(226, 226, 226);
+        }
+
+        .contenedor-tweets {
+            max-width: 650px;
+            margin: 0 auto;
+        }
+
+        /* Estilo para cada "tweet" de tu bitácora */
+        .tweet-card {
+            background-color: rgb(235, 235, 235);
+            border-left: 4px solid #ca630e;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .tweet-fecha {
+            font-size: 0.85rem;
+            opacity: 0.8;
+            margin-bottom: 10px;
+        }
+
+        .tweet-contenido {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            white-space: pre-wrap; /* Mantiene los saltos de línea que hagas en el editor */
+        }
+
+        .cargando {
+            text-align: center;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header-blog">
+        <h1>[ LAB_LOG ]</h1>
+        <a href="../" class="btn-volver"><- Volver al inicio</a>
+    </div>
+
+    <main class="contenedor-tweets" id="feed-tweets">
+        <p class="cargando">Conectando con el laboratorio...</p>
+    </main>
+
+    <script>
+        // LE DECIMOS A LA WEB QUE BUSQUE TUS PUBLICACIONES EN TU GITHUB
+        // Reemplazá 'demilolmanso' por tu usuario real si no es ese, y 'Agorlab' por el nombre exacto de tu repositorio
+        const USUARIO_GITHUB = 'demilolmanso'; 
+        const REPO_NAME = 'Agorlab'; 
+
+        const contenedor = document.getElementById('feed-tweets');
+
+        async function cargarTweets() {
+            try {
+                // 1. Le pedimos a la API de GitHub la lista de archivos dentro de la carpeta posts
+                const urlApi = `https://api.github.com/repos/${USUARIO_GITHUB}/${REPO_NAME}/contents/microblog/posts`;
+                const respuesta = await fetch(urlApi);
+                
+                if (!respuesta.ok) {
+                    contenedor.innerHTML = "<p class='cargando'>Aún no hay publicaciones en la bitácora. ¡Escribí la primera desde /admin!</p>";
+                    return;
+                }
+
+                const archivos = await respuesta.json();
+                
+                // Limpiamos el mensaje de "cargando"
+                contenedor.innerHTML = '';
+
+                // Damos vuelta la lista para que el post más nuevo salga arriba de todo (estilo Twitter)
+                archivos.reverse();
+
+                // 2. Por cada archivo encontrado, vamos a leer su contenido real
+                for (let archivo of archivos) {
+                    if (archivo.name.endsWith('.md')) {
+                        const resPost = await fetch(archivo.download_url);
+                        const textoRaw = await resPost.text();
+
+                        // Procesamos el contenido para separar los datos que guarda Decap CMS
+                        const partes = textoRaw.split('---');
+                        if (partes.length >= 3) {
+                            const metadata = partes[1];
+                            const cuerpo = partes.slice(2).join('---').trim();
+
+                            // Extraemos la fecha usando una expresión regular simple
+                            const matchFecha = metadata.match(/date:\s*(.+)/);
+                            let fechaFormateada = "Fecha desconocida";
+                            
+                            if (matchFecha) {
+                                const d = new Date(matchFecha[1]);
+                                fechaFormateada = d.toLocaleDateString('es-AR', {
+                                    day: '2-digit',
+                                    month: '2-digit',
+                                    year: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                });
+                            }
+
+                            // 3. Creamos el diseño del Tweet en HTML y lo metemos en la pantalla
+                            const tweetHtml = `
+                                <article class="tweet-card">
+                                    <div class="tweet-fecha">${fechaFormateada} hs</div>
+                                    <div class="tweet-contenido">${cuerpo}</div>
+                                </article>
+                            `;
+                            contenedor.innerHTML += tweetHtml;
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error(error);
+                contenedor.innerHTML = "<p class='cargando'>Error al conectar con la base de datos del laboratorio.</p>";
+            }
+        }
+
+        cargarTweets();
+    </script>
+</body>
+</html>
