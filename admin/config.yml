@@ -1,0 +1,17 @@
+backend:
+  name: git-gateway
+  branch: main # O master, según cómo se llame tu rama principal en GitHub
+
+# Dónde se van a guardar las imágenes que subas (si querés meter fotos tipo Twitter)
+media_folder: "assets/uploads"
+public_folder: "/assets/uploads"
+
+collections:
+  - name: "microblog"
+    label: "Mis Tweets"
+    folder: "microblog/posts" # Los posteos se guardarán en carpetitas individuales acá adentro
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - { label: "Fecha", name: "date", widget: "datetime" }
+      - { label: "¿Qué estás rompiendo o arreglando hoy?", name: "body", widget: "text" }
