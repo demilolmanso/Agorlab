@@ -75,21 +75,28 @@
             box-shadow: 2px 2px 0px #ca630e; 
         }
 
-        /* Contenedor adaptado para Reels y videos verticales */
+        /* Contenedor adaptado para videos */
         .tweet-video-container {
             max-width: 100%;
             margin-top: 15px;
             border: 1px solid #ca630e;
             box-shadow: 2px 2px 0px #ca630e;
+            overflow: hidden;
             background: #000;
-            display: flex;
-            justify-content: center;
         }
 
-        .tweet-video-container video, .tweet-video-container iframe {
-            max-width: 100%;
-            max-height: 500px;
+        .tweet-video-container iframe, .tweet-video-container video {
+            width: 100%;
             display: block;
+            border: none;
+            aspect-ratio: 16 / 9; /* Mantiene la proporción clásica */
+        }
+
+        /* Ajuste por si subís un video vertical (estilo Reel/Short) */
+        .video-vertical iframe, .video-vertical video {
+            aspect-ratio: 9 / 16;
+            max-height: 500px;
+            margin: 0 auto;
         }
 
         .cargando {
@@ -140,7 +147,7 @@
                             const metadata = partes[1];
                             const cuerpo = partes.slice(2).join('---').trim();
 
-                            // Extrae la fecha del post
+                            // Extrae la fecha
                             const matchFecha = metadata.match(/date:\s*(.+)/);
                             let fechaFormateada = "Fecha desconocida";
                             
@@ -162,21 +169,44 @@
                                 fotoHtml = `<img src="${matchFoto[1].trim()}" class="tweet-foto" alt="Imagen del laboratorio">`;
                             }
 
-                            // LÓGICA DE VIDEO MEJORADA (Para evitar bloqueos de Instagram)
+                            // NUEVA LÓGICA DE DETECCIÓN DE VIDEO (Drive + IFrames + MP4s)
                             const matchVideo = metadata.match(/video:\s*["']?([\s\S]*?)["']?(?=\n\w+:|$)/);
                             let videoHtml = '';
-                            if (matchVideo && matchVideo[1] && matchVideo[1].trim() !== "") {
-                                const contenidoVideo = matchVideo[1].trim();
+                            let esVertical = '';
 
-                                // Si es un iframe ya armado (ej: de YouTube), lo deja pasar directo
-                                if (contenidoVideo.includes('<iframe')) {
-                                    videoHtml = `<div class="tweet-video-container">${contenidoVideo}</div>`;
-                                } else {
-                                    // Si pegaste un enlace directo (.mp4 o similar), usa la etiqueta nativa de HTML5
+                            if (matchVideo && matchVideo[1] && matchVideo[1].trim() !== "") {
+                                let urlVideo = matchVideo[1].trim();
+
+                                // Si pegaste un código de iframe completo (ej: de YouTube)
+                                if (urlVideo.includes('<iframe')) {
+                                    videoHtml = `<div class="tweet-video-container">${urlVideo}</div>`;
+                                } 
+                                // Si es un link de Google Drive (¡Solución definitiva!)
+                                else if (urlVideo.includes('drive.google.com')) {
+                                    let idDrive = '';
+                                    
+                                    // Extraemos el ID sin importar el formato de link de Drive que pegues
+                                    if (urlVideo.includes('/d/')) {
+                                        idDrive = urlVideo.split('/d/')[1].split('/')[0];
+                                    } else if (urlVideo.includes('id=')) {
+                                        idDrive = urlVideo.split('id=')[1].split('&')[0];
+                                    }
+
+                                    if (idDrive) {
+                                        // Lo incrustamos con el reproductor oficial de vista previa de Drive
+                                        videoHtml = `
+                                            <div class="tweet-video-container">
+                                                <iframe src="https://drive.google.com/file/d/${idDrive}/preview" allow="autoplay"></iframe>
+                                            </div>
+                                        `;
+                                    }
+                                } 
+                                // Si es un archivo de video directo clásico (.mp4)
+                                else {
                                     videoHtml = `
                                         <div class="tweet-video-container">
                                             <video controls playsinline preload="metadata">
-                                                <source src="${contenidoVideo}" type="video/mp4">
+                                                <source src="${urlVideo}" type="video/mp4">
                                                 Tu navegador no soporta reproducción de video.
                                             </video>
                                         </div>
@@ -203,7 +233,7 @@
 
             } catch (error) {
                 console.error(error);
-                contenedor.innerHTML = "<p class='cargando'>Error al conectar con la base de datos del laboratorio.</p>";
+                contenedor.innerHTML = "<p class='cargando'>Error al conectar con la bitácora.</p>";
             }
         }
 
