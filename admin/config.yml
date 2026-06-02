@@ -17,3 +17,4 @@ collections:
       - { label: "Fecha", name: "date", widget: "datetime" }
       - { label: "¿Qué estás rompiendo o arreglando hoy?", name: "body", widget: "text" }
       - { label: "Foto opcional", name: "foto", widget: "image", required: false }
+      - { label: "Código de Video incrustado (Iframe / URL)", name: "video", widget: "text", required: false }
