@@ -2,25 +2,26 @@
 <html lang="es">
 <head>
     <meta name="google-site-verification" content="SoM7uMHM_aVpeFbVifwL9c7XdTC3ZZbXns4dKT-M3W0" />
-    <!-- Poné esto en el <head> de tu index.html principal -->
-<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Agorlab | Un laboratorio digital a la vista de todos</title>
-    <!-- El miniloguito de la pestaña -->
-<link rel="icon" type="image/png" href="/favicon.png">
+    
+    <link rel="icon" type="image/png" href="/favicon.png">
+    
+    <link rel="stylesheet" href="/style.css">
+
     <style>
-        /*  estilos :3  */
         .logo-container {
             display: block;
             text-align: center;
-            margin-top: 20px;    /* Espacio arriba del logo */
-            margin-bottom: 20px; /* Más espacio abajo del logo porque ahora es más grande */
+            margin-top: 20px;    
+            margin-bottom: 20px; 
         }
 
         .logo-site {
-            max-width: 950px;   /* ¡AGRANDADO! Antes estaba en 450px */
-            width: 100%;        /* Para que se adapte bien si lo achicás o ves en celular */
+            max-width: 950px;   
+            width: 100%;        
             height: auto;       
         }
 
@@ -42,13 +43,38 @@
             letter-spacing: 1px;
             margin-bottom: 1.8rem; 
         }
-        
-        body { background-color: rgb(226, 226, 226); }
+
+        .contenedor-btn-blog {
+            text-align: center;
+            width: 100%;
+            margin-top: 25px;
+            margin-bottom: 25px;
+        }
+
+        .btn-microblog {
+            display: inline-block;
+            color: #ca630e;
+            text-decoration: none;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+            border: 1px dashed #ca630e;
+            padding: 10px 20px;
+            background-color: transparent;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .btn-microblog:hover {
+            background-color: #ca630e;
+            color: rgb(226, 226, 226);
+            box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+        }
     </style>
 </head>
 <body> 
 
-    <!-- Contenedor del logo -->
     <div class="logo-container">
         <img src="logo_agorlab.png" alt="Agorlab" class="logo-site">
     </div>
@@ -56,46 +82,16 @@
     <section class="prologo">
         <p>Hola, mi nombre es <strong>Demián</strong>.</p>
         
-        <p><strong>Agorlab</strong> es mi espacio de trabajo. Es un hibrido entre un blog, un laboratorio donde subir mis experimentos/proyectos y un portafolio digital.</p>
+        <p><strong>Agorlab</strong> es mi espacio de trabajo. Es un híbrido entre un blog, un laboratorio donde subir mis experimentos/proyectos y un portafolio digital.</p>
         
         <p>Para mí, la mejor forma de aprender es creando, rompiendo cosas y arreglándolas, así que acá documento todo mi proceso.</p>
 
         <p>Bienvenidos a <strong>Agorlab</strong>!</p>
     </section>
-<!-- Bloque del botón centrado -->
-<style>
-    .contenedor-btn-blog {
-        text-align: center;
-        width: 100%;
-        margin-top: 25px;
-        margin-bottom: 25px;
-    }
 
-    .btn-microblog {
-        display: inline-block;
-        color: #ca630e;
-        text-decoration: none;
-        font-family: 'Courier New', Courier, monospace;
-        font-weight: bold;
-        font-size: 1.1rem;
-        letter-spacing: 1px;
-        border: 1px dashed #ca630e;
-        padding: 10px 20px;
-        background-color: transparent;
-        transition: all 0.2s ease-in-out;
-    }
+    <div class="contenedor-btn-blog">
+        <a href="/microblog/" class="btn-microblog">[ LEER_BITÁCORA ]</a>
+    </div>
 
-    .btn-microblog:hover {
-        background-color: #ca630e;
-        color: rgb(226, 226, 226);
-        box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.1);
-        cursor: pointer;
-    }
-</style>
-
-<div class="contenedor-btn-blog">
-    <a href="/microblog/" class="btn-microblog">[ LEER_BITÁCORA ]</a>
-</div>
-<!-- Fin del bloque -->
 </body>
 </html>
