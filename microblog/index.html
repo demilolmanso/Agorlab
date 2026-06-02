@@ -31,6 +31,7 @@
             font-weight: bold;
             border: 1px dashed #ca630e;
             padding: 5px 10px;
+            transition: all 0.2s ease;
         }
 
         .btn-volver:hover {
@@ -43,7 +44,7 @@
             margin: 0 auto;
         }
 
-        /* Estilo para cada "tweet" de tu bitácora */
+        /* Estilo para cada "tweet" de la bitácora */
         .tweet-card {
             background-color: rgb(235, 235, 235);
             border-left: 4px solid #ca630e;
@@ -61,7 +62,7 @@
         .tweet-contenido {
             font-size: 1.1rem;
             line-height: 1.6;
-            white-space: pre-wrap; /* Mantiene los saltos de línea que hagas en el editor */
+            white-space: pre-wrap; /* Mantiene los saltos de línea */
         }
 
         .cargando {
@@ -78,22 +79,28 @@
     </div>
 
     <main class="contenedor-tweets" id="feed-tweets">
-        <p class="cargando">Conectando con el laboratorio...</p>
+        <p class="cargando">Conectando con el laboratorio secreto...</p>
     </main>
 
     <script>
-        // LE DECIMOS A LA WEB QUE BUSQUE TUS PUBLICACIONES EN TU GITHUB
-        // Reemplazá 'demilolmanso' por tu usuario real si no es ese, y 'Agorlab' por el nombre exacto de tu repositorio
+        // Configuración de tus credenciales de GitHub
         const USUARIO_GITHUB = 'demilolmanso'; 
         const REPO_NAME = 'Agorlab'; 
+        const MI_TOKEN = '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'; 
 
         const contenedor = document.getElementById('feed-tweets');
 
         async function cargarTweets() {
             try {
-                // 1. Le pedimos a la API de GitHub la lista de archivos dentro de la carpeta posts
                 const urlApi = `https://api.github.com/repos/${USUARIO_GITHUB}/${REPO_NAME}/contents/microblog/posts`;
-                const respuesta = await fetch(urlApi);
+                
+                // Petición a la API usando Bearer para tokens fine-grained
+                const respuesta = await fetch(urlApi, {
+                    headers: {
+                        'Authorization': `Bearer ${MI_TOKEN}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                });
                 
                 if (!respuesta.ok) {
                     contenedor.innerHTML = "<p class='cargando'>Aún no hay publicaciones en la bitácora. ¡Escribí la primera desde /admin!</p>";
@@ -101,26 +108,27 @@
                 }
 
                 const archivos = await respuesta.json();
-                
-                // Limpiamos el mensaje de "cargando"
                 contenedor.innerHTML = '';
-
-                // Damos vuelta la lista para que el post más nuevo salga arriba de todo (estilo Twitter)
+                
+                // Ordenar para que el más nuevo salga arriba
                 archivos.reverse();
 
-                // 2. Por cada archivo encontrado, vamos a leer su contenido real
                 for (let archivo of archivos) {
                     if (archivo.name.endsWith('.md')) {
-                        const resPost = await fetch(archivo.download_url);
+                        // Descarga segura del archivo privado usando el token
+                        const resPost = await fetch(archivo.download_url, {
+                            headers: {
+                                'Authorization': `Bearer ${MI_TOKEN}`
+                            }
+                        });
                         const textoRaw = await resPost.text();
 
-                        // Procesamos el contenido para separar los datos que guarda Decap CMS
+                        // Procesar el contenido que genera Decap CMS
                         const partes = textoRaw.split('---');
                         if (partes.length >= 3) {
                             const metadata = partes[1];
                             const cuerpo = partes.slice(2).join('---').trim();
 
-                            // Extraemos la fecha usando una expresión regular simple
                             const matchFecha = metadata.match(/date:\s*(.+)/);
                             let fechaFormateada = "Fecha desconocida";
                             
@@ -135,7 +143,6 @@
                                 });
                             }
 
-                            // 3. Creamos el diseño del Tweet en HTML y lo metemos en la pantalla
                             const tweetHtml = `
                                 <article class="tweet-card">
                                     <div class="tweet-fecha">${fechaFormateada} hs</div>
@@ -146,6 +153,11 @@
                         }
                     }
                 }
+                
+                if (contenedor.innerHTML === '') {
+                    contenedor.innerHTML = "<p class='cargando'>No se encontraron posteos válidos en la carpeta.</p>";
+                }
+
             } catch (error) {
                 console.error(error);
                 contenedor.innerHTML = "<p class='cargando'>Error al conectar con la base de datos del laboratorio.</p>";
