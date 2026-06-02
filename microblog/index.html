@@ -66,6 +66,14 @@
             line-height: 1.6;
             white-space: pre-wrap;
         }
+        .tweet-foto {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin-top: 15px;
+    border: 1px solid #ca630e; /* Un borde sutil con tu naranja característico */
+    box-shadow: 2px 2px 0px #ca630e; /* Efecto retro/hardcore simulando sombra sólida */
+}
 
         .cargando {
             text-align: center;
@@ -121,28 +129,39 @@
                             const cuerpo = partes.slice(2).join('---').trim();
 
                             // Extrae y formatea la fecha del post
-                            const matchFecha = metadata.match(/date:\s*(.+)/);
-                            let fechaFormateada = "Fecha desconocida";
-                            
-                            if (matchFecha) {
-                                const d = new Date(matchFecha[1]);
-                                fechaFormateada = d.toLocaleDateString('es-AR', {
-                                    day: '2-digit',
-                                    month: '2-digit',
-                                    year: 'numeric',
-                                    hour: '2-digit',
-                                    minute: '2-digit'
-                                });
-                            }
+const matchFecha = metadata.match(/date:\s*(.+)/);
+let fechaFormateada = "Fecha desconocida";
 
-                            // Renderiza el posteo en el HTML
-                            const tweetHtml = `
-                                <article class="tweet-card">
-                                    <div class="tweet-fecha">${fechaFormateada} hs</div>
-                                    <div class="tweet-contenido">${cuerpo}</div>
-                                </article>
-                            `;
-                            contenedor.innerHTML += tweetHtml;
+if (matchFecha) {
+    const d = new Date(matchFecha[1]);
+    fechaFormateada = d.toLocaleDateString('es-AR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+}
+
+// ─── NUEVO: Extrae la ruta de la foto si existe ───
+const matchFoto = metadata.match(/foto:\s*["']?([^"'\n\r]+)["']?/);
+let fotoHtml = '';
+
+if (matchFoto && matchFoto[1]) {
+    const rutaFoto = matchFoto[1].trim();
+    // Creamos la etiqueta de imagen apuntando a la ruta que guardó el CMS
+    fotoHtml = `<img src="${rutaFoto}" class="tweet-foto" alt="Imagen del laboratorio">`;
+}
+
+// Renderiza el posteo en el HTML (Agregamos ${fotoHtml})
+const tweetHtml = `
+    <article class="tweet-card">
+        <div class="tweet-fecha">${fechaFormateada} hs</div>
+        <div class="tweet-contenido">${cuerpo}</div>
+        ${fotoHtml}
+    </article>
+`;
+contenedor.innerHTML += tweetHtml;
                         }
                     }
                 }
