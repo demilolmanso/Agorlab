@@ -6,6 +6,18 @@
   <title>Agorlab - Panel de Control</title>
   <!-- Cargamos el script del CMS de forma remota -->
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+  <!-- Poné esto antes del </body> en tu admin/index.html -->
+<script>
+  if (window.netlifyIdentity) {
+    window.netlifyIdentity.on("init", user => {
+      if (!user) {
+        window.netlifyIdentity.on("login", () => {
+          document.location.href = "/admin/";
+        });
+      }
+    });
+  }
+</script>
 </head>
 <body>
 </body>
