@@ -1,17 +1,19 @@
 backend:
   name: git-gateway
-  branch: main # O master, según cómo se llame tu rama principal en GitHub
+  branch: main # O master, según tu rama principal
 
-# Dónde se van a guardar las imágenes que subas (si querés meter fotos tipo Twitter)
 media_folder: "assets/uploads"
 public_folder: "/assets/uploads"
 
 collections:
   - name: "microblog"
     label: "Mis Tweets"
-    folder: "microblog/posts" # Los posteos se guardarán en carpetitas individuales acá adentro
+    folder: "microblog/posts"
     create: true
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    # ESTO ARREGLA EL ERROR: Le dice al CMS que use la fecha como identificador visual
+    identifier_field: date 
     fields:
+      - { label: "Título de control (No se ve en el tweet)", name: "title", widget: "string" }
       - { label: "Fecha", name: "date", widget: "datetime" }
       - { label: "¿Qué estás rompiendo o arreglando hoy?", name: "body", widget: "text" }
