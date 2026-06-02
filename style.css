@@ -1,0 +1,18 @@
+/* style.css - Estilos globales para Agorlab */
+
+body { 
+    /* Fondo base (por si no carga la imagen) */
+    background-color: rgb(226, 226, 226); 
+    
+    /* SI QUERÉS USAR UNA IMAGEN DE FONDO FIJA:
+       Descomentá las líneas de abajo y cambiá 'tu-fondo.jpg' por tu archivo */
+    
+    background-image: url('/fondo.jpg');
+    background-attachment: fixed;
+    background-size: cover;
+    background-position: center;
+    
+    
+    margin: 0;
+    padding: 0;
+}
