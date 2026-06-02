@@ -16,3 +16,4 @@ collections:
       - { label: "Título de control (No se ve en el tweet)", name: "title", widget: "string" }
       - { label: "Fecha", name: "date", widget: "datetime" }
       - { label: "¿Qué estás rompiendo o arreglando hoy?", name: "body", widget: "text" }
+      - { label: "Foto opcional", name: "foto", widget: "image", required: false }
