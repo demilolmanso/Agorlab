@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Agorlab - Bitácora</title>
-    <!-- El miniloguito de la pestaña -->
-<link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="icon" type="image/png" href="/favicon.png">
     <style>
         body { 
             background-color: rgb(226, 226, 226); 
@@ -66,22 +65,58 @@
             line-height: 1.6;
             white-space: pre-wrap;
         }
+
         .tweet-foto {
-    max-width: 100%;
-    height: auto;
-    display: block;
-    margin-top: 15px;
-    border: 1px solid #ca630e; /* Un borde sutil con tu naranja característico */
-    box-shadow: 2px 2px 0px #ca630e; /* Efecto retro/hardcore simulando sombra sólida */
-}
-        .tweet-video {
-    max-width: 100%;
-    height: auto;
-    display: block;
-    margin-top: 15px;
-    border: 1px solid #ca630e;
-    box-shadow: 2px 2px 0px #ca630e;
-}
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin-top: 15px;
+            border: 1px solid #ca630e; 
+            box-shadow: 2px 2px 0px #ca630e; 
+        }
+
+        .tweet-video-container {
+            max-width: 100%;
+            margin-top: 15px;
+            border: 1px solid #ca630e;
+            box-shadow: 2px 2px 0px #ca630e;
+            overflow: hidden;
+        }
+
+        .tweet-video-container iframe {
+            width: 100%;
+            display: block;
+        }
+
+        /* Botón de Likes interactivo */
+        .tweet-acciones {
+            margin-top: 20px;
+        }
+
+        .btn-like {
+            background: transparent;
+            border: 1px dashed #ca630e;
+            color: #ca630e;
+            padding: 5px 12px;
+            font-family: inherit;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.1s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-like:hover {
+            background-color: #ca630e;
+            color: rgb(226, 226, 226);
+        }
+
+        .btn-like.liked {
+            background-color: #ca630e;
+            color: rgb(226, 226, 226);
+            border-style: solid;
+        }
 
         .cargando {
             text-align: center;
@@ -101,15 +136,16 @@
     </main>
 
     <script>
-        // Tus datos fijos de GitHub
         const USUARIO_GITHUB = 'demilolmanso'; 
         const REPO_NAME = 'Agorlab'; 
+
+        // Endpoint público alternativo para contadores rápidos libres de configuración
+        const API_LIKES = "https://api.countapi.xyz/hit/agorlab_blog"; 
 
         const contenedor = document.getElementById('feed-tweets');
 
         async function cargarTweets() {
             try {
-                // Petición directa a la API pública de GitHub
                 const urlApi = `https://api.github.com/repos/${USUARIO_GITHUB}/${REPO_NAME}/contents/microblog/posts`;
                 const respuesta = await fetch(urlApi);
                 
@@ -121,55 +157,69 @@
                 const archivos = await respuesta.json();
                 contenedor.innerHTML = '';
 
-                // Ordenamos para que los tweets más nuevos aparezcan arriba
                 archivos.reverse();
 
                 for (let archivo of archivos) {
                     if (archivo.name.endsWith('.md')) {
-                        // Descarga el contenido del archivo de texto
                         const resPost = await fetch(archivo.download_url);
                         const textoRaw = await resPost.text();
 
-                        // Separa la metadata del cuerpo del posteo
                         const partes = textoRaw.split('---');
                         if (partes.length >= 3) {
                             const metadata = partes[1];
                             const cuerpo = partes.slice(2).join('---').trim();
 
-                            // Extrae y formatea la fecha del post
-const matchFecha = metadata.match(/date:\s*(.+)/);
-let fechaFormateada = "Fecha desconocida";
+                            // Extrae la fecha del post
+                            const matchFecha = metadata.match(/date:\s*(.+)/);
+                            let fechaFormateada = "Fecha desconocida";
+                            
+                            if (matchFecha) {
+                                const d = new Date(matchFecha[1]);
+                                fechaFormateada = d.toLocaleDateString('es-AR', {
+                                    day: '2-digit',
+                                    month: '2-digit',
+                                    year: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                });
+                            }
 
-if (matchFecha) {
-    const d = new Date(matchFecha[1]);
-    fechaFormateada = d.toLocaleDateString('es-AR', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-    });
-}
+                            // Extrae la foto si existe
+                            const matchFoto = metadata.match(/foto:\s*["']?([^"'\n\r]+)["']?/);
+                            let fotoHtml = '';
+                            if (matchFoto && matchFoto[1]) {
+                                fotoHtml = `<img src="${matchFoto[1].trim()}" class="tweet-foto" alt="Imagen del laboratorio">`;
+                            }
 
-// ─── NUEVO: Extrae la ruta de la foto si existe ───
-const matchFoto = metadata.match(/foto:\s*["']?([^"'\n\r]+)["']?/);
-let fotoHtml = '';
+                            // Extrae el video si existe
+                            const matchVideo = metadata.match(/video:\s*["']?([\s\S]*?)["']?(?=\n\w+:|$)/);
+                            let videoHtml = '';
+                            if (matchVideo && matchVideo[1] && matchVideo[1].trim() !== "") {
+                                videoHtml = `<div class="tweet-video-container">${matchVideo[1].trim()}</div>`;
+                            }
 
-if (matchFoto && matchFoto[1]) {
-    const rutaFoto = matchFoto[1].trim();
-    // Creamos la etiqueta de imagen apuntando a la ruta que guardó el CMS
-    fotoHtml = `<img src="${rutaFoto}" class="tweet-foto" alt="Imagen del laboratorio">`;
-}
+                            // Identificador limpio para los likes de este post
+                            const postId = archivo.name.replace('.md', '');
+                            const haVotado = localStorage.getItem(`liked_${postId}`) ? 'liked' : '';
 
-// Renderiza el posteo en el HTML (Agregamos ${fotoHtml})
-const tweetHtml = `
-    <article class="tweet-card">
-        <div class="tweet-fecha">${fechaFormateada} hs</div>
-        <div class="tweet-contenido">${cuerpo}</div>
-        ${fotoHtml}
-    </article>
-`;
-contenedor.innerHTML += tweetHtml;
+                            // Renderiza el posteo con estructura corregida y botón de likes
+                            const tweetHtml = `
+                                <article class="tweet-card">
+                                    <div class="tweet-fecha">${fechaFormateada} hs</div>
+                                    <div class="tweet-contenido">${cuerpo}</div>
+                                    ${fotoHtml}
+                                    ${videoHtml}
+                                    <div class="tweet-acciones">
+                                        <button class="btn-like ${haVotado}" id="btn-${postId}" onclick="presionarLike('${postId}')">
+                                            <span>❤</span> <span id="conteo-${postId}">0</span>
+                                        </button>
+                                    </div>
+                                </article>
+                            `;
+                            contenedor.innerHTML += tweetHtml;
+
+                            // Carga los likes acumulados en segundo plano
+                            obtenerLikes(postId);
                         }
                     }
                 }
@@ -184,27 +234,47 @@ contenedor.innerHTML += tweetHtml;
             }
         }
 
-        // Ejecuta la función automáticamente
+        // Obtiene los likes usando un contador key-value abierto basado en tu ID de post
+        function obtenerLikes(postId) {
+            fetch(`https://api.keyvalue.xyz/agorlab_likes_${postId}/likes`)
+                .then(res => res.text())
+                .then(val => {
+                    const num = parseInt(val) || 0;
+                    document.getElementById(`conteo-${postId}`).textContent = num;
+                })
+                .catch(() => {});
+        }
+
+        // Maneja el click del corazón y guarda en LocalStorage
+        function presionarLike(postId) {
+            const boton = document.getElementById(`btn-${postId}`);
+            const contadorTexto = document.getElementById(`conteo-${postId}`);
+            
+            if (localStorage.getItem(`liked_${postId}`)) {
+                alert("Ya le diste amor a este experimento.");
+                return;
+            }
+
+            let actual = parseInt(contadorTexto.textContent) || 0;
+            let nuevo = actual + 1;
+
+            // Guardamos el nuevo conteo de forma remota e invisible
+            fetch(`https://api.keyvalue.xyz/agorlab_likes_${postId}/likes/${nuevo}`, { method: 'POST' })
+                .then(() => {
+                    localStorage.setItem(`liked_${postId}`, 'true');
+                    boton.classList.add('liked');
+                    contadorTexto.textContent = nuevo;
+                })
+                .catch(() => {
+                    // Fallback visual si la red falla
+                    localStorage.setItem(`liked_${postId}`, 'true');
+                    boton.classList.add('liked');
+                    contadorTexto.textContent = nuevo;
+                });
+        }
+
+        // Ejecuta la carga inicial
         cargarTweets();
-     // Extrae el campo de video
-const matchVideo = metadata.match(/video:\s*["']?([\s\S]*?)["']?(?=\n\w+:|$)/);
-let videoHtml = '';
-
-if (matchVideo && matchVideo[1]) {
-    const contenidoVideo = matchVideo[1].trim();
-    
-    // Si pegaste un iframe completo, lo renderiza directo. Si no, podrías envolverlo en un contenedor.
-    videoHtml = `<div class="tweet-video-container">${contenidoVideo}</div>`;
-}
-
-// Y lo sumás al render del HTML de tu tarjeta:
-const tweetHtml = `
-    <article class="tweet-card">
-        <div class="tweet-fecha">${fechaFormateada} hs</div>
-        <div class="tweet-contenido">${cuerpo}</div>
-        ${fotoHtml}
-        ${videoHtml} </article>
-`;   
     </script>
 </body>
 </html>
