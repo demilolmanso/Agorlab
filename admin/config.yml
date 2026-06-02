@@ -1,22 +1,14 @@
 backend:
   name: git-gateway
-  branch: main # O master, según tu rama principal
+  branch: main
 
 media_folder: "assets/uploads"
 public_folder: "/assets/uploads"
 
-collections:
-  - name: "microblog"
-    label: "Mis Tweets"
-    folder: "microblog/posts"
-    create: true
-    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
-    # ESTO ARREGLA EL ERROR: Le dice al CMS que use la fecha como identificador visual
-    identifier_field: date 
-    fields:
-      - { label: "Título de control (No se ve en el tweet)", name: "title", widget: "string" }
-      - { label: "Fecha", name: "date", widget: "datetime" }
-      - { label: "¿Qué estás rompiendo o arreglando hoy?", name: "body", widget: "text" }# ... (Dejá todo lo que ya tenías arriba igual)
+# Activamos el modo que nos permite leer contenido sin la API de GitHub
+slug:
+  encoding: "ascii"
+  clean_accents: true
 
 collections:
   - name: "microblog"
@@ -25,38 +17,9 @@ collections:
     create: true
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     identifier_field: date
-    # ESTO GENERARÁ EL ARCHIVO JSON AUTOMÁTICAMENTE PARA TU INDEX
+    # Esto genera un archivo JSON limpio en la raíz pública cada vez que publicás
     meta: { path: { label: "Tweets Index", name: "tweets-index", widget: "hidden", default: "/tweets-index.json" } }
     fields:
-      - { label: "Título de control (No se ve en el tweet)", name: "title", widget: "string" }
-      - { label: "Fecha", name: "date", widget: "datetime" }
-      - { label: "¿Qué estás rompiendo o arreglando hoy?", name: "body", widget: "text" }# ... (Dejá todo lo que ya tenías arriba igual)
-
-collections:
-  - name: "microblog"
-    label: "Mis Tweets"
-    folder: "microblog/posts"
-    create: true
-    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
-    identifier_field: date
-    # ESTO GENERARÁ EL ARCHIVO JSON AUTOMÁTICAMENTE PARA TU INDEX
-    meta: { path: { label: "Tweets Index", name: "tweets-index", widget: "hidden", default: "/tweets-index.json" } }
-    fields:
-      - { label: "Título de control (No se ve en el tweet)", name: "title", widget: "string" }
-      - { label: "Fecha", name: "date", widget: "datetime" }
-      - { label: "¿Qué estás rompiendo o arreglando hoy?", name: "body", widget: "text" }
-# ... (Dejá todo lo que ya tenías arriba igual)
-
-collections:
-  - name: "microblog"
-    label: "Mis Tweets"
-    folder: "microblog/posts"
-    create: true
-    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
-    identifier_field: date
-    # ESTO GENERARÁ EL ARCHIVO JSON AUTOMÁTICAMENTE PARA TU INDEX
-    meta: { path: { label: "Tweets Index", name: "tweets-index", widget: "hidden", default: "/tweets-index.json" } }
-    fields:
-      - { label: "Título de control (No se ve en el tweet)", name: "title", widget: "string" }
+      - { label: "Título de control (No se ve)", name: "title", widget: "string" }
       - { label: "Fecha", name: "date", widget: "datetime" }
       - { label: "¿Qué estás rompiendo o arreglando hoy?", name: "body", widget: "text" }
