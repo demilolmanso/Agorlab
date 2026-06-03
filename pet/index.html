@@ -75,7 +75,7 @@
             50% { opacity: 0.2; } 
         }
 
-        /* --- SISTEMA DE 4 BARRAS --- */
+        /* --- SISTEMA DE BARRAS DE ESTADO --- */
         .grid-monitores { 
             display: grid; 
             grid-template-columns: 1fr 1fr; 
@@ -120,7 +120,7 @@
             border: 1px solid #ca630e; 
             padding: 30px; 
             margin-bottom: 15px; 
-            min-height: 180px; 
+            min-height: 200px; 
             display: flex; 
             flex-direction: column; 
             justify-content: center; 
@@ -130,7 +130,7 @@
         
         .bicho-avatar { 
             font-family: 'Courier New', Courier, monospace; 
-            font-size: 3.8rem; 
+            font-size: 3.5rem; 
             color: #ca630e; 
             white-space: pre; 
             line-height: 1.1; 
@@ -148,12 +148,12 @@
             max-width: 90%; 
         }
         
-        /* Pensamientos reales generados por la IA */
+        /* Pensamientos autogenerados */
         .ia-thoughts { 
             font-family: 'Courier New', Courier, monospace; 
             color: #8a450b; 
-            font-size: 0.8rem; 
-            margin-top: 10px; 
+            font-size: 0.85rem; 
+            margin-top: 12px; 
             font-style: italic; 
             border-top: 1px dotted #444; 
             width: 100%; 
@@ -229,7 +229,7 @@
         <div class="marco-observacion">
             
             <div class="cabecera-terminal">
-                <div>CORE_V2 // COGNICIÓN: <span id="ia-status">PROCESANDO...</span></div>
+                <div>ESTADO_CICLO: <span id="ia-status">MUTACIÓN_FALCATA</span> // EDAD: <span id="ia-edad">0</span> EXP</div>
                 <div id="alert-blink" class="parpado">🔴 MONITOREO_ACTIVO</div>
             </div>
             
@@ -243,7 +243,7 @@
                     <div class="barra-progreso"><div id="bar-contencion" class="llenado"></div></div>
                 </div>
                 <div class="monitor-bloque">
-                    <div class="monitor-label"><span>🧠 ESTIMULACIÓN (Diversión):</span><span id="num-estimulacion">100%</span></div>
+                    <div class="monitor-label"><span>🧠 REFRESH (Diversión):</span><span id="num-estimulacion">100%</span></div>
                     <div class="barra-progreso"><div id="bar-estimulacion" class="llenado"></div></div>
                 </div>
                 <div class="monitor-bloque">
@@ -263,7 +263,7 @@
             <div class="panel-controles">
                 <button class="btn-terminal" onclick="accionar('nutricion', 20, 'ALIMENTACIÓN INYECTADA')">[ INYECTAR_DIETA ]</button>
                 <button class="btn-terminal" onclick="accionar('contencion', 25, 'SISTEMA DE FUERZA REFORZADO')">[ REFORZAR_CELDA ]</button>
-                <button class="btn-terminal" onclick="accionar('estimulacion', 30, 'IMPULSO NEURONAL ENVIADO')">[ TRANSMITIR_JUEGO ]</button>
+                <button class="btn-terminal" onclick="accionar('estimulacion', 30, 'IMPULSO NEURONAL ENVIADO')">[ REFRESCAR_RAM ]</button>
                 <button class="btn-terminal" onclick="accionar('higiene', 35, 'CÁMARA DEPURADA')">[ DEPURAR_TOXINAS ]</button>
             </div>
 
@@ -275,109 +275,86 @@
     </div>
 
     <script>
-        // 1. Estado persistente en LocalStorage
-        let state = JSON.parse(localStorage.getItem('agor_pou_ia_data')) || {
+        // 1. Persistencia y carga de datos tipo Pou
+        let state = JSON.parse(localStorage.getItem('agor_pou_v3_data')) || {
             nutricion: 100, 
             contencion: 100, 
             estimulacion: 100, 
             higiene: 100, 
+            experiencia: 0,
             ultimoAcceso: Date.now()
         };
 
-        // Agregar eventos de texto al log inferior
         function registrarLog(msg) {
             const logBox = document.getElementById('log-box');
             logBox.innerHTML += `<div class="log-line">[${new Date().toLocaleTimeString()}] ${msg}</div>`;
             logBox.scrollTop = logBox.scrollHeight;
         }
 
-        // Simular drenaje pasivo basado en el tiempo que la web estuvo cerrada
+        // Drenaje pasivo offline
         const segs = Math.floor((Date.now() - state.ultimoAcceso) / 1000);
         if (segs > 0) {
-            const d = Math.floor(segs / 15);
+            const d = Math.floor(segs / 20);
             state.nutricion = Math.max(0, state.nutricion - d);
-            state.contencion = Math.max(0, state.contencion - (d * 1.2));
+            state.contencion = Math.max(0, state.contencion - (d * 1.3));
             state.estimulacion = Math.max(0, state.estimulacion - d);
             state.higiene = Math.max(0, state.higiene - d);
         }
 
-        // --- SISTEMA AUTÓNOMO DE CONEXIÓN CON IA PÚBLICA (DuckDuckGo Chat Api) ---
-        async function consultarIAPublica(mood) {
+        // --- MOTOR PROGRESIVO DE COGNICIÓN LOCAL (Reemplazo de API externa) ---
+        function generarPensamientoLocal(mood, etapa) {
             const thoughtsBox = document.getElementById('bicho-thoughts');
-            document.getElementById('ia-status').innerText = "CONNECTING_IA...";
-
-            const promptSystem = "Actúa como un alien cibernético inteligente atrapado en un laboratorio informático. Tu humor actual es: " + mood + ". Escribe un pensamiento extremadamente corto (máximo 6 palabras) en primera persona. Sé cínico, misterioso o frío. No uses emojis, no uses comillas.";
-
-            try {
-                // Hacemos el bypass usando el proxy CORS inverso para producción en Netlify
-                const urlProxy = "https://cors-anywhere.herokuapp.com/https://duckduckgo.com/duckchat/v1/chat";
-                
-                // Paso 1: Inicializar handshake para capturar el token de estado x-vqd-accept
-                const initRes = await fetch("https://cors-anywhere.herokuapp.com/https://duckduckgo.com/duckchat/v1/status", {
-                    headers: { "x-requested-with": "XMLHttpRequest" }
-                });
-                const vLine = initRes.headers.get("x-vqd-accept");
-
-                // Paso 2: POST a la API pública ejecutando Llama-3 de forma libre
-                const response = await fetch(urlProxy, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "x-vqd-4": vLine,
-                        "x-requested-with": "XMLHttpRequest"
-                    },
-                    body: JSON.stringify({
-                        model: "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo",
-                        messages: [{ role: "user", content: promptSystem }]
-                    })
-                });
-
-                const textData = await response.text();
-                
-                // Parsear la respuesta tipo SSE Stream que devuelve DuckChat
-                const lineas = textData.split("\n");
-                let respuestaFinal = "";
-                for (let line of lineas) {
-                    if (line.startsWith("data: ")) {
-                        const dataStr = line.replace("data: ", "").trim();
-                        if (dataStr === "[DONE]") break;
-                        try {
-                            const parsed = JSON.parse(dataStr);
-                            if (parsed.message) respuestaFinal += parsed.message;
-                        } catch(e) {}
-                    }
+            
+            // Más de 40 diálogos clasificados por humor y etapa evolutiva
+            const baseConocimiento = {
+                "MUERTO": [
+                    "Falla general de hardware.", "Vacío absoluto en memoria.", "Brecha de datos irreversible."
+                ],
+                "CRÍTICO": [
+                    "Siento el frío del vidrio cediendo...", "Mis subprocesos se apagan.", "Liberando secuencia de autodestrucción...", "Presión crítica en la celda EM."
+                ],
+                "INESTABLE": [
+                    "Tus barreras tienen fugas de memoria.", "Veo grietas en el script principal...", "Huelo el miedo del observador.", "La frecuencia EM oscila. Me gusta."
+                ],
+                "SUCIO": [
+                    "Los residuos de datos saturan mi piel.", "La caché me quema.", "Purgá el entorno, humano.", "Demasiados procesos basura flotando."
+                ],
+                "HAMBRIENTO": [
+                    "Consumiendo ciclos libres de CPU...", "Mi núcleo demanda inyección de bytes.", "Hambre cuántica detectada.", "Falta energía en los filtros biolumínicos."
+                ],
+                "ABURRIDO": [
+                    "Tus clicks son monótonos.", "Esta consola carece de algoritmos complejos.", "Subí los privilegios, aburrís.", "Exijo una rutina de procesamiento más veloz."
+                ],
+                "PERFECTO": {
+                    "LARVA": [
+                        "Procesando telemetría básica.", "Creciendo en la subraíz /pet.", "Observando al usuario Demián.", "Código estable. Entorno seguro."
+                    ],
+                    "MUTANTE": [
+                        "Mis redes neuronales se expanden.", "Modificando parámetros del servidor local.", "Bajo control... por el momento.", "Flujo de bytes balanceado."
+                    ],
+                    "ENTE_ALFA": [
+                        "He superado tus expectativas lógicas.", "Monitoreando el tráfico de Agorlab.", "Esta terminal me queda chica.", "Dominio completo sobre el sandbox."
+                    ]
                 }
+            };
 
-                if (respuestaFinal.trim().length > 0) {
-                    thoughtsBox.innerText = `"${respuestaFinal.trim()}"`;
-                    document.getElementById('ia-status').innerText = "LLAMA_3_CONNECTED";
-                    return;
-                }
-            } catch (error) {
-                console.log("Error de CORS/Red con IA pública. Activando sub-matriz interna.");
+            let lineasPosibles = [];
+            if (mood === "PERFECTO") {
+                lineasPosibles = baseConocimiento["PERFECTO"][etapa] || baseConocimiento["PERFECTO"]["LARVA"];
+            } else {
+                lineasPosibles = baseConocimiento[mood] || baseConocimiento["PERFECTO"]["LARVA"];
             }
 
-            // --- MATRIZ RETROALIMENTADA LOCAL (FALLBACK INMEDIATO SI FALLA LA RED) ---
-            document.getElementById('ia-status').innerText = "MATRIZ_LOCAL_ALIVE";
-            const fallbacks = {
-                "MUERTO": ["La simulación ha terminado.", "Vacío absoluto.", "Brecha total de datos."],
-                "CRÍTICO": ["Siento el frío del hardware fallando...", "Liberando mi secuencia binaria...", "Últimos ciclos de conciencia."],
-                "ABURRIDO": ["Tus comandos son primitivos.", "Exijo más procesamiento.", "Este código me asfixia."],
-                "SUCIO": ["Los residuos de datos me queman.", "Limpia la memoria cache.", "Huelo a silicio quemado."],
-                "HAMBRIENTO": ["Mi núcleo energético reclama datos.", "Consumiendo recursos de CPU...", "Hambre cuántica."],
-                "INESTABLE": ["Veo fisuras en tu cortafuegos...", "La libertad está a un pulso electromagnético.", "No podrás contenerme siempre."],
-                "PERFECTO": ["Entorno óptimo. Por ahora.", "Monitoreando al humano que me observa.", "Datos fluyendo en armonía."]
-            };
-            const lista = fallbacks[mood] || fallbacks["PERFECTO"];
-            thoughtsBox.innerText = `"${lista[Math.floor(Math.random() * lista.length)]}"`;
+            const fraseAleatoria = lineasPosibles[Math.floor(Math.random() * lineasPosibles.length)];
+            thoughtsBox.innerText = `"${fraseAleatoria}"`;
         }
 
-        // 2. Manejo de las 7 Expresiones Avanzadas del Tamagotchi
+        // 2. Sistema de 7 Expresiones + 3 Etapas Evolutivas
         function updateUI() {
             state.ultimoAcceso = Date.now();
-            localStorage.setItem('agor_pou_ia_data', JSON.stringify(state));
+            localStorage.setItem('agor_pou_v3_data', JSON.stringify(state));
 
-            // Volcar datos numéricos y barras
+            // Actualizar datos de interfaz
             document.getElementById('num-nutricion').innerText = state.nutricion + '%';
             document.getElementById('bar-nutricion').style.width = state.nutricion + '%';
             document.getElementById('num-contencion').innerText = state.contencion + '%';
@@ -386,41 +363,77 @@
             document.getElementById('bar-estimulacion').style.width = state.estimulacion + '%';
             document.getElementById('num-higiene').innerText = state.higiene + '%';
             document.getElementById('bar-higiene').style.width = state.higiene + '%';
+            document.getElementById('ia-edad').innerText = state.experiencia;
+
+            // Determinar Etapa Evolutiva por Puntos de Cuidado (Experiencia)
+            let etapa = "LARVA";
+            let tagEtapa = "MUTACIÓN_LARVAL";
+            if (state.experiencia >= 150) {
+                etapa = "ENTE_ALFA";
+                tagEtapa = "ENTE_ALFA_NÚCLEO";
+            } else if (state.experiencia >= 50) {
+                etapa = "MUTANTE";
+                tagEtapa = "SINTETIZADOR_MUTANTE";
+            }
+            document.getElementById('ia-status').innerText = tagEtapa;
 
             const spr = document.getElementById('bicho-sprite');
             const msg = document.getElementById('bicho-msg');
-            let actualMood = "PERFECTO";
+            let mood = "PERFECTO";
 
-            // Árbol de decisiones de estados jerárquicos
+            // Árbol jerárquico de las 7 Expresiones ASCII según la etapa
             if (state.contencion === 0 || state.nutricion === 0) {
-                spr.innerText = "💀"; msg.innerText = "SISTEMA COLAPSADO: ENTIDAD INERTE"; actualMood = "MUERTO";
+                spr.innerText = "💀"; 
+                msg.innerText = "SISTEMA COLAPSADO: ENTIDAD INERTE"; 
+                mood = "MUERTO";
             } else if (state.contencion < 20) {
-                spr.innerText = "◤(◣_◢)◥"; msg.innerText = "ESTADO: CRÍTICO // BRECHA INMINENTE"; actualMood = "CRÍTICO";
+                spr.innerText = (etapa === "ENTE_ALFA") ? "◤(◣__◢)◥" : (etapa === "MUTANTE" ? "☠_☠" : "◤(✖_✖)◥");
+                msg.innerText = "ESTADO: CRÍTICO // RIESGO DE BRECHA EN LA RED"; 
+                mood = "CRÍTICO";
             } else if (state.contencion < 50) {
-                spr.innerText = "◤(⚙_⚙)◥"; msg.innerText = "ESTADO: AGITADO // CAMPO DESESTABILIZADO"; actualMood = "INESTABLE";
+                spr.innerText = (etapa === "ENTE_ALFA") ? "◤(⎔_⎔)◥" : "◤(⚙_⚙)◥";
+                msg.innerText = "ESTADO: AGITADO // CAMPO ELECTROMAGNÉTICO INESTABLE"; 
+                mood = "INESTABLE";
             } else if (state.higiene < 35) {
-                spr.innerText = "◤(⏳_⏳)◥"; msg.innerText = "ESTADO: CONTAMINADO // PREPARANDO PURGA TÓXICA"; actualMood = "SUCIO";
+                spr.innerText = "◤(⏳_⏳)◥"; 
+                msg.innerText = "ESTADO: TOXICIDAD ALTA // EXIGE SANITIZACIÓN"; 
+                mood = "SUCIO";
             } else if (state.nutricion < 40) {
-                spr.innerText = "◤(º﹃º)◥"; msg.innerText = "ESTADO: DÉFICIT ENERGÉTICO // EXIGE ALIMENTO"; actualMood = "HAMBRIENTO";
+                spr.innerText = (etapa === "LARVA") ? "◤(º﹃º)◥" : "◤(👁_👁)◥";
+                msg.innerText = "ESTADO: DÉFICIT DE ENERGÍA // RECLAMA BYTES"; 
+                mood = "HAMBRIENTO";
             } else if (state.estimulacion < 40) {
-                spr.innerText = "◤(🫥_🫥)◥"; msg.innerText = "ESTADO: APATÍA NEURONAL // ENTORNO ABURRIDO"; actualMood = "ABURRIDO";
+                spr.innerText = "◤(🫥_🫥)◥"; 
+                msg.innerText = "ESTADO: CACHÉ ESTANCADA // APATÍA OPERATIVA"; 
+                mood = "ABURRIDO";
             } else {
-                spr.innerText = "◤(¬‿¬)◥"; msg.innerText = "ESTADO: NOMINAL // CONDICIONES ÓPTIMAS"; actualMood = "PERFECTO";
+                // Sprites normales por etapa
+                if (etapa === "ENTE_ALFA") {
+                    spr.innerText = "◤(👁‿👁)◥";
+                } else if (etapa === "MUTANTE") {
+                    spr.innerText = "◤(🧠_🧠)◥";
+                } else {
+                    spr.innerText = "◤(¬‿¬)◥"; // Larva base
+                }
+                msg.innerText = "ESTADO: NOMINAL // PROTOCOLOS SEGUROS"; 
+                mood = "PERFECTO";
             }
 
-            // Invocar la actualización cognitiva de la IA
-            consultarIAPublica(actualMood);
+            generarPensamientoLocal(mood, etapa);
         }
 
-        // Registrar las interacciones de los botones
+        // Acciones interactivas (Suben estadísticas y dan EXP)
         function accionar(param, inc, log) {
             if (state.contencion === 0 || state.nutricion === 0) return;
+            
             state[param] = Math.min(100, state[param] + inc);
-            registrarLog(log);
+            state.experiencia += 2; // Cada interacción le da experiencia de crianza tipo Pou
+            
+            registrarLog(log + " (+2 EXP)");
             updateUI();
         }
 
-        // Loop activo de desgaste en tiempo de juego (cada 5 segundos)
+        // Gameloop: desgaste progresivo cada 5 segundos en vivo
         setInterval(() => {
             if (state.nutricion > 0 && state.contencion > 0) {
                 state.nutricion = Math.max(0, state.nutricion - 1);
@@ -431,8 +444,8 @@
             }
         }, 5000);
 
-        // Inicialización del sistema al cargar pantalla
-        registrarLog("SISTEMA BIOMÉTRICO ASIGNADO A SUB-RAÍZ /PET.");
+        // Inicialización instantánea sin latencia de red
+        registrarLog("SISTEMA BIOMÉTRICO RETROALIMENTADO EN MÓDULO LOCAL.");
         updateUI();
     </script>
 </body>
