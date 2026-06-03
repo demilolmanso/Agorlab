@@ -44,14 +44,18 @@
             margin-bottom: 1.8rem; 
         }
 
-        .contenedor-btn-blog {
-            text-align: center;
+        /* --- CONTENEDOR DE BOTONES ACTUALIZADO --- */
+        .contenedor-botones {
+            display: flex;
+            justify-content: center;
+            gap: 20px; /* Separación limpia entre los botones */
             width: 100%;
             margin-top: 25px;
-            margin-bottom: 25px;
+            margin-bottom: 40px;
+            flex-wrap: wrap; /* Si se abre desde celular, se acomodan uno abajo del otro automáticamente */
         }
 
-        .btn-microblog {
+        .btn-interactivo {
             display: inline-block;
             color: #ca630e;
             text-decoration: none;
@@ -65,7 +69,7 @@
             transition: all 0.2s ease-in-out;
         }
 
-        .btn-microblog:hover {
+        .btn-interactivo:hover {
             background-color: #ca630e;
             color: rgb(226, 226, 226);
             box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.1);
@@ -89,8 +93,9 @@
         <p>Bienvenidos a <strong>Agorlab</strong>!</p>
     </section>
 
-    <div class="contenedor-btn-blog">
-        <a href="/microblog/" class="btn-microblog">[ LEER_BITÁCORA ]</a>
+    <div class="contenedor-botones">
+        <a href="/microblog/" class="btn-interactivo">[ LEER_BITÁCORA ]</a>
+        <a href="/pet/" class="btn-interactivo">[ MONITOREAR_NÚCLEO ]</a>
     </div>
 
 </body>
