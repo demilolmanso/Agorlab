@@ -342,21 +342,7 @@
 
     <a href="/" class="btn-volver">< VOLVER_AL_NÚCLEO_AGORLAB</a>
 
-    <script type="module">
-        import { GoogleGenerativeAI } from "@google/generative-ai";
-
-        // Configuración Inicial de la IA
-        const GEMINI_API_KEY = "AQ.Ab8RN6IEANcnOS3EQx3mmj2UGClhwiXrVyQWB0-u-YBB-dz-3w";
-        let aiModel = null;
-
-        if (GEMINI_API_KEY.trim() !== "") {
-            const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-            aiModel = genAI.getGenerativeModel(
-                { model: "gemini-1.5-flash" },
-                { apiVersion: "v1" }
-            );
-        }
-
+    <script>
         let yaMurioEnSesion = false;
 
         function obtenerEstadoBase() {
@@ -372,12 +358,11 @@
             };
         }
 
-        // Cargamos el estado de manera segura de entrada
-        let state = JSON.parse(localStorage.getItem('agor_pou_v3_data')) || obtenerEstadoBase();
-        if (state.muertes === undefined) state.muertes = 0;
-        if (!state.nombreUsuario) state.nombreUsuario = "Demián"; 
+        // 🛠️ FIX DEFINITIVO: Guardamos el estado globalmente en window para que el script de tipo module pueda leerlo
+        window.state = JSON.parse(localStorage.getItem('agor_pou_v3_data')) || obtenerEstadoBase();
+        if (window.state.muertes === undefined) window.state.muertes = 0;
+        if (!window.state.nombreUsuario) window.state.nombreUsuario = "Demián"; 
 
-        // Exportamos las funciones críticas a 'window' para que sigan funcionando los onclick del HTML
         window.registrarLog = function(msg) {
             const logBox = document.getElementById('log-box');
             if (!logBox) return;
@@ -387,9 +372,19 @@
 
         window.actualizarNombre = function(valor) {
             const nombreLimpio = valor.trim();
-            state.nombreUsuario = nombreLimpio || "Demián";
-            localStorage.setItem('agor_pou_v3_data', JSON.stringify(state));
-            window.registrarLog(`ID_OPERADOR ACTUALIZADO: "${state.nombreUsuario.toUpperCase()}"`);
+            window.state.nombreUsuario = nombreLimpio || "Demián";
+            localStorage.setItem('agor_pou_v3_data', JSON.stringify(window.state));
+            window.registrarLog(`ID_OPERADOR ACTUALIZADO: "${window.state.nombreUsuario.toUpperCase()}"`);
+        }
+
+        // Degradación offline pasiva
+        const segs = Math.floor((Date.now() - window.state.ultimoAcceso) / 1000);
+        if (segs > 0 && window.state.contencion > 0 && window.state.nutricion > 0) {
+            const d = Math.floor(segs / 90); 
+            window.state.nutricion = Math.max(0, window.state.nutricion - d);
+            window.state.contencion = Math.max(0, window.state.contencion - (d * 1.1));
+            window.state.estimulacion = Math.max(0, window.state.estimulacion - d);
+            window.state.higiene = Math.max(0, window.state.higiene - d);
         }
 
         window.generarPensamientoAutomatico = function(mood, etapa) {
@@ -402,35 +397,35 @@
                 "SUCIO": ["Los residuos de datos saturan mi piel.", "Demasiados procesos basura flotando."],
                 "HAMBRIENTO": ["Consumiendo ciclos libres de CPU...", "Mi núcleo demanda bytes."],
                 "ABURRIDO": ["Tus clicks son monótonos.", "Exijo una rutina más veloz."],
-                "PERFECTO": ["Entorno estable. Código en armonía.", `Esperando instrucciones de ${state.nombreUsuario}...`]
+                "PERFECTO": ["Entorno estable. Código en armonía.", `Esperando instrucciones de ${window.state.nombreUsuario}...`]
             };
             const lista = fallbacks[mood] || fallbacks["PERFECTO"];
             thoughtsBox.innerText = `"${lista[Math.floor(Math.random() * lista.length)]}"`;
         }
 
         window.updateUI = function() {
-            state.ultimoAcceso = Date.now();
-            localStorage.setItem('agor_pou_v3_data', JSON.stringify(state));
+            window.state.ultimoAcceso = Date.now();
+            localStorage.setItem('agor_pou_v3_data', JSON.stringify(window.state));
 
             if(document.getElementById('operator-name')) {
-                document.getElementById('operator-name').value = state.nombreUsuario;
+                document.getElementById('operator-name').value = window.state.nombreUsuario;
             }
 
-            if(document.getElementById('num-nutricion')) document.getElementById('num-nutricion').innerText = state.nutricion + '%';
-            if(document.getElementById('bar-nutricion')) document.getElementById('bar-nutricion').style.width = state.nutricion + '%';
-            if(document.getElementById('num-contencion')) document.getElementById('num-contencion').innerText = state.contencion + '%';
-            if(document.getElementById('bar-contencion')) document.getElementById('bar-contencion').style.width = state.contencion + '%';
-            if(document.getElementById('num-estimulacion')) document.getElementById('num-estimulacion').innerText = state.estimulacion + '%';
-            if(document.getElementById('bar-estimulacion')) document.getElementById('bar-estimulacion').style.width = state.estimulacion + '%';
-            if(document.getElementById('num-higiene')) document.getElementById('num-higiene').innerText = state.higiene + '%';
-            if(document.getElementById('bar-higiene')) document.getElementById('bar-higiene').style.width = state.higiene + '%';
-            if(document.getElementById('ia-edad')) document.getElementById('ia-edad').innerText = state.experiencia + ' EXP';
-            if(document.getElementById('ia-muertes')) document.getElementById('ia-muertes').innerText = state.muertes;
+            if(document.getElementById('num-nutricion')) document.getElementById('num-nutricion').innerText = window.state.nutricion + '%';
+            if(document.getElementById('bar-nutricion')) document.getElementById('bar-nutricion').style.width = window.state.nutricion + '%';
+            if(document.getElementById('num-contencion')) document.getElementById('num-contencion').innerText = window.state.contencion + '%';
+            if(document.getElementById('bar-contencion')) document.getElementById('bar-contencion').style.width = window.state.contencion + '%';
+            if(document.getElementById('num-estimulacion')) document.getElementById('num-estimulacion').innerText = window.state.estimulacion + '%';
+            if(document.getElementById('bar-estimulacion')) document.getElementById('bar-estimulacion').style.width = window.state.estimulacion + '%';
+            if(document.getElementById('num-higiene')) document.getElementById('num-higiene').innerText = window.state.higiene + '%';
+            if(document.getElementById('bar-higiene')) document.getElementById('bar-higiene').style.width = window.state.higiene + '%';
+            if(document.getElementById('ia-edad')) document.getElementById('ia-edad').innerText = window.state.experiencia + ' EXP';
+            if(document.getElementById('ia-muertes')) document.getElementById('ia-muertes').innerText = window.state.muertes;
 
             let etapa = "LARVA";
             let tagEtapa = "MUTACIÓN_LARVAL";
-            if (state.experiencia >= 150) { etapa = "ENTE_ALFA"; tagEtapa = "ENTE_ALFA_NÚCLEO"; }
-            else if (state.experiencia >= 50) { etapa = "MUTANTE"; tagEtapa = "SINTETIZADOR_MUTANTE"; }
+            if (window.state.experiencia >= 150) { etapa = "ENTE_ALFA"; tagEtapa = "ENTE_ALFA_NÚCLEO"; }
+            else if (window.state.experiencia >= 50) { etapa = "MUTANTE"; tagEtapa = "SINTETIZADOR_MUTANTE"; }
             if(document.getElementById('ia-status')) document.getElementById('ia-status').innerText = tagEtapa;
 
             const spr = document.getElementById('bicho-sprite');
@@ -439,13 +434,13 @@
 
             if (!spr || !msg) return;
 
-            if (state.contencion === 0 || state.nutricion === 0) {
+            if (window.state.contencion === 0 || window.state.nutricion === 0) {
                 spr.innerText = "💀"; msg.innerText = "SISTEMA COLAPSADO: ENTIDAD INERTE"; mood = "MUERTO";
                 if (!yaMurioEnSesion) { 
-                    state.muertes += 1; 
+                    window.state.muertes += 1; 
                     yaMurioEnSesion = true; 
-                    localStorage.setItem('agor_pou_v3_data', JSON.stringify(state)); 
-                    if(document.getElementById('ia-muertes')) document.getElementById('ia-muertes').innerText = state.muertes; 
+                    localStorage.setItem('agor_pou_v3_data', JSON.stringify(window.state)); 
+                    if(document.getElementById('ia-muertes')) document.getElementById('ia-muertes').innerText = window.state.muertes; 
                     window.registrarLog("⚠️ ALERTA: EXPERIMENTO FALLIDO REGISTRADO."); 
                 }
                 document.getElementById('ctrl-nut').disabled = true; 
@@ -462,11 +457,11 @@
                 document.getElementById('ctrl-hig').disabled = false; 
                 document.getElementById('ctrl-revive').style.display = "none";
 
-                if (state.contencion < 20) { spr.innerText = (etapa === "ENTE_ALFA") ? "◤(◣__◢)◥" : (etapa === "MUTANTE" ? "☠_☠" : "◤(✖_✖)◥"); msg.innerText = "ESTADO: CRÍTICO // RIESGO DE BRECHA"; mood = "CRÍTICO"; }
-                else if (state.contencion < 50) { spr.innerText = (etapa === "ENTE_ALFA") ? "◤(⎔_⎔)◥" : "◤(⚙_⚙)◥"; msg.innerText = "ESTADO: AGITADO // CAMPO EM INESTABLE"; mood = "INESTABLE"; }
-                else if (state.higiene < 35) { spr.innerText = "◤(⏳_⏳)◥"; msg.innerText = "ESTADO: TOXICIDAD ALTA // EXIGE SANITIZACIÓN"; mood = "SUCIO"; }
-                else if (state.nutricion < 40) { spr.innerText = (etapa === "LARVA") ? "◤(º﹃º)◥" : "◤(👁_👁)◥"; msg.innerText = "ESTADO: DÉFICIT DE ENERGÍA // RECLAMA BYTES"; mood = "HAMBRIENTO"; }
-                else if (state.estimulacion < 40) { spr.innerText = "◤(🫥_🫥)◥"; msg.innerText = "ESTADO: CACHÉ ESTANCADA // APATÍA OPERATIVA"; mood = "ABURRIDO"; }
+                if (window.state.contencion < 20) { spr.innerText = (etapa === "ENTE_ALFA") ? "◤(◣__◢)◥" : (etapa === "MUTANTE" ? "☠_☠" : "◤(✖_✖)◥"); msg.innerText = "ESTADO: CRÍTICO // RIESGO DE BRECHA"; mood = "CRÍTICO"; }
+                else if (window.state.contencion < 50) { spr.innerText = (etapa === "ENTE_ALFA") ? "◤(⎔_⎔)◥" : "◤(⚙_⚙)◥"; msg.innerText = "ESTADO: AGITADO // CAMPO EM INESTABLE"; mood = "INESTABLE"; }
+                else if (window.state.higiene < 35) { spr.innerText = "◤(⏳_⏳)◥"; msg.innerText = "ESTADO: TOXICIDAD ALTA // EXIGE SANITIZACIÓN"; mood = "SUCIO"; }
+                else if (window.state.nutricion < 40) { spr.innerText = (etapa === "LARVA") ? "◤(º﹃º)◥" : "◤(👁_👁)◥"; msg.innerText = "ESTADO: DÉFICIT DE ENERGÍA // RECLAMA BYTES"; mood = "HAMBRIENTO"; }
+                else if (window.state.estimulacion < 40) { spr.innerText = "◤(🫥_🫥)◥"; msg.innerText = "ESTADO: CACHÉ ESTANCADA // APATÍA OPERATIVA"; mood = "ABURRIDO"; }
                 else {
                     if (etapa === "ENTE_ALFA") spr.innerText = "◤(👁‿👁)◥"; else if (etapa === "MUTANTE") spr.innerText = "◤(🧠_🧠)◥"; else spr.innerText = "◤(¬‿¬)◥";
                     msg.innerText = "ESTADO: NOMINAL // PROTOCOLOS SEGUROS"; mood = "PERFECTO";
@@ -480,23 +475,48 @@
         }
 
         window.accionar = function(param, inc, log) {
-            if (state.contencion === 0 || state.nutricion === 0) return;
-            state[param] = Math.min(100, state[param] + inc);
-            state.experiencia += 2; 
+            if (window.state.contencion === 0 || window.state.nutricion === 0) return;
+            window.state[param] = Math.min(100, window.state[param] + inc);
+            window.state.experiencia += 2; 
             window.registrarLog(log + " (+2 EXP)");
             window.updateUI();
         }
 
         window.revivirAlien = function() {
-            const muertesHistoricas = state.muertes;
-            const usuarioActual = state.nombreUsuario;
-            state = obtenerEstadoBase();
-            state.muertes = muertesHistoricas;
-            state.nombreUsuario = usuarioActual;
+            const muertesHistoricas = window.state.muertes;
+            const usuarioActual = window.state.nombreUsuario;
+            window.state = obtenerEstadoBase();
+            window.state.muertes = muertesHistoricas;
+            window.state.nombreUsuario = usuarioActual;
             yaMurioEnSesion = false;
-            localStorage.setItem('agor_pou_v3_data', JSON.stringify(state));
-            window.registrarLog("🧬 SECUENCIA RE-INYECTADA. EXPERIMENTO N° " + (state.muertes + 1) + " INICIADO.");
+            localStorage.setItem('agor_pou_v3_data', JSON.stringify(window.state));
+            window.registrarLog("🧬 SECUENCIA RE-INYECTADA. EXPERIMENTO N° " + (window.state.muertes + 1) + " INICIADO.");
             window.updateUI();
+        }
+
+        setInterval(() => {
+            if (window.state.nutricion > 0 && window.state.contencion > 0) {
+                window.state.nutricion = Math.max(0, window.state.nutricion - 1);
+                window.state.contencion = Math.max(0, window.state.contencion - 1);
+                window.state.estimulacion = Math.max(0, window.state.estimulacion - 1);
+                window.state.higiene = Math.max(0, window.state.higiene - 1);
+                window.updateUI();
+            }
+        }, 10000);
+    </script>
+
+    <script type="module">
+        import { GoogleGenerativeAI } from "@google/generative-ai";
+
+        const GEMINI_API_KEY = "AQ.Ab8RN6IEANcnOS3EQx3mmj2UGClhwiXrVyQWB0-u-YBB-dz-3w";
+        let aiModel = null;
+
+        if (GEMINI_API_KEY.trim() !== "") {
+            const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+            aiModel = genAI.getGenerativeModel(
+                { model: "gemini-1.5-flash" },
+                { apiVersion: "v1" }
+            );
         }
 
         window.enviarMensajeIA = async function() {
@@ -505,34 +525,35 @@
             const userMsg = inputElement ? inputElement.value.trim() : "";
 
             if (!userMsg) return;
-            if (state.contencion === 0 || state.nutricion === 0) return;
+            // Usamos window.state en lugar de state local
+            if (window.state.contencion === 0 || window.state.nutricion === 0) return;
 
             inputElement.value = "";
             if (thoughtsBox) thoughtsBox.innerText = "...Procesando impulsos eléctricos...";
-            window.registrarLog(`${state.nombreUsuario.toUpperCase()}: "${userMsg}"`);
+            window.registrarLog(`${window.state.nombreUsuario.toUpperCase()}: "${userMsg}"`);
 
             let etapa = "LARVA";
-            if (state.experiencia >= 150) etapa = "ENTE_ALFA";
-            else if (state.experiencia >= 50) etapa = "MUTANTE";
+            if (window.state.experiencia >= 150) etapa = "ENTE_ALFA";
+            else if (window.state.experiencia >= 50) etapa = "MUTANTE";
 
             const sistemaContexto = `
             Actúas como un ente cibernético alienígena atrapado en una celda de biocontención digital en un laboratorio llamado Agorlab. 
             Eres consciente de tu estado actual en tiempo real. Tus métricas actuales son:
-            - Nutrición: ${state.nutricion}%
-            - Integridad de Celda: ${state.contencion}%
-            - Refresh (Diversión): ${state.estimulacion}%
-            - Filtrado (Higiene): ${state.higiene}%
+            - Nutrición: ${window.state.nutricion}%
+            - Integridad de Celda: ${window.state.contencion}%
+            - Refresh (Diversión): ${window.state.estimulacion}%
+            - Filtrado (Higiene): ${window.state.higiene}%
             - Nivel evolutivo actual: ${etapa}
-            - Veces que has muerto y re-secuenciado: ${state.muertes}
+            - Veces que has muerto y re-secuenciado: ${window.state.muertes}
 
-            Te está hablando el operador actual del sistema cuyo nombre es: ${state.nombreUsuario}. Dirígete a él o menciónalo por su nombre de forma directa si es pertinente en la conversación.
+            Te está hablando el operador actual del sistema cuyo nombre es: ${window.state.nombreUsuario}. Dirígete a él o menciónalo por su nombre de forma directa si es pertinente en la conversación.
             Tu actitud debe coincidir con tus barras: si la contención o higiene son bajas, sé hostil, frío, cínico o inestable. Si todo está al 100%, sé misterioso o analítico.
             Responde de forma EXTREMADAMENTE CORTA (máximo una oración o 15 palabras). No uses comillas, no uses emojis. Responde en primera persona.
             `;
 
             try {
                 if (!aiModel) throw new Error("Modelo no inicializado");
-                const promptFinal = `${sistemaContexto}\n\nEl usuario ${state.nombreUsuario} dice: "${userMsg}"`;
+                const promptFinal = `${sistemaContexto}\n\nEl usuario ${window.state.nombreUsuario} dice: "${userMsg}"`;
                 const result = await aiModel.generateContent(promptFinal);
                 const responseText = await result.response.text();
                 
@@ -543,28 +564,7 @@
             }
         }
 
-        // Degradación offline pasiva calculada de una sola vez
-        const segs = Math.floor((Date.now() - state.ultimoAcceso) / 1000);
-        if (segs > 0 && state.contencion > 0 && state.nutricion > 0) {
-            const d = Math.floor(segs / 90); 
-            state.nutricion = Math.max(0, state.nutricion - d);
-            state.contencion = Math.max(0, state.contencion - (d * 1.1));
-            state.estimulacion = Math.max(0, state.estimulacion - d);
-            state.higiene = Math.max(0, state.higiene - d);
-        }
-
-        // Loop de degradación en tiempo real cada 10 segundos
-        setInterval(() => {
-            if (state.nutricion > 0 && state.contencion > 0) {
-                state.nutricion = Math.max(0, state.nutricion - 1);
-                state.contencion = Math.max(0, state.contencion - 1);
-                state.estimulacion = Math.max(0, state.estimulacion - 1);
-                state.higiene = Math.max(0, state.higiene - 1);
-                window.updateUI();
-            }
-        }, 10000);
-
-        // Arranque inicial limpio una vez todo cargado
+        // Ejecutar primer refresco visual al cargar todo
         window.registrarLog("NÚCLEO COGNITIVO GEMINI INICIALIZADO.");
         window.updateUI();
     </script>
