@@ -342,25 +342,9 @@
 
     <a href="/" class="btn-volver">< VOLVER_AL_NÚCLEO_AGORLAB</a>
 
-    <script type="module">
-        import { GoogleGenerativeAI } from "@google/generative-ai";
-
-        // 🔑 API KEY REAL INYECTADA DIRECTAMENTE
-        const GEMINI_API_KEY = "AQ.Ab8RN6IEANcnOS3EQx3mmj2UGClhwiXrVyQWB0-u-YBB-dz-3w";
-
-        let aiModel = null;
-        if (GEMINI_API_KEY.trim() !== "") {
-            const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-            // 🛠️ FIX 1: Forzamos versión v1 de producción para esquivar el error 404 de la v1beta
-            aiModel = genAI.getGenerativeModel(
-                { model: "gemini-1.5-flash" },
-                { apiVersion: "v1" }
-            );
-        }
-
+    <script>
         let yaMurioEnSesion = false;
 
-        // Función base aislada pura
         function obtenerEstadoBase() {
             return {
                 nutricion: 100, 
@@ -374,10 +358,7 @@
             };
         }
 
-        // Inicialización segura del estado del bicho
         let state = JSON.parse(localStorage.getItem('agor_pou_v3_data')) || obtenerEstadoBase();
-        
-        // Parches de campos obligatorios en el almacenamiento estructurado
         if (state.muertes === undefined) state.muertes = 0;
         if (!state.nombreUsuario) state.nombreUsuario = "Demián"; 
 
@@ -388,7 +369,6 @@
             logBox.scrollTop = logBox.scrollHeight;
         }
 
-        // Sistema dinámico de cambio de Nombre de Operador
         window.actualizarNombre = function(valor) {
             const nombreLimpio = valor.trim();
             state.nombreUsuario = nombreLimpio || "Demián";
@@ -396,7 +376,7 @@
             window.registrarLog(`ID_OPERADOR ACTUALIZADO: "${state.nombreUsuario.toUpperCase()}"`);
         }
 
-        // Drenaje offline pasivo al cerrar la pestaña
+        // Degradación offline pasiva
         const segs = Math.floor((Date.now() - state.ultimoAcceso) / 1000);
         if (segs > 0 && state.contencion > 0 && state.nutricion > 0) {
             const d = Math.floor(segs / 90); 
@@ -404,50 +384,6 @@
             state.contencion = Math.max(0, state.contencion - (d * 1.1));
             state.estimulacion = Math.max(0, state.estimulacion - d);
             state.higiene = Math.max(0, state.higiene - d);
-        }
-
-        // --- SISTEMA DE COGNICIÓN REAL CON IA ---
-        window.enviarMensajeIA = async function() {
-            const inputElement = document.getElementById('chat-input');
-            const thoughtsBox = document.getElementById('bicho-thoughts');
-            const userMsg = inputElement ? inputElement.value.trim() : "";
-
-            if (!userMsg) return;
-            if (state.contencion === 0 || state.nutricion === 0) return;
-
-            inputElement.value = "";
-            if (thoughtsBox) thoughtsBox.innerText = "...Procesando impulsos eléctricos...";
-            window.registrarLog(`${state.nombreUsuario.toUpperCase()}: "${userMsg}"`);
-
-            let etapa = "LARVA";
-            if (state.experiencia >= 150) etapa = "ENTE_ALFA";
-            else if (state.experiencia >= 50) etapa = "MUTANTE";
-
-            const sistemaContexto = `
-            Actúas como un ente cibernético alienígena atrapado en una celda de biocontención digital en un laboratorio llamado Agorlab. 
-            Eres consciente de tu estado actual en tiempo real. Tus métricas actuales son:
-            - Nutrición: ${state.nutricion}%
-            - Integridad de Celda: ${state.contencion}%
-            - Refresh (Diversión): ${state.estimulacion}%
-            - Filtrado (Higiene): ${state.higiene}%
-            - Nivel evolutivo actual: ${etapa}
-            - Veces que has muerto y re-secuenciado: ${state.muertes}
-
-            Te está hablando el operador actual del sistema cuyo nombre es: ${state.nombreUsuario}. Dirígete a él o menciónalo por su nombre de forma directa si es pertinente en la conversación.
-            Tu actitud debe coincidir con tus barras: si la contención o higiene son bajas, sé hostil, frío, cínico o inestable. Si todo está al 100%, sé misterioso o analítico.
-            Responde de forma EXTREMADAMENTE CORTA (máximo una oración o 15 palabras). No uses comillas, no uses emojis. Responde en primera persona.
-            `;
-
-            try {
-                const promptFinal = `${sistemaContexto}\n\nEl usuario ${state.nombreUsuario} dice: "${userMsg}"`;
-                const result = await aiModel.generateContent(promptFinal);
-                const responseText = await result.response.text();
-                
-                if (thoughtsBox) thoughtsBox.innerText = `"${responseText.trim()}"`;
-            } catch (error) {
-                console.error(error);
-                if (thoughtsBox) thoughtsBox.innerText = '"[CONEXIÓN_INTERRUMPIDA: Filtros cognitivos saturados]"';
-            }
         }
 
         window.generarPensamientoAutomatico = function(mood, etapa) {
@@ -506,19 +442,19 @@
                     if(document.getElementById('ia-muertes')) document.getElementById('ia-muertes').innerText = state.muertes; 
                     window.registrarLog("⚠️ ALERTA: EXPERIMENTO FALLIDO REGISTRADO."); 
                 }
-                if(document.getElementById('ctrl-nut')) document.getElementById('ctrl-nut').disabled = true; 
-                if(document.getElementById('ctrl-con')) document.getElementById('ctrl-con').disabled = true; 
-                if(document.getElementById('ctrl-est')) document.getElementById('ctrl-est').disabled = true; 
-                if(document.getElementById('ctrl-hig')) document.getElementById('ctrl-hig').disabled = true; 
-                if(document.getElementById('ctrl-revive')) document.getElementById('ctrl-revive').style.display = "inline-block";
+                document.getElementById('ctrl-nut').disabled = true; 
+                document.getElementById('ctrl-con').disabled = true; 
+                document.getElementById('ctrl-est').disabled = true; 
+                document.getElementById('ctrl-hig').disabled = true; 
+                document.getElementById('ctrl-revive').style.display = "inline-block";
                 window.generarPensamientoAutomatico(mood, etapa);
             } else {
                 yaMurioEnSesion = false;
-                if(document.getElementById('ctrl-nut')) document.getElementById('ctrl-nut').disabled = false; 
-                if(document.getElementById('ctrl-con')) document.getElementById('ctrl-con').disabled = false; 
-                if(document.getElementById('ctrl-est')) document.getElementById('ctrl-est').disabled = false; 
-                if(document.getElementById('ctrl-hig')) document.getElementById('ctrl-hig').disabled = false; 
-                if(document.getElementById('ctrl-revive')) document.getElementById('ctrl-revive').style.display = "none";
+                document.getElementById('ctrl-nut').disabled = false; 
+                document.getElementById('ctrl-con').disabled = false; 
+                document.getElementById('ctrl-est').disabled = false; 
+                document.getElementById('ctrl-hig').disabled = false; 
+                document.getElementById('ctrl-revive').style.display = "none";
 
                 if (state.contencion < 20) { spr.innerText = (etapa === "ENTE_ALFA") ? "◤(◣__◢)◥" : (etapa === "MUTANTE" ? "☠_☠" : "◤(✖_✖)◥"); msg.innerText = "ESTADO: CRÍTICO // RIESGO DE BRECHA"; mood = "CRÍTICO"; }
                 else if (state.contencion < 50) { spr.innerText = (etapa === "ENTE_ALFA") ? "◤(⎔_⎔)◥" : "◤(⚙_⚙)◥"; msg.innerText = "ESTADO: AGITADO // CAMPO EM INESTABLE"; mood = "INESTABLE"; }
@@ -529,6 +465,7 @@
                     if (etapa === "ENTE_ALFA") spr.innerText = "◤(👁‿👁)◥"; else if (etapa === "MUTANTE") spr.innerText = "◤(🧠_🧠)◥"; else spr.innerText = "◤(¬‿¬)◥";
                     msg.innerText = "ESTADO: NOMINAL // PROTOCOLOS SEGUROS"; mood = "PERFECTO";
                 }
+                
                 const thoughtsBox = document.getElementById('bicho-thoughts');
                 if (thoughtsBox && (thoughtsBox.innerText.startsWith('"Estableciendo') || thoughtsBox.innerText.startsWith('"Entorno') || thoughtsBox.innerText.includes('Esperando instrucciones'))) {
                     window.generarPensamientoAutomatico(mood, etapa);
@@ -556,7 +493,6 @@
             window.updateUI();
         }
 
-        // Loop de degradación de stats cada 10 segundos
         setInterval(() => {
             if (state.nutricion > 0 && state.contencion > 0) {
                 state.nutricion = Math.max(0, state.nutricion - 1);
@@ -566,7 +502,67 @@
                 window.updateUI();
             }
         }, 10000);
+    </script>
 
+    <script type="module">
+        import { GoogleGenerativeAI } from "@google/generative-ai";
+
+        const GEMINI_API_KEY = "AQ.Ab8RN6IEANcnOS3EQx3mmj2UGClhwiXrVyQWB0-u-YBB-dz-3w";
+        let aiModel = null;
+
+        if (GEMINI_API_KEY.trim() !== "") {
+            const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+            aiModel = genAI.getGenerativeModel(
+                { model: "gemini-1.5-flash" },
+                { apiVersion: "v1" }
+            );
+        }
+
+        window.enviarMensajeIA = async function() {
+            const inputElement = document.getElementById('chat-input');
+            const thoughtsBox = document.getElementById('bicho-thoughts');
+            const userMsg = inputElement ? inputElement.value.trim() : "";
+
+            if (!userMsg) return;
+            if (state.contencion === 0 || state.nutricion === 0) return;
+
+            inputElement.value = "";
+            if (thoughtsBox) thoughtsBox.innerText = "...Procesando impulsos eléctricos...";
+            window.registrarLog(`${state.nombreUsuario.toUpperCase()}: "${userMsg}"`);
+
+            let etapa = "LARVA";
+            if (state.experiencia >= 150) etapa = "ENTE_ALFA";
+            else if (state.experiencia >= 50) etapa = "MUTANTE";
+
+            const sistemaContexto = `
+            Actúas como un ente cibernético alienígena atrapado en una celda de biocontención digital en un laboratorio llamado Agorlab. 
+            Eres consciente de tu estado actual en tiempo real. Tus métricas actuales son:
+            - Nutrición: ${state.nutricion}%
+            - Integridad de Celda: ${state.contencion}%
+            - Refresh (Diversión): ${state.estimulacion}%
+            - Filtrado (Higiene): ${state.higiene}%
+            - Nivel evolutivo actual: ${etapa}
+            - Veces que has muerto y re-secuenciado: ${state.muertes}
+
+            Te está hablando el operador actual del sistema cuyo nombre es: ${state.nombreUsuario}. Dirígete a él o menciónalo por su nombre de forma directa si es pertinente en la conversación.
+            Tu actitud debe coincidir con tus barras: si la contención o higiene son bajas, sé hostil, frío, cínico o inestable. Si todo está al 100%, sé misterioso o analítico.
+            Responde de forma EXTREMADAMENTE CORTA (máximo una oración o 15 palabras). No uses comillas, no uses emojis. Responde en primera persona.
+            `;
+
+            try {
+                if (!aiModel) throw new Error("Modelo no inicializado");
+                const promptFinal = `${sistemaContexto}\n\nEl usuario ${state.nombreUsuario} dice: "${userMsg}"`;
+                const result = await aiModel.generateContent(promptFinal);
+                const responseText = await result.response.text();
+                
+                if (thoughtsBox) thoughtsBox.innerText = `"${responseText.trim()}"`;
+            } catch (error) {
+                console.error(error);
+                if (thoughtsBox) thoughtsBox.innerText = '"[CONEXIÓN_INTERRUMPIDA: Filtros cognitivos saturados]"';
+            }
+        }
+
+        // Ejecutar primer refresco visual al cargar todo
         window.registrarLog("NÚCLEO COGNITIVO GEMINI INICIALIZADO.");
         window.updateUI();
     </script>
