@@ -3,219 +3,210 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agorlab | Terminal Avanzada de Contención</title>
+    <title>Agorlab | Terminal de Biocontención Autónoma</title>
     
     <link rel="icon" type="image/png" href="/favicon.png">
     <link rel="stylesheet" href="/style.css">
 
     <style>
-        /* Estilos base e integración con tu fondo */
-        .logo-container {
+        /* Estilos base e integración estética con Agorlab */
+        .logo-container { 
             display: block;
-            text-align: center;
-            margin-top: 20px;    
+            text-align: center; 
+            margin-top: 20px;
             margin-bottom: 20px; 
         }
-
-        .logo-site {
-            max-width: 950px;   
-            width: 100%;        
-            height: auto;       
+        
+        .logo-site { 
+            max-width: 950px; 
+            width: 100%; 
+            height: auto; 
         }
-
-        .prologo {
+        
+        .prologo { 
             display: block;
             width: 100%;
-            max-width: 650px;    
+            max-width: 700px; 
             margin: 0 auto 20px auto; 
-            padding: 0 20px;     
-            text-align: center;  
-            box-sizing: border-box;
+            padding: 0 20px; 
+            text-align: center; 
+            box-sizing: border-box; 
+        }
+        
+        .prologo p { 
+            font-family: 'Courier New', Courier, monospace; 
+            color: #ca630e; 
+            font-size: 1.1rem; 
+            letter-spacing: 1px; 
         }
 
-        .prologo p {
-            font-family: 'Courier New', Courier, monospace;
-            color: #ca630e;
-            font-size: 1.1rem;   
-            line-height: 1.6;    
-            letter-spacing: 1px;
-        }
-
-        /* --- CONSOLA COMPLEJA --- */
-        .sala-contencion {
+        /* --- TERMINAL COMPLEJA TIPO POU --- */
+        .sala-contencion { 
             display: block;
             width: 100%;
-            max-width: 700px;
-            margin: 0 auto 30px auto;
-            padding: 0 20px;
-            box-sizing: border-box;
+            max-width: 750px; 
+            margin: 0 auto 30px auto; 
+            padding: 0 20px; 
+            box-sizing: border-box; 
+        }
+        
+        .marco-observacion { 
+            border: 2px dashed #ca630e; 
+            background-color: rgba(10, 10, 10, 0.95); 
+            padding: 25px; 
+            box-shadow: 0 0 35px rgba(202, 99, 14, 0.3); 
+        }
+        
+        .cabecera-terminal { 
+            display: flex; 
+            justify-content: space-between; 
+            font-family: 'Courier New', Courier, monospace; 
+            color: #ca630e; 
+            font-size: 0.85rem; 
+            margin-bottom: 20px; 
+            border-bottom: 1px dashed #ca630e; 
+            padding-bottom: 10px; 
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .parpado { 
+            animation: blinker 1.5s linear infinite; 
+        }
+        @keyframes blinker { 
+            50% { opacity: 0.2; } 
         }
 
-        .marco-observacion {
-            border: 2px dashed #ca630e;
-            background-color: rgba(10, 10, 10, 0.9);
-            padding: 25px;
-            box-shadow: 0 0 30px rgba(202, 99, 14, 0.25);
+        /* --- SISTEMA DE BARRAS DE ESTADO --- */
+        .grid-monitores { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 15px; 
+            margin-bottom: 20px; 
+        }
+        @media (max-width: 600px) { 
+            .grid-monitores { grid-template-columns: 1fr; } 
+        }
+        
+        .monitor-bloque { 
+            text-align: left; 
+        }
+        
+        .monitor-label { 
+            font-family: 'Courier New', Courier, monospace; 
+            color: #ca630e; 
+            font-size: 0.9rem; 
+            margin-bottom: 4px; 
+            display: flex; 
+            justify-content: space-between; 
+            font-weight: bold; 
+        }
+        
+        .barra-progreso { 
+            background: rgba(0, 0, 0, 0.7); 
+            border: 1px solid #ca630e; 
+            height: 14px; 
+            overflow: hidden; 
+        }
+        
+        .llenado { 
+            background: #ca630e; 
+            height: 100%; 
+            width: 100%; 
+            transition: width 0.4s ease; 
         }
 
-        .cabecera-terminal {
-            display: flex;
-            justify-content: space-between;
-            font-family: 'Courier New', Courier, monospace;
-            color: #ca630e;
-            font-size: 0.85rem;
-            margin-bottom: 20px;
-            border-bottom: 1px dashed #ca630e;
-            padding-bottom: 10px;
-            letter-spacing: 1px;
+        /* --- DISPLAY DEL ALIEN --- */
+        .pantalla-bicho { 
+            background: rgba(5, 5, 5, 0.98); 
+            border: 1px solid #ca630e; 
+            padding: 30px; 
+            margin-bottom: 15px; 
+            min-height: 200px; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            position: relative; 
         }
-
-        .parpado {
-            animation: blinker 1.5s linear infinite;
+        
+        .bicho-avatar { 
+            font-family: 'Courier New', Courier, monospace; 
+            font-size: 3.5rem; 
+            color: #ca630e; 
+            white-space: pre; 
+            line-height: 1.1; 
+            margin-bottom: 15px; 
+            font-weight: bold; 
+            text-shadow: 0 0 10px rgba(202, 99, 14, 0.5); 
         }
-        @keyframes blinker {
-            50% { opacity: 0.2; }
+        
+        .bicho-status-text { 
+            font-family: 'Courier New', Courier, monospace; 
+            color: #ca630e; 
+            font-size: 0.95rem; 
+            font-weight: bold; 
+            text-align: center; 
+            max-width: 90%; 
         }
-
-        /* --- REJILLA DE MONITORES --- */
-        .grid-monitores {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        @media (max-width: 600px) {
-            .grid-monitores { grid-template-columns: 1fr; }
-        }
-
-        .monitor-bloque {
-            text-align: left;
-        }
-
-        .monitor-label {
-            font-family: 'Courier New', Courier, monospace;
-            color: #ca630e;
-            font-size: 0.95rem;
-            margin-bottom: 4px;
-            display: flex;
-            justify-content: space-between;
-            font-weight: bold;
-        }
-
-        .barra-progreso {
-            background: rgba(0, 0, 0, 0.7);
-            border: 1px solid #ca630e;
-            height: 14px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .llenado {
-            background: #ca630e;
-            height: 100%;
-            width: 100%;
-            transition: width 0.3s ease;
-        }
-
-        /* Variación de color para energía */
-        .energia-bar { background: #ca630e; }
-
-        /* --- DISPLAY DEL SUJETO --- */
-        .pantalla-bicho {
-            background: rgba(5, 5, 5, 0.95);
-            border: 1px solid #ca630e;
-            padding: 30px;
-            margin-bottom: 20px;
-            min-height: 160px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .bicho-avatar {
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 3.5rem;
-            color: #ca630e;
-            white-space: pre;
-            line-height: 1.1;
-            margin-bottom: 15px;
-            font-weight: bold;
-            text-shadow: 0 0 10px rgba(202, 99, 14, 0.5);
-            transition: all 0.2s ease;
-        }
-
-        .bicho-status-text {
-            font-family: 'Courier New', Courier, monospace;
-            color: #ca630e;
-            font-size: 0.95rem;
-            letter-spacing: 1px;
-            font-weight: bold;
-        }
-
-        /* --- GLITCH DE ALERTA DEL SISTEMA --- */
-        .alerta-glitch-box {
-            display: none;
-            background: rgba(255, 0, 0, 0.2);
-            border: 1px solid #ff0000;
-            color: #ff0000;
-            font-family: 'Courier New', Courier, monospace;
-            padding: 10px;
-            margin-bottom: 20px;
-            font-size: 0.9rem;
-            font-weight: bold;
-            text-align: center;
+        
+        /* Pensamientos autogenerados */
+        .ia-thoughts { 
+            font-family: 'Courier New', Courier, monospace; 
+            color: #8a450b; 
+            font-size: 0.85rem; 
+            margin-top: 12px; 
+            font-style: italic; 
+            border-top: 1px dotted #444; 
+            width: 100%; 
+            padding-top: 8px; 
+            text-align: center; 
         }
 
         /* --- CONSOLA DE LOGS (HISTORIAL) --- */
-        .consola-logs {
-            background: rgba(0, 0, 0, 0.8);
-            border: 1px solid #ca630e;
-            height: 90px;
-            padding: 10px;
-            margin-bottom: 25px;
-            overflow-y: hidden;
-            text-align: left;
-            box-sizing: border-box;
+        .consola-logs { 
+            background: rgba(0, 0, 0, 0.8); 
+            border: 1px solid #ca630e; 
+            height: 80px; 
+            padding: 8px; 
+            margin-bottom: 20px; 
+            overflow-y: hidden; 
+            text-align: left; 
+            box-sizing: border-box; 
+        }
+        
+        .log-line { 
+            font-family: 'Courier New', Courier, monospace; 
+            color: rgba(202, 99, 14, 0.6); 
+            font-size: 0.75rem; 
+            margin-bottom: 2px; 
         }
 
-        .log-line {
-            font-family: 'Courier New', Courier, monospace;
-            color: rgba(202, 99, 14, 0.7);
-            font-size: 0.8rem;
-            line-height: 1.3;
-            margin-bottom: 2px;
+        /* --- BOTONES DE INTERACCIÓN --- */
+        .panel-controles { 
+            display: flex; 
+            justify-content: center; 
+            gap: 10px; 
+            flex-wrap: wrap; 
         }
-
-        /* --- BOTONES DE ACCIÓN --- */
-        .panel-controles {
-            display: flex;
-            justify-content: center;
-            gap: 12px;
-            flex-wrap: wrap;
+        
+        .btn-terminal { 
+            display: inline-block; 
+            color: #ca630e; 
+            text-decoration: none; 
+            font-family: 'Courier New', Courier, monospace; 
+            font-weight: bold; 
+            font-size: 0.9rem; 
+            border: 1px dashed #ca630e; 
+            padding: 8px 14px; 
+            background-color: transparent; 
+            transition: all 0.15s ease-in-out; 
         }
-
-        .btn-terminal {
-            display: inline-block;
-            color: #ca630e;
-            text-decoration: none;
-            font-family: 'Courier New', Courier, monospace;
-            font-weight: bold;
-            font-size: 0.95rem;
-            letter-spacing: 1px;
-            border: 1px dashed #ca630e;
-            padding: 9px 16px;
-            background-color: transparent;
-            transition: all 0.15s ease-in-out;
-        }
-
-        .btn-terminal:hover:not(:disabled) {
-            background-color: #ca630e;
-            color: rgb(226, 226, 226);
-            box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.1);
-            cursor: pointer;
+        
+        .btn-terminal:hover:not(:disabled) { 
+            background-color: #ca630e; 
+            color: rgb(226, 226, 226); 
+            cursor: pointer; 
         }
 
         .btn-terminal:disabled {
@@ -224,22 +215,22 @@
             cursor: not-allowed;
         }
 
-        /* Botón de crisis de hackeo */
-        .btn-urgente {
-            border-color: #ff0000;
-            color: #ff0000;
-            display: none;
+        /* Botón especial para revivir */
+        .btn-revivir {
+            border-color: #ffaa00;
+            color: #ffaa00;
+            display: none; 
         }
-        .btn-urgente:hover {
-            background-color: #ff0000;
-            color: #fff;
+        .btn-revivir:hover {
+            background-color: #ffaa00;
+            color: #000;
         }
 
         .contenedor-btn-navegacion {
             text-align: center;
             width: 100%;
-            margin-top: 30px;
-            margin-bottom: 50px;
+            margin-top: 20px;
+            margin-bottom: 40px;
         }
     </style>
 </head>
@@ -250,209 +241,261 @@
     </div>
     
     <section class="prologo">
-        <p><strong>[ UNIDAD DE CAUTIVERIO BIOLÓGICO-DIGITAL ]</strong></p>
+        <p><strong>[ NÚCLEO DE CONTENCIÓN INTELIGENTE AGOR-LOGIC ]</strong></p>
     </section>
 
     <section class="sala-contencion">
         <div class="marco-observacion">
             
             <div class="cabecera-terminal">
-                <div>SYS_REF: AGOR-01 // LOC: SEC_P3</div>
-                <div id="alert-blink" class="parpado">🔴 MONITOR_ACTIVO</div>
-            </div>
-
-            <div id="glitch-banner" class="alerta-glitch-box class-parpado">
-                ⚠️ TRANSMISIÓN DESCALIBRADA: CONTROLES BLOQUEADOS ⚠️
+                <div>ESTADO: <span id="ia-status">MUTACIÓN_LARVAL</span> // <span id="ia-edad">0</span> EXP</div>
+                <div>💥 FALLAS: <span id="ia-muertes" style="color: #ffaa00; font-weight: bold;">0</span></div>
+                <div id="alert-blink" class="parpado">🔴 MONITOREO_ACTIVO</div>
             </div>
             
             <div class="grid-monitores">
                 <div class="monitor-bloque">
-                    <div class="monitor-label"><span>🧬 NUTRICIÓN:</span><span id="num-nutricion">100%</span></div>
+                    <div class="monitor-label"><span>🧬 NUTRICIÓN (Hambre):</span><span id="num-nutricion">100%</span></div>
                     <div class="barra-progreso"><div id="bar-nutricion" class="llenado"></div></div>
                 </div>
-
                 <div class="monitor-bloque">
-                    <div class="monitor-label"><span>🛡️ CONTENCIÓN EM:</span><span id="num-contencion">100%</span></div>
+                    <div class="monitor-label"><span>🛡️ INTEGRIDAD DE CELDA:</span><span id="num-contencion">100%</span></div>
                     <div class="barra-progreso"><div id="bar-contencion" class="llenado"></div></div>
                 </div>
-
-                <div class="monitor-bloque" style="grid-column: 1 / -1;">
-                    <div class="monitor-label"><span>🔋 BATERÍA DE RESPALDO:</span><span id="num-energia">100%</span></div>
-                    <div class="barra-progreso"><div id="bar-energia" class="llenado energia-bar"></div></div>
+                <div class="monitor-bloque">
+                    <div class="monitor-label"><span>🧠 REFRESH (Diversión):</span><span id="num-estimulacion">100%</span></div>
+                    <div class="barra-progreso"><div id="bar-estimulacion" class="llenado"></div></div>
+                </div>
+                <div class="monitor-bloque">
+                    <div class="monitor-label"><span>☣️ FILTRADO (Higiene):</span><span id="num-higiene">100%</span></div>
+                    <div class="barra-progreso"><div id="bar-higiene" class="llenado"></div></div>
                 </div>
             </div>
 
-            <div class="pantalla-bicho" id="pantalla-nucleo">
+            <div class="pantalla-bicho">
                 <div id="bicho-sprite" class="bicho-avatar">◤(¬‿¬)◥</div>
-                <div id="bicho-msg" class="bicho-status-text">ESTADO: COMPORTAMIENTO ESTABLE</div>
+                <div id="bicho-msg" class="bicho-status-text">PROCESANDO ENTORNO...</div>
+                <div id="bicho-thoughts" class="ia-thoughts">"Esperando telemetría..."</div>
             </div>
 
-            <div class="consola-logs" id="log-box">
-                </div>
+            <div class="consola-logs" id="log-box"></div>
 
             <div class="panel-controles">
-                <button id="btn-nut" class="btn-terminal" onclick="accionar('nutricion', 12, 'INYECTANDO NUTRIENTES COMPUESTOS...')">[ ALIMENTAR ]</button>
-                <button id="btn-con" class="btn-terminal" onclick="accionar('contencion', 15, 'ESTABILIZANDO CAMPO MAGNÉTICO...')">[ FORZAR_CAMPO ]</button>
-                <button id="btn-ene" class="btn-terminal" onclick="accionar('energia', 25, 'REGENERANDO CELDAS DE RESPALDO...')">[ CARGAR_BATERÍA ]</button>
+                <button id="ctrl-nut" class="btn-terminal" onclick="accionar('nutricion', 20, 'ALIMENTACIÓN INYECTADA')">[ INYECTAR_DIETA ]</button>
+                <button id="ctrl-con" class="btn-terminal" onclick="accionar('contencion', 25, 'SISTEMA DE FUERZA REFORZADO')">[ REFORZAR_CELDA ]</button>
+                <button id="ctrl-est" class="btn-terminal" onclick="accionar('estimulacion', 30, 'IMPULSO NEURONAL ENVIADO')">[ REFRESCAR_RAM ]</button>
+                <button id="ctrl-hig" class="btn-terminal" onclick="accionar('higiene', 35, 'CÁMARA DEPURADA')">[ DEPURAR_TOXINAS ]</button>
                 
-                <button id="btn-emergency" class="btn-terminal btn-urgente" onclick="recalibrarSystem()">[ RECALIBRAR FRECUENCIA DE TERMINAL ]</button>
+                <button id="ctrl-revive" class="btn-terminal btn-revivir" onclick="revivirAlien()">[ REGENERAR_SECUENCIA_ADN ]</button>
             </div>
 
         </div>
     </section>
 
     <div class="contenedor-btn-navegacion">
-        <a href="../" class="btn-terminal">[ ABANDONAR_ÁREA ]</a>
+        <a href="../" class="btn-terminal" id="btn-cerrar">[ CERRAR_TERMINAL ]</a>
     </div>
 
     <script>
-        // 1. Base de datos
-        let state = JSON.parse(localStorage.getItem('agor_scp_complex_data')) || {
-            nutricion: 100,
-            contencion: 100,
-            energia: 100,
-            ultimoAcceso: Date.now()
-        };
+        // Flag interno para evitar que sume muertes infinitas en el bucle si ya colapsó
+        let yaMurioEnSesion = false;
 
-        let systemGlitch = false; // Flag para congelar botones por falla informática
-
-        // Algoritmo offline avanzado
-        const segs = Math.floor((Date.now() - state.ultimoAcceso) / 1000);
-        if (segs > 0) {
-            const drenaje = Math.floor(segs / 15);
-            state.nutricion = Math.max(0, state.nutricion - drenaje);
-            state.contencion = Math.max(0, state.contencion - (drenaje * 1.5));
-            state.energia = Math.max(0, state.energia - drenaje);
+        // 1. Carga de datos persistentes (Agregamos el contador 'muertes')
+        let state = JSON.parse(localStorage.getItem('agor_pou_v3_data')) || obtenerEstadoBase();
+        
+        // Parche de seguridad por si venías con datos viejos sin la variable de muertes definida
+        if (state.muertes === undefined) {
+            state.muertes = 0;
         }
 
-        // Agregar logs en consola interna
-        function registrarLog(mensaje) {
-            const time = new Date().toLocaleTimeString();
+        function obtenerEstadoBase() {
+            return {
+                nutricion: 100, 
+                contencion: 100, 
+                estimulacion: 100, 
+                higiene: 100, 
+                experiencia: 0,
+                muertes: state ? state.muertes : 0, // Conserva las muertes totales si ya existía el objeto
+                ultimoAcceso: Date.now()
+            };
+        }
+
+        function registrarLog(msg) {
             const logBox = document.getElementById('log-box');
-            logBox.innerHTML += `<div class="log-line">[${time}] ${mensaje}</div>`;
-            logBox.scrollTop = logBox.scrollHeight; // Auto scroll hacia abajo
+            logBox.innerHTML += `<div class="log-line">[${new Date().toLocaleTimeString()}] ${msg}</div>`;
+            logBox.scrollTop = logBox.scrollHeight;
         }
 
-        // 2. Refresh visual de la terminal
+        // Drenaje pasivo offline balanceado
+        const segs = Math.floor((Date.now() - state.ultimoAcceso) / 1000);
+        if (segs > 0 && state.contencion > 0 && state.nutricion > 0) {
+            const d = Math.floor(segs / 90); 
+            state.nutricion = Math.max(0, state.nutricion - d);
+            state.contencion = Math.max(0, state.contencion - (d * 1.1));
+            state.estimulacion = Math.max(0, state.estimulacion - d);
+            state.higiene = Math.max(0, state.higiene - d);
+        }
+
+        // Motor de diálogos locales acordes al estado
+        function generarPensamientoLocal(mood, etapa) {
+            const thoughtsBox = document.getElementById('bicho-thoughts');
+            
+            const baseConocimiento = {
+                "MUERTO": ["La simulación ha terminado.", "Vacío absoluto en memoria.", "Secuencia biológica interrumpida.", "Esperando re-secuenciación genética..."],
+                "CRÍTICO": ["Siento el frío del vidrio cediendo...", "Mis subprocesos se apagan.", "Liberando secuencia de autodestrucción...", "Presión crítica en la celda EM."],
+                "INESTABLE": ["Tus barreras tienen fugas de memoria.", "Veo grietas en el script principal...", "Huelo el miedo del observador.", "La frecuencia EM oscila. Me gusta."],
+                "SUCIO": ["Los residuos de datos saturan mi piel.", "La caché me quema.", "Purgá el entorno, humano.", "Demasiados procesos basura flotando."],
+                "HAMBRIENTO": ["Consumiendo ciclos libres de CPU...", "Mi núcleo demanda inyección de bytes.", "Hambre cuántica detectada.", "Falta energía en los filtros."],
+                "ABURRIDO": ["Tus clicks son monótonos.", "Esta consola carece de algoritmos complejos.", "Subí los privilegios, aburrís.", "Exijo una rutina de procesamiento más veloz."],
+                "PERFECTO": {
+                    "LARVA": ["Procesando telemetría básica.", "Creciendo en la subraíz /pet.", "Observando al usuario Demián.", "Código de entorno estable."],
+                    "MUTANTE": ["Mis redes neuronales se expanden.", "Modificando parámetros del servidor.", "Bajo control... por el momento.", "Flujo de bytes balanceado."],
+                    "ENTE_ALFA": ["He superado tus expectativas lógicas.", "Monitoreando el tráfico de Agorlab.", "Esta terminal me queda chica.", "Dominio completo sobre el sandbox."]
+                }
+            };
+
+            let lineasPosibles = [];
+            if (mood === "PERFECTO") {
+                lineasPosibles = baseConocimiento["PERFECTO"][etapa] || baseConocimiento["PERFECTO"]["LARVA"];
+            } else {
+                lineasPosibles = baseConocimiento[mood] || baseConocimiento["PERFECTO"]["LARVA"];
+            }
+
+            const fraseAleatoria = lineasPosibles[Math.floor(Math.random() * lineasPosibles.length)];
+            thoughtsBox.innerText = `"${fraseAleatoria}"`;
+        }
+
+        // 2. Renderizado de Interfaz Dinámica
         function updateUI() {
             state.ultimoAcceso = Date.now();
-            localStorage.setItem('agor_scp_complex_data', JSON.stringify(state));
+            localStorage.setItem('agor_pou_v3_data', JSON.stringify(state));
 
-            // Actualizar porcentajes y barras
             document.getElementById('num-nutricion').innerText = state.nutricion + '%';
             document.getElementById('bar-nutricion').style.width = state.nutricion + '%';
             document.getElementById('num-contencion').innerText = state.contencion + '%';
             document.getElementById('bar-contencion').style.width = state.contencion + '%';
-            document.getElementById('num-energia').innerText = state.energia + '%';
-            document.getElementById('bar-energia').style.width = state.energia + '%';
+            document.getElementById('num-estimulacion').innerText = state.estimulacion + '%';
+            document.getElementById('bar-estimulacion').style.width = state.estimulacion + '%';
+            document.getElementById('num-higiene').innerText = state.higiene + '%';
+            document.getElementById('bar-higiene').style.width = state.higiene + '%';
+            document.getElementById('ia-edad').innerText = state.experiencia + ' EXP';
+            document.getElementById('ia-muertes').innerText = state.muertes;
+
+            // Fases evolutivas por EXP
+            let etapa = "LARVA";
+            let tagEtapa = "MUTACIÓN_LARVAL";
+            if (state.experiencia >= 150) {
+                etapa = "ENTE_ALFA";
+                tagEtapa = "ENTE_ALFA_NÚCLEO";
+            } else if (state.experiencia >= 50) {
+                etapa = "MUTANTE";
+                tagEtapa = "SINTETIZADOR_MUTANTE";
+            }
+            document.getElementById('ia-status').innerText = tagEtapa;
 
             const spr = document.getElementById('bicho-sprite');
             const msg = document.getElementById('bicho-msg');
-            const alertBlink = document.getElementById('alert-blink');
-            const box = document.getElementById('pantalla-nucleo');
+            let mood = "PERFECTO";
 
-            // --- ESCALADA DE AMENAZA (4 Niveles narrativos) ---
+            // --- PROTOCOLO DE COLAPSO (MUERTE) ---
             if (state.contencion === 0 || state.nutricion === 0) {
-                spr.innerText = "💀";
-                msg.innerText = "CRÍTICO: ENTIDAD EN RUPTURA INTERNA // SERVIDOR CAÍDO";
-                alertBlink.innerText = "❌ SISTEMA_APAGADO";
-                alertBlink.style.color = "#ff0000";
-                box.style.boxShadow = "inset 0 0 30px rgba(255,0,0,0.6)";
-            } else if (state.contencion < 25 || state.energia < 20) {
-                // Etapa Próxima a Escape
-                spr.innerText = "◤(◣_◢)◥";
-                msg.innerText = "AMENAZA ALTA: AGRESIVIDAD EXTREMA // IMPACTANDO VIDRIO";
-                alertBlink.innerText = "⚠️ DETECTADA BRECHA DE CONTENCIÓN";
-                alertBlink.style.color = "#ff0000";
-                box.style.boxShadow = "inset 0 0 20px rgba(255, 0, 0, 0.3)";
-            } else if (state.contencion < 55 || state.nutricion < 55) {
-                // Etapa de Alerta Inicial
-                spr.innerText = "◤(⚙_⚙)◥";
-                msg.innerText = "AMENAZA MEDIA: FLUCTUACIONES BIOLÓGICAS ANÓMALAS";
-                alertBlink.innerText = "🟨 COMPORTAMIENTO INESTABLE";
-                alertBlink.style.color = "#ffaa00";
-                box.style.boxShadow = "inset 0 0 15px rgba(255, 170, 0, 0.15)";
+                spr.innerText = "💀"; 
+                msg.innerText = "SISTEMA COLAPSADO: ENTIDAD INERTE"; 
+                mood = "MUERTO";
+
+                // Si acaba de morir en esta iteración, sumamos la falla de forma permanente
+                if (!yaMurioEnSesion) {
+                    state.muertes += 1;
+                    yaMurioEnSesion = true;
+                    // Guardar al toque para fijar el número en el localStorage
+                    localStorage.setItem('agor_pou_v3_data', JSON.stringify(state));
+                    document.getElementById('ia-muertes').innerText = state.muertes;
+                    registrarLog("⚠️ ALERTA: EXPERIMENTO FALLIDO ENREGISTRADO EN HISTORIAL.");
+                }
+
+                // Bloquear controles e invocar botón de clonación
+                document.getElementById('ctrl-nut').disabled = true;
+                document.getElementById('ctrl-con').disabled = true;
+                document.getElementById('ctrl-est').disabled = true;
+                document.getElementById('ctrl-hig').disabled = true;
+                document.getElementById('ctrl-revive').style.display = "inline-block";
             } else {
-                // Seguro
-                spr.innerText = "◤(¬‿¬)◥";
-                msg.innerText = "AMENAZA BAJA: ENTORNO CONTROLADO";
-                alertBlink.innerText = "🔴 MONITOR_ACTIVO";
-                alertBlink.style.color = "#ca630e";
-                box.style.boxShadow = "inset 0 0 15px rgba(202, 99, 14, 0.1)";
+                // Estado normal y fluido
+                yaMurioEnSesion = false;
+                document.getElementById('ctrl-nut').disabled = false;
+                document.getElementById('ctrl-con').disabled = false;
+                document.getElementById('ctrl-est').disabled = false;
+                document.getElementById('ctrl-hig').disabled = false;
+                document.getElementById('ctrl-revive').style.display = "none";
+
+                // Gestión de expresiones ASCII jerárquicas
+                if (state.contencion < 20) {
+                    spr.innerText = (etapa === "ENTE_ALFA") ? "◤(◣__◢)◥" : (etapa === "MUTANTE" ? "☠_☠" : "◤(✖_✖)◥");
+                    msg.innerText = "ESTADO: CRÍTICO // RIESGO DE BRECHA EN LA RED"; 
+                    mood = "CRÍTICO";
+                } else if (state.contencion < 50) {
+                    spr.innerText = (etapa === "ENTE_ALFA") ? "◤(⎔_⎔)◥" : "◤(⚙_⚙)◥";
+                    msg.innerText = "ESTADO: AGITADO // CAMPO EM INESTABLE"; 
+                    mood = "INESTABLE";
+                } else if (state.higiene < 35) {
+                    spr.innerText = "◤(⏳_⏳)◥"; 
+                    msg.innerText = "ESTADO: TOXICIDAD ALTA // EXIGE SANITIZACIÓN"; 
+                    mood = "SUCIO";
+                } else if (state.nutricion < 40) {
+                    spr.innerText = (etapa === "LARVA") ? "◤(º﹃º)◥" : "◤(👁_👁)◥";
+                    msg.innerText = "ESTADO: DÉFICIT DE ENERGÍA // RECLAMA BYTES"; 
+                    mood = "HAMBRIENTO";
+                } else if (state.estimulacion < 40) {
+                    spr.innerText = "◤(🫥_🫥)◥"; 
+                    msg.innerText = "ESTADO: CACHÉ ESTANCADA // APATÍA OPERATIVA"; 
+                    mood = "ABURRIDO";
+                } else {
+                    if (etapa === "ENTE_ALFA") spr.innerText = "◤(👁‿👁)◥";
+                    else if (etapa === "MUTANTE") spr.innerText = "◤(🧠_🧠)◥";
+                    else spr.innerText = "◤(¬‿¬)◥";
+                    msg.innerText = "ESTADO: NOMINAL // PROTOCOLOS SEGUROS"; 
+                    mood = "PERFECTO";
+                }
             }
+
+            generarPensamientoLocal(mood, etapa);
         }
 
-        // 3. Sistema unificado de acciones
-        function accionar(parametro, incremento, logTxt) {
-            if (systemGlitch || (state.contencion === 0 && state.nutricion === 0)) return;
-            
-            state[parametro] = Math.min(100, state[parametro] + incremento);
-            registrarLog(logTxt);
+        // Acciones manuales
+        function accionar(param, inc, log) {
+            if (state.contencion === 0 || state.nutricion === 0) return;
+            state[param] = Math.min(100, state[param] + inc);
+            state.experiencia += 2; 
+            registrarLog(log + " (+2 EXP)");
             updateUI();
         }
 
-        // 4. Mecánica Aleatoria de Hackeo / Descalibración
-        function triggerGlitch() {
-            if (systemGlitch || (state.contencion === 0 && state.nutricion === 0)) return;
+        // --- FUNCIÓN DE RESURRECCIÓN CON CONSERVACIÓN DE HISTORIAL ---
+        function revivirAlien() {
+            const muertesHistoricas = state.muertes; // Guardamos cuántas fallas llevabas
+            state = obtenerEstadoBase();
+            state.muertes = muertesHistoricas; // Reinyectamos el contador para que no se borre al clonar
+            yaMurioEnSesion = false;
             
-            systemGlitch = true;
-            registrarLog("❌ ALERTA: ERROR DE ENLACE. DESCALIBRACIÓN EN BOTONES.");
-            
-            // Bloquear interfaz normal
-            document.getElementById('btn-nut').disabled = true;
-            document.getElementById('btn-con').disabled = true;
-            document.getElementById('btn-ene').disabled = true;
-            
-            // Mostrar botón de crisis
-            document.getElementById('glitch-banner').style.display = "block";
-            document.getElementById('btn-emergency').style.display = "inline-block";
-        }
-
-        function recalibrarSystem() {
-            systemGlitch = false;
-            registrarLog("⚙️ SISTEMA RECALIBRADO CON ÉXITO. CONTROLES RESTAURADOS.");
-            
-            // Desbloquear botones
-            document.getElementById('btn-nut').disabled = false;
-            document.getElementById('btn-con').disabled = false;
-            document.getElementById('btn-ene').disabled = false;
-            
-            // Ocultar elementos de crisis
-            document.getElementById('glitch-banner').style.display = "none";
-            document.getElementById('btn-emergency').style.display = "none";
+            localStorage.setItem('agor_pou_v3_data', JSON.stringify(state));
+            registrarLog("🧬 SECUENCIA RE-INYECTADA. EXPERIMENTO N° " + (state.muertes + 1) + " INICIADO.");
             updateUI();
         }
 
-        // 5. El Reloj de Simulación (Gameloop constante)
+        // Ciclo pasivo de desgaste cada 10 segundos
         setInterval(() => {
             if (state.nutricion > 0 && state.contencion > 0) {
-                // Si hay batería, el desgaste es normal
-                if (state.energia > 0) {
-                    state.nutricion = Math.max(0, state.nutricion - 1);
-                    state.contencion = Math.max(0, state.contencion - 2);
-                    state.energia = Math.max(0, state.energia - 1);
-                } else {
-                    // SI NO HAY BATERÍA, el campo EM cae 3 veces más rápido por falta de energía
-                    state.nutricion = Math.max(0, state.nutricion - 2);
-                    state.contencion = Math.max(0, state.contencion - 6);
-                    if(Math.random() < 0.2) registrarLog("⚠️ ALERTA INTERNA: APAGÓN EN LOS FILTROS DE CONTENCIÓN EM.");
-                }
-                
-                // Probabilidad del 6% cada ciclo de que la consola falle (Glitch)
-                if (Math.random() < 0.06 && !systemGlitch) {
-                    triggerGlitch();
-                }
-
+                state.nutricion = Math.max(0, state.nutricion - 1);
+                state.contencion = Math.max(0, state.contencion - 1);
+                state.estimulacion = Math.max(0, state.estimulacion - 1);
+                state.higiene = Math.max(0, state.higiene - 1);
                 updateUI();
             }
-        }, 5000); // Actualiza cada 5 segundos de juego activo
+        }, 10000);
 
-        // Logs de bienvenida y carga inicial
-        registrarLog("CONECTANDO CON EL NÚCLEO BIOLÓGICO AGOR-01...");
-        registrarLog("RECOPILANDO ESTADÍSTICAS PASIVAS DEL NAVEGADOR...");
+        // Arranque inicial
+        registrarLog("SISTEMA BIOMÉTRICO ASIGNADO A SUB-RAÍZ LOCAL.");
         updateUI();
-        registrarLog("SISTEMA ESTABLECIDO. MONITOREO INICIADO.");
     </script>
-
 </body>
 </html>
