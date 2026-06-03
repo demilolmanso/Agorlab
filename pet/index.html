@@ -265,4 +265,57 @@
             document.getElementById('bar-contencion').style.width = scp.contencion + '%';
 
             const sprite = document.getElementById('bicho-sprite');
-            const
+            const msg = document.getElementById('bicho-msg');
+            const alerta = document.getElementById('alert-blink');
+
+            // Lógica de estados ASCII basados en contención/hambre
+            if (scp.contencion === 0 || scp.nutricion === 0) {
+                sprite.innerText = "💀";
+                msg.innerText = "ESTADO: CRÍTICO // FALLA MÁXIMA";
+                alerta.innerText = "❌ NÚCLEO_APAGADO";
+                alerta.style.color = "#ff0000";
+            } else if (scp.contencion < 35 || scp.nutricion < 35) {
+                sprite.innerText = "◤(⚙_⚙)◥";
+                msg.innerText = "ESTADO: EVASIVO // AGITACIÓN DETECTADA";
+                alerta.innerText = "⚠️ ADVERTENCIA: RIESGO DE BRECHA";
+                alerta.style.color = "#ff0000";
+            } else {
+                sprite.innerText = "◤(¬‿¬)◥";
+                msg.innerText = "ESTADO: SEGURO // BAJO CONTROL";
+                alerta.innerText = "🔴 MONITOR_ACTIVO";
+                alerta.style.color = "#ca630e";
+            }
+        }
+
+        // Acciones
+        function alimentar() {
+            if (scp.nutricion === 0 && scp.contencion === 0) return; 
+            scp.nutricion = Math.min(100, scp.nutricion + 15);
+            actualizarPantalla();
+        }
+
+        function abrirMenu() {
+            // Reservado por si querés agregar expansiones en el futuro
+        }
+
+        function estabilizar() {
+            if (scp.nutricion === 0 && scp.contencion === 0) return;
+            scp.contencion = Math.min(100, scp.contencion + 20);
+            actualizarPantalla();
+        }
+
+        // Gameloop activo: drena estadísticas gradualmente cada 7 segundos en vivo
+        setInterval(() => {
+            if (scp.nutricion > 0 && scp.contencion > 0) {
+                scp.nutricion = Math.max(0, scp.nutricion - 1);
+                scp.contencion = Math.max(0, scp.contencion - 2);
+                actualizarPantalla();
+            }
+        }, 7000);
+
+        // Render inicial al cargar
+        actualizarPantalla();
+    </script>
+
+</body>
+</html>
