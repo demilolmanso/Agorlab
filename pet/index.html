@@ -358,15 +358,38 @@
         let aiModel = null;
         if (GEMINI_API_KEY.trim() !== "") {
             const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-            aiModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+            
+            // 🛠️ FIX 1: Forzamos la versión v1 de producción para evitar el 404
+            aiModel = genAI.getGenerativeModel(
+                { model: "gemini-1.5-flash" },
+                { apiVersion: "v1" }
+            );
         }
 
         let yaMurioEnSesion = false;
+        
+        // 🛠️ FIX 2: Limpiamos la función para que devuelva valores puros y no rompa por la TDZ
+        function obtenerEstadoBase() {
+            return {
+                nutricion: 100, 
+                contencion: 100, 
+                estimulacion: 100, 
+                higiene: 100, 
+                experiencia: 0, 
+                muertes: 0, 
+                nombreUsuario: "Demián",
+                ultimoAcceso: Date.now()
+            };
+        }
+
+        // Ahora sí, si no hay datos previos, se inicializa de forma segura
         let state = JSON.parse(localStorage.getItem('agor_pou_v3_data')) || obtenerEstadoBase();
         
         // Parches de campos obligatorios en el estado estructurado
         if (state.muertes === undefined) state.muertes = 0;
-        if (!state.nombreUsuario) state.nombreUsuario = "Demián"; // Por defecto inicializa en tu firma del laboratorio
+        if (!state.nombreUsuario) state.nombreUsuario = "Demián"; 
+
+        // ... El resto de tus funciones (window.registrarLog, window.updateUI, etc.) siguen igual de acá en adelante
 
         function obtenerEstadoBase() {
             return {
