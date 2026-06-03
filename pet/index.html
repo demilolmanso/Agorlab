@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agorlab | Terminal de Biocontención Autónoma</title>
+    <style>
+        /* [TUS ESTILOS CSS AQUÍ] */
+        body { background-color: #0d0d0d; color: #ca630e; font-family: monospace; }
+        .terminal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .panel-box { border: 1px dashed #ca630e; padding: 20px; }
+    </style>
+</head>
+<body>
+
+    <div class="terminal-grid">
+        <div class="panel-box">
+            <div id="bicho-sprite">◤(✦_✦)◥</div>
+            <div id="bicho-thoughts">"Esperando instrucciones..."</div>
+        </div>
+
+        <div class="panel-box">
+            <button onclick="accionar('nutricion', 15, 'Energía inyectada')">[ ALIMENTAR ]</button>
+            <button onclick="accionar('contencion', 20, 'Campo reforzado')">[ ESTABILIZAR ]</button>
+            <button onclick="revivirAlien()" id="btn-revive" style="display:none;">[ REVIVIR ]</button>
+        </div>
+
+        <div class="panel-box" style="grid-column: span 2;">
+            <input type="text" id="chat-input" placeholder="Comando...">
+            <button onclick="enviarMensajeIA()">[ TRANSMITIR ]</button>
+            <div id="log-box"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { GoogleGenerativeAI } from "@google/generative-ai";
+
+        // --- LÓGICA GLOBAL ---
+        window.state = JSON.parse(localStorage.getItem('agor_pou_v3_data')) || {
+            nutricion: 100, contencion: 100, estimulacion: 100, higiene: 100,
+            experiencia: 0, muertes: 0, nombreUsuario: "Demián"
+        };
+
+        window.accionar = function(param, inc, log) {
+            window.state[param] = Math.min(100, window.state[param] + inc);
+            localStorage.setItem('agor_pou_v3_data', JSON.stringify(window.state));
+            updateUI();
+        };
+
+        window.revivirAlien = function() {
+            window.state = { nutricion: 100, contencion: 100, estimulacion: 100, higiene: 100, experiencia: 0, muertes: window.state.muertes + 1, nombreUsuario: "Demián" };
+            updateUI();
+        };
+
+        function updateUI() {
+            // Aquí iría tu lógica de actualización de barras y sprites
+            console.log("UI actualizada", window.state);
+        }
+
+        // --- IA GEMINI ---
+        const genAI = new GoogleGenerativeAI("AQ.Ab8RN6IEANcnOS3EQx3mmj2UGClhwiXrVyQWB0-u-YBB-dz-3w");
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+        window.enviarMensajeIA = async function() {
+            const input = document.getElementById('chat-input').value;
+            const prompt = `Estado actual: ${JSON.stringify(window.state)}. El usuario dice: ${input}. Responde como ente alienígena.`;
+            
+            const result = await model.generateContent(prompt);
+            document.getElementById('bicho-thoughts').innerText = result.response.text();
+        };
+
+        updateUI();
+    </script>
+</body>
+</html>
