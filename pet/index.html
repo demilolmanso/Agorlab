@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="/style.css">
 
     <style>
-        /* Estilos heredados del main index de agorlab.com */
+        /* Ajustes específicos para fusionar el juego con tu fondo de pantalla */
         .logo-container {
             display: block;
             text-align: center;
@@ -27,8 +27,8 @@
         .prologo {
             display: block;
             width: 100%;
-            max-width: 750px;    
-            margin: 0 auto 20px auto; 
+            max-width: 650px;    
+            margin: 0 auto 30px auto; 
             padding: 0 20px;     
             text-align: center;  
             box-sizing: border-box;
@@ -37,13 +37,13 @@
         .prologo p {
             font-family: 'Courier New', Courier, monospace;
             color: #ca630e;
-            font-size: 1.1rem;   
-            line-height: 1.6;    
+            font-size: 1.2rem;   
+            line-height: 1.7;    
             letter-spacing: 1px;
-            margin-bottom: 1rem; 
+            margin-bottom: 1.8rem; 
         }
 
-        /* --- CONSOLA DEL TAMAGOTCHI NATIVO --- */
+        /* --- CONSOLA CONTENEDORA INTERACTIVA --- */
         .sala-contencion {
             display: block;
             width: 100%;
@@ -54,12 +54,13 @@
             text-align: center;
         }
 
+        /* Caja semitransparente para que no tape los destellos del fondo de tu web */
         .marco-observacion {
             border: 2px dashed #ca630e;
-            background-color: rgba(20, 20, 20, 0.8);
+            background-color: rgba(10, 10, 10, 0.85);
             padding: 25px;
-            box-shadow: 0 0 20px rgba(202, 99, 14, 0.15);
-            border-radius: 4px;
+            box-shadow: 0 0 25px rgba(202, 99, 14, 0.2);
+            border-radius: 0px; /* Estética angular retro */
         }
 
         .status-terminal {
@@ -69,6 +70,7 @@
             text-align: left;
             margin-bottom: 20px;
             letter-spacing: 1px;
+            font-weight: bold;
         }
 
         .parpado {
@@ -78,7 +80,7 @@
             50% { opacity: 0.3; }
         }
 
-        /* --- MONITORES DE ESTADO (BARRAS) --- */
+        /* --- MONITORES (BARRAS DE ENERGÍA) --- */
         .panel-monitores {
             margin-bottom: 25px;
             text-align: left;
@@ -87,17 +89,18 @@
         .monitor-label {
             font-family: 'Courier New', Courier, monospace;
             color: #ca630e;
-            font-size: 1rem;
-            margin-bottom: 5px;
+            font-size: 1.1rem;
+            margin-bottom: 6px;
             display: flex;
             justify-content: space-between;
+            font-weight: bold;
         }
 
         .barra-progreso {
-            background: #222;
+            background: rgba(0, 0, 0, 0.6);
             border: 1px solid #ca630e;
-            height: 16px;
-            margin-bottom: 15px;
+            height: 18px;
+            margin-bottom: 20px;
             position: relative;
             overflow: hidden;
         }
@@ -105,38 +108,161 @@
         .llenado {
             background: #ca630e;
             height: 100%;
-            width: 100%; /* Se maneja dinámicamente con JS */
-            transition: width 0.4s ease;
+            width: 100%;
+            transition: width 0.4s cubic-bezier(0.1, 0.8, 0.3, 1);
         }
 
-        /* --- EL ESPÉCIMEN (RENDER RETRO) --- */
+        /* --- CÁMARA DEL ALIEN --- */
         .pantalla-bicho {
-            background: #0d0d0d;
+            background: rgba(5, 5, 5, 0.9);
             border: 1px solid #ca630e;
-            padding: 30px;
+            padding: 35px;
             margin-bottom: 25px;
-            min-height: 120px;
+            min-height: 140px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            box-shadow: inset 0 0 15px rgba(202, 99, 14, 0.1);
         }
 
         .bicho-avatar {
             font-family: 'Courier New', Courier, monospace;
-            font-size: 3.5rem;
+            font-size: 3.8rem;
             color: #ca630e;
             white-space: pre;
             line-height: 1;
-            margin-bottom: 15px;
+            margin-bottom: 18px;
+            font-weight: bold;
+            text-shadow: 0 0 8px rgba(202, 99, 14, 0.4);
         }
 
         .bicho-status-text {
             font-family: 'Courier New', Courier, monospace;
             color: #ca630e;
-            font-size: 0.9rem;
+            font-size: 1rem;
             letter-spacing: 1px;
+            font-weight: bold;
         }
 
-        /* --- BOTONES DE ACCIÓN DE LA TERMINAL --- */
-        .
+        /* --- BOTONERÍA DE CONTROL (Estilo idéntico a tu .btn-microblog) --- */
+        .panel-controles {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn-terminal {
+            display: inline-block;
+            color: #ca630e;
+            text-decoration: none;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+            border: 1px dashed #ca630e;
+            padding: 10px 20px;
+            background-color: transparent;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .btn-terminal:hover {
+            background-color: #ca630e;
+            color: rgb(226, 226, 226);
+            box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+        }
+
+        .contenedor-btn-navegacion {
+            text-align: center;
+            width: 100%;
+            margin-top: 30px;
+            margin-bottom: 50px;
+        }
+    </style>
+</head>
+<body> 
+
+    <div class="logo-container">
+        <img src="../logo_agorlab.png" alt="Agorlab" class="logo-site">
+    </div>
+    
+    <section class="prologo">
+        <p><strong>[ SUBSECCIÓN: MONITOR_DE_ENTORNO ]</strong></p>
+        <p>Estás dentro del sistema directo de contención. Los niveles de este espécimen digital deben ser regulados manualmente desde esta terminal.</p>
+    </section>
+
+    <section class="sala-contencion">
+        <div class="marco-observacion">
+            
+            <div class="status-terminal">
+                ⚡ TERMINAL: ONLINE // <span id="alert-blink" class="parpado">🔴 MONITOR_ACTIVO</span>
+            </div>
+            
+            <div class="panel-monitores">
+                <div class="monitor-label">
+                    <span>🧬 NUTRICIÓN:</span>
+                    <span id="num-nutricion">100%</span>
+                </div>
+                <div class="barra-progreso">
+                    <div id="bar-nutricion" class="llenado"></div>
+                </div>
+
+                <div class="monitor-label">
+                    <span>🛡️ ESTABILIDAD_DE_CAMPO:</span>
+                    <span id="num-contencion">100%</span>
+                </div>
+                <div class="barra-progreso">
+                    <div id="bar-contencion" class="llenado"></div>
+                </div>
+            </div>
+
+            <div class="pantalla-bicho">
+                <div id="bicho-sprite" class="bicho-avatar">◤(¬‿¬)◥</div>
+                <div id="bicho-msg" class="bicho-status-text">ESTADO: SEGURO // BAJO CONTROL</div>
+            </div>
+
+            <div class="panel-controles">
+                <button class="btn-terminal" onclick="alimentar()">[ INYECTAR_DIETA ]</button>
+                <button class="btn-terminal" onclick="estabilizar()">[ REFORZAR_CAMPO ]</button>
+            </div>
+
+        </div>
+    </section>
+
+    <div class="contenedor-btn-navegacion">
+        <a href="../" class="btn-terminal">[ CERRAR_TERMINAL ]</a>
+    </div>
+
+    <script>
+        // Iniciar o levantar de localStorage
+        let scp = JSON.parse(localStorage.getItem('agor_scp_data')) || {
+            nutricion: 100,
+            contencion: 100,
+            ultimoAcceso: Date.now()
+        };
+
+        // Algoritmo offline: calcula cuánto tiempo pasó desde que se cerró la pestaña
+        const tiempoActual = Date.now();
+        const tiempoPasado = tiempoActual - scp.ultimoAcceso;
+        const segundosAfuera = Math.floor(tiempoPasado / 1000);
+        
+        // Cada 15 segundos reales afuera de la web, drena 1 punto de cada stat
+        const desgastePasivo = Math.floor(segundosAfuera / 15);
+        scp.nutricion = Math.max(0, scp.nutricion - desgastePasivo);
+        scp.contencion = Math.max(0, scp.contencion - desgastePasivo);
+
+        function actualizarPantalla() {
+            scp.ultimoAcceso = Date.now();
+            localStorage.setItem('agor_scp_data', JSON.stringify(scp));
+
+            // Actualizar interfaz gráfica
+            document.getElementById('num-nutricion').innerText = scp.nutricion + '%';
+            document.getElementById('bar-nutricion').style.width = scp.nutricion + '%';
+
+            document.getElementById('num-contencion').innerText = scp.contencion + '%';
+            document.getElementById('bar-contencion').style.width = scp.contencion + '%';
+
+            const sprite = document.getElementById('bicho-sprite');
+            const
