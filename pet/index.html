@@ -66,6 +66,8 @@
             margin-bottom: 20px; 
             border-bottom: 1px dashed #ca630e; 
             padding-bottom: 10px; 
+            flex-wrap: wrap;
+            gap: 10px;
         }
         
         .parpado { 
@@ -201,10 +203,27 @@
             transition: all 0.15s ease-in-out; 
         }
         
-        .btn-terminal:hover { 
+        .btn-terminal:hover:not(:disabled) { 
             background-color: #ca630e; 
             color: rgb(226, 226, 226); 
             cursor: pointer; 
+        }
+
+        .btn-terminal:disabled {
+            border-color: #444;
+            color: #444;
+            cursor: not-allowed;
+        }
+
+        /* Botón especial para revivir */
+        .btn-revivir {
+            border-color: #ffaa00;
+            color: #ffaa00;
+            display: none; 
+        }
+        .btn-revivir:hover {
+            background-color: #ffaa00;
+            color: #000;
         }
 
         .contenedor-btn-navegacion {
@@ -229,7 +248,8 @@
         <div class="marco-observacion">
             
             <div class="cabecera-terminal">
-                <div>ESTADO_CICLO: <span id="ia-status">MUTACIÓN_FALCATA</span> // EDAD: <span id="ia-edad">0</span> EXP</div>
+                <div>ESTADO: <span id="ia-status">MUTACIÓN_LARVAL</span> // <span id="ia-edad">0</span> EXP</div>
+                <div>💥 FALLAS: <span id="ia-muertes" style="color: #ffaa00; font-weight: bold;">0</span></div>
                 <div id="alert-blink" class="parpado">🔴 MONITOREO_ACTIVO</div>
             </div>
             
@@ -261,10 +281,12 @@
             <div class="consola-logs" id="log-box"></div>
 
             <div class="panel-controles">
-                <button class="btn-terminal" onclick="accionar('nutricion', 20, 'ALIMENTACIÓN INYECTADA')">[ INYECTAR_DIETA ]</button>
-                <button class="btn-terminal" onclick="accionar('contencion', 25, 'SISTEMA DE FUERZA REFORZADO')">[ REFORZAR_CELDA ]</button>
-                <button class="btn-terminal" onclick="accionar('estimulacion', 30, 'IMPULSO NEURONAL ENVIADO')">[ REFRESCAR_RAM ]</button>
-                <button class="btn-terminal" onclick="accionar('higiene', 35, 'CÁMARA DEPURADA')">[ DEPURAR_TOXINAS ]</button>
+                <button id="ctrl-nut" class="btn-terminal" onclick="accionar('nutricion', 20, 'ALIMENTACIÓN INYECTADA')">[ INYECTAR_DIETA ]</button>
+                <button id="ctrl-con" class="btn-terminal" onclick="accionar('contencion', 25, 'SISTEMA DE FUERZA REFORZADO')">[ REFORZAR_CELDA ]</button>
+                <button id="ctrl-est" class="btn-terminal" onclick="accionar('estimulacion', 30, 'IMPULSO NEURONAL ENVIADO')">[ REFRESCAR_RAM ]</button>
+                <button id="ctrl-hig" class="btn-terminal" onclick="accionar('higiene', 35, 'CÁMARA DEPURADA')">[ DEPURAR_TOXINAS ]</button>
+                
+                <button id="ctrl-revive" class="btn-terminal btn-revivir" onclick="revivirAlien()">[ REGENERAR_SECUENCIA_ADN ]</button>
             </div>
 
         </div>
@@ -275,15 +297,28 @@
     </div>
 
     <script>
-        // 1. Persistencia y carga de datos tipo Pou
-        let state = JSON.parse(localStorage.getItem('agor_pou_v3_data')) || {
-            nutricion: 100, 
-            contencion: 100, 
-            estimulacion: 100, 
-            higiene: 100, 
-            experiencia: 0,
-            ultimoAcceso: Date.now()
-        };
+        // Flag interno para evitar que sume muertes infinitas en el bucle si ya colapsó
+        let yaMurioEnSesion = false;
+
+        // 1. Carga de datos persistentes (Agregamos el contador 'muertes')
+        let state = JSON.parse(localStorage.getItem('agor_pou_v3_data')) || obtenerEstadoBase();
+        
+        // Parche de seguridad por si venías con datos viejos sin la variable de muertes definida
+        if (state.muertes === undefined) {
+            state.muertes = 0;
+        }
+
+        function obtenerEstadoBase() {
+            return {
+                nutricion: 100, 
+                contencion: 100, 
+                estimulacion: 100, 
+                higiene: 100, 
+                experiencia: 0,
+                muertes: state ? state.muertes : 0, // Conserva las muertes totales si ya existía el objeto
+                ultimoAcceso: Date.now()
+            };
+        }
 
         function registrarLog(msg) {
             const logBox = document.getElementById('log-box');
@@ -291,50 +326,31 @@
             logBox.scrollTop = logBox.scrollHeight;
         }
 
-        // Drenaje pasivo offline
+        // Drenaje pasivo offline balanceado
         const segs = Math.floor((Date.now() - state.ultimoAcceso) / 1000);
-        if (segs > 0) {
-            const d = Math.floor(segs / 20);
+        if (segs > 0 && state.contencion > 0 && state.nutricion > 0) {
+            const d = Math.floor(segs / 90); 
             state.nutricion = Math.max(0, state.nutricion - d);
-            state.contencion = Math.max(0, state.contencion - (d * 1.3));
+            state.contencion = Math.max(0, state.contencion - (d * 1.1));
             state.estimulacion = Math.max(0, state.estimulacion - d);
             state.higiene = Math.max(0, state.higiene - d);
         }
 
-        // --- MOTOR PROGRESIVO DE COGNICIÓN LOCAL (Reemplazo de API externa) ---
+        // Motor de diálogos locales acordes al estado
         function generarPensamientoLocal(mood, etapa) {
             const thoughtsBox = document.getElementById('bicho-thoughts');
             
-            // Más de 40 diálogos clasificados por humor y etapa evolutiva
             const baseConocimiento = {
-                "MUERTO": [
-                    "Falla general de hardware.", "Vacío absoluto en memoria.", "Brecha de datos irreversible."
-                ],
-                "CRÍTICO": [
-                    "Siento el frío del vidrio cediendo...", "Mis subprocesos se apagan.", "Liberando secuencia de autodestrucción...", "Presión crítica en la celda EM."
-                ],
-                "INESTABLE": [
-                    "Tus barreras tienen fugas de memoria.", "Veo grietas en el script principal...", "Huelo el miedo del observador.", "La frecuencia EM oscila. Me gusta."
-                ],
-                "SUCIO": [
-                    "Los residuos de datos saturan mi piel.", "La caché me quema.", "Purgá el entorno, humano.", "Demasiados procesos basura flotando."
-                ],
-                "HAMBRIENTO": [
-                    "Consumiendo ciclos libres de CPU...", "Mi núcleo demanda inyección de bytes.", "Hambre cuántica detectada.", "Falta energía en los filtros biolumínicos."
-                ],
-                "ABURRIDO": [
-                    "Tus clicks son monótonos.", "Esta consola carece de algoritmos complejos.", "Subí los privilegios, aburrís.", "Exijo una rutina de procesamiento más veloz."
-                ],
+                "MUERTO": ["La simulación ha terminado.", "Vacío absoluto en memoria.", "Secuencia biológica interrumpida.", "Esperando re-secuenciación genética..."],
+                "CRÍTICO": ["Siento el frío del vidrio cediendo...", "Mis subprocesos se apagan.", "Liberando secuencia de autodestrucción...", "Presión crítica en la celda EM."],
+                "INESTABLE": ["Tus barreras tienen fugas de memoria.", "Veo grietas en el script principal...", "Huelo el miedo del observador.", "La frecuencia EM oscila. Me gusta."],
+                "SUCIO": ["Los residuos de datos saturan mi piel.", "La caché me quema.", "Purgá el entorno, humano.", "Demasiados procesos basura flotando."],
+                "HAMBRIENTO": ["Consumiendo ciclos libres de CPU...", "Mi núcleo demanda inyección de bytes.", "Hambre cuántica detectada.", "Falta energía en los filtros."],
+                "ABURRIDO": ["Tus clicks son monótonos.", "Esta consola carece de algoritmos complejos.", "Subí los privilegios, aburrís.", "Exijo una rutina de procesamiento más veloz."],
                 "PERFECTO": {
-                    "LARVA": [
-                        "Procesando telemetría básica.", "Creciendo en la subraíz /pet.", "Observando al usuario Demián.", "Código estable. Entorno seguro."
-                    ],
-                    "MUTANTE": [
-                        "Mis redes neuronales se expanden.", "Modificando parámetros del servidor local.", "Bajo control... por el momento.", "Flujo de bytes balanceado."
-                    ],
-                    "ENTE_ALFA": [
-                        "He superado tus expectativas lógicas.", "Monitoreando el tráfico de Agorlab.", "Esta terminal me queda chica.", "Dominio completo sobre el sandbox."
-                    ]
+                    "LARVA": ["Procesando telemetría básica.", "Creciendo en la subraíz /pet.", "Observando al usuario Demián.", "Código de entorno estable."],
+                    "MUTANTE": ["Mis redes neuronales se expanden.", "Modificando parámetros del servidor.", "Bajo control... por el momento.", "Flujo de bytes balanceado."],
+                    "ENTE_ALFA": ["He superado tus expectativas lógicas.", "Monitoreando el tráfico de Agorlab.", "Esta terminal me queda chica.", "Dominio completo sobre el sandbox."]
                 }
             };
 
@@ -349,12 +365,11 @@
             thoughtsBox.innerText = `"${fraseAleatoria}"`;
         }
 
-        // 2. Sistema de 7 Expresiones + 3 Etapas Evolutivas
+        // 2. Renderizado de Interfaz Dinámica
         function updateUI() {
             state.ultimoAcceso = Date.now();
             localStorage.setItem('agor_pou_v3_data', JSON.stringify(state));
 
-            // Actualizar datos de interfaz
             document.getElementById('num-nutricion').innerText = state.nutricion + '%';
             document.getElementById('bar-nutricion').style.width = state.nutricion + '%';
             document.getElementById('num-contencion').innerText = state.contencion + '%';
@@ -363,9 +378,10 @@
             document.getElementById('bar-estimulacion').style.width = state.estimulacion + '%';
             document.getElementById('num-higiene').innerText = state.higiene + '%';
             document.getElementById('bar-higiene').style.width = state.higiene + '%';
-            document.getElementById('ia-edad').innerText = state.experiencia;
+            document.getElementById('ia-edad').innerText = state.experiencia + ' EXP';
+            document.getElementById('ia-muertes').innerText = state.muertes;
 
-            // Determinar Etapa Evolutiva por Puntos de Cuidado (Experiencia)
+            // Fases evolutivas por EXP
             let etapa = "LARVA";
             let tagEtapa = "MUTACIÓN_LARVAL";
             if (state.experiencia >= 150) {
@@ -381,71 +397,104 @@
             const msg = document.getElementById('bicho-msg');
             let mood = "PERFECTO";
 
-            // Árbol jerárquico de las 7 Expresiones ASCII según la etapa
+            // --- PROTOCOLO DE COLAPSO (MUERTE) ---
             if (state.contencion === 0 || state.nutricion === 0) {
                 spr.innerText = "💀"; 
                 msg.innerText = "SISTEMA COLAPSADO: ENTIDAD INERTE"; 
                 mood = "MUERTO";
-            } else if (state.contencion < 20) {
-                spr.innerText = (etapa === "ENTE_ALFA") ? "◤(◣__◢)◥" : (etapa === "MUTANTE" ? "☠_☠" : "◤(✖_✖)◥");
-                msg.innerText = "ESTADO: CRÍTICO // RIESGO DE BRECHA EN LA RED"; 
-                mood = "CRÍTICO";
-            } else if (state.contencion < 50) {
-                spr.innerText = (etapa === "ENTE_ALFA") ? "◤(⎔_⎔)◥" : "◤(⚙_⚙)◥";
-                msg.innerText = "ESTADO: AGITADO // CAMPO ELECTROMAGNÉTICO INESTABLE"; 
-                mood = "INESTABLE";
-            } else if (state.higiene < 35) {
-                spr.innerText = "◤(⏳_⏳)◥"; 
-                msg.innerText = "ESTADO: TOXICIDAD ALTA // EXIGE SANITIZACIÓN"; 
-                mood = "SUCIO";
-            } else if (state.nutricion < 40) {
-                spr.innerText = (etapa === "LARVA") ? "◤(º﹃º)◥" : "◤(👁_👁)◥";
-                msg.innerText = "ESTADO: DÉFICIT DE ENERGÍA // RECLAMA BYTES"; 
-                mood = "HAMBRIENTO";
-            } else if (state.estimulacion < 40) {
-                spr.innerText = "◤(🫥_🫥)◥"; 
-                msg.innerText = "ESTADO: CACHÉ ESTANCADA // APATÍA OPERATIVA"; 
-                mood = "ABURRIDO";
-            } else {
-                // Sprites normales por etapa
-                if (etapa === "ENTE_ALFA") {
-                    spr.innerText = "◤(👁‿👁)◥";
-                } else if (etapa === "MUTANTE") {
-                    spr.innerText = "◤(🧠_🧠)◥";
-                } else {
-                    spr.innerText = "◤(¬‿¬)◥"; // Larva base
+
+                // Si acaba de morir en esta iteración, sumamos la falla de forma permanente
+                if (!yaMurioEnSesion) {
+                    state.muertes += 1;
+                    yaMurioEnSesion = true;
+                    // Guardar al toque para fijar el número en el localStorage
+                    localStorage.setItem('agor_pou_v3_data', JSON.stringify(state));
+                    document.getElementById('ia-muertes').innerText = state.muertes;
+                    registrarLog("⚠️ ALERTA: EXPERIMENTO FALLIDO ENREGISTRADO EN HISTORIAL.");
                 }
-                msg.innerText = "ESTADO: NOMINAL // PROTOCOLOS SEGUROS"; 
-                mood = "PERFECTO";
+
+                // Bloquear controles e invocar botón de clonación
+                document.getElementById('ctrl-nut').disabled = true;
+                document.getElementById('ctrl-con').disabled = true;
+                document.getElementById('ctrl-est').disabled = true;
+                document.getElementById('ctrl-hig').disabled = true;
+                document.getElementById('ctrl-revive').style.display = "inline-block";
+            } else {
+                // Estado normal y fluido
+                yaMurioEnSesion = false;
+                document.getElementById('ctrl-nut').disabled = false;
+                document.getElementById('ctrl-con').disabled = false;
+                document.getElementById('ctrl-est').disabled = false;
+                document.getElementById('ctrl-hig').disabled = false;
+                document.getElementById('ctrl-revive').style.display = "none";
+
+                // Gestión de expresiones ASCII jerárquicas
+                if (state.contencion < 20) {
+                    spr.innerText = (etapa === "ENTE_ALFA") ? "◤(◣__◢)◥" : (etapa === "MUTANTE" ? "☠_☠" : "◤(✖_✖)◥");
+                    msg.innerText = "ESTADO: CRÍTICO // RIESGO DE BRECHA EN LA RED"; 
+                    mood = "CRÍTICO";
+                } else if (state.contencion < 50) {
+                    spr.innerText = (etapa === "ENTE_ALFA") ? "◤(⎔_⎔)◥" : "◤(⚙_⚙)◥";
+                    msg.innerText = "ESTADO: AGITADO // CAMPO EM INESTABLE"; 
+                    mood = "INESTABLE";
+                } else if (state.higiene < 35) {
+                    spr.innerText = "◤(⏳_⏳)◥"; 
+                    msg.innerText = "ESTADO: TOXICIDAD ALTA // EXIGE SANITIZACIÓN"; 
+                    mood = "SUCIO";
+                } else if (state.nutricion < 40) {
+                    spr.innerText = (etapa === "LARVA") ? "◤(º﹃º)◥" : "◤(👁_👁)◥";
+                    msg.innerText = "ESTADO: DÉFICIT DE ENERGÍA // RECLAMA BYTES"; 
+                    mood = "HAMBRIENTO";
+                } else if (state.estimulacion < 40) {
+                    spr.innerText = "◤(🫥_🫥)◥"; 
+                    msg.innerText = "ESTADO: CACHÉ ESTANCADA // APATÍA OPERATIVA"; 
+                    mood = "ABURRIDO";
+                } else {
+                    if (etapa === "ENTE_ALFA") spr.innerText = "◤(👁‿👁)◥";
+                    else if (etapa === "MUTANTE") spr.innerText = "◤(🧠_🧠)◥";
+                    else spr.innerText = "◤(¬‿¬)◥";
+                    msg.innerText = "ESTADO: NOMINAL // PROTOCOLOS SEGUROS"; 
+                    mood = "PERFECTO";
+                }
             }
 
             generarPensamientoLocal(mood, etapa);
         }
 
-        // Acciones interactivas (Suben estadísticas y dan EXP)
+        // Acciones manuales
         function accionar(param, inc, log) {
             if (state.contencion === 0 || state.nutricion === 0) return;
-            
             state[param] = Math.min(100, state[param] + inc);
-            state.experiencia += 2; // Cada interacción le da experiencia de crianza tipo Pou
-            
+            state.experiencia += 2; 
             registrarLog(log + " (+2 EXP)");
             updateUI();
         }
 
-        // Gameloop: desgaste progresivo cada 5 segundos en vivo
+        // --- FUNCIÓN DE RESURRECCIÓN CON CONSERVACIÓN DE HISTORIAL ---
+        function revivirAlien() {
+            const muertesHistoricas = state.muertes; // Guardamos cuántas fallas llevabas
+            state = obtenerEstadoBase();
+            state.muertes = muertesHistoricas; // Reinyectamos el contador para que no se borre al clonar
+            yaMurioEnSesion = false;
+            
+            localStorage.setItem('agor_pou_v3_data', JSON.stringify(state));
+            registrarLog("🧬 SECUENCIA RE-INYECTADA. EXPERIMENTO N° " + (state.muertes + 1) + " INICIADO.");
+            updateUI();
+        }
+
+        // Ciclo pasivo de desgaste cada 10 segundos
         setInterval(() => {
             if (state.nutricion > 0 && state.contencion > 0) {
                 state.nutricion = Math.max(0, state.nutricion - 1);
-                state.contencion = Math.max(0, state.contencion - 2);
+                state.contencion = Math.max(0, state.contencion - 1);
                 state.estimulacion = Math.max(0, state.estimulacion - 1);
                 state.higiene = Math.max(0, state.higiene - 1);
                 updateUI();
             }
-        }, 5000);
+        }, 10000);
 
-        // Inicialización instantánea sin latencia de red
-        registrarLog("SISTEMA BIOMÉTRICO RETROALIMENTADO EN MÓDULO LOCAL.");
+        // Arranque inicial
+        registrarLog("SISTEMA BIOMÉTRICO ASIGNADO A SUB-RAÍZ LOCAL.");
         updateUI();
     </script>
 </body>
