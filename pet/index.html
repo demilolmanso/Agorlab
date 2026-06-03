@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agorlab | Terminal Avanzada de Contención</title>
+    
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="stylesheet" href="/style.css">
+
+    <style>
+        /* Estilos base e integración con tu fondo */
+        .logo-container {
+            display: block;
+            text-align: center;
+            margin-top: 20px;    
+            margin-bottom: 20px; 
+        }
+
+        .logo-site {
+            max-width: 950px;   
+            width: 100%;        
+            height: auto;       
+        }
+
+        .prologo {
+            display: block;
+            width: 100%;
+            max-width: 650px;    
+            margin: 0 auto 20px auto; 
+            padding: 0 20px;     
+            text-align: center;  
+            box-sizing: border-box;
+        }
+
+        .prologo p {
+            font-family: 'Courier New', Courier, monospace;
+            color: #ca630e;
+            font-size: 1.1rem;   
+            line-height: 1.6;    
+            letter-spacing: 1px;
+        }
+
+        /* --- CONSOLA COMPLEJA --- */
+        .sala-contencion {
+            display: block;
+            width: 100%;
+            max-width: 700px;
+            margin: 0 auto 30px auto;
+            padding: 0 20px;
+            box-sizing: border-box;
+        }
+
+        .marco-observacion {
+            border: 2px dashed #ca630e;
+            background-color: rgba(10, 10, 10, 0.9);
+            padding: 25px;
+            box-shadow: 0 0 30px rgba(202, 99, 14, 0.25);
+        }
+
+        .cabecera-terminal {
+            display: flex;
+            justify-content: space-between;
+            font-family: 'Courier New', Courier, monospace;
+            color: #ca630e;
+            font-size: 0.85rem;
+            margin-bottom: 20px;
+            border-bottom: 1px dashed #ca630e;
+            padding-bottom: 10px;
+            letter-spacing: 1px;
+        }
+
+        .parpado {
+            animation: blinker 1.5s linear infinite;
+        }
+        @keyframes blinker {
+            50% { opacity: 0.2; }
+        }
+
+        /* --- REJILLA DE MONITORES --- */
+        .grid-monitores {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        @media (max-width: 600px) {
+            .grid-monitores { grid-template-columns: 1fr; }
+        }
+
+        .monitor-bloque {
+            text-align: left;
+        }
+
+        .monitor-label {
+            font-family: 'Courier New', Courier, monospace;
+            color: #ca630e;
+            font-size: 0.95rem;
+            margin-bottom: 4px;
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+        }
+
+        .barra-progreso {
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid #ca630e;
+            height: 14px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .llenado {
+            background: #ca630e;
+            height: 100%;
+            width: 100%;
+            transition: width 0.3s ease;
+        }
+
+        /* Variación de color para energía */
+        .energia-bar { background: #ca630e; }
+
+        /* --- DISPLAY DEL SUJETO --- */
+        .pantalla-bicho {
+            background: rgba(5, 5, 5, 0.95);
+            border: 1px solid #ca630e;
+            padding: 30px;
+            margin-bottom: 20px;
+            min-height: 160px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bicho-avatar {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 3.5rem;
+            color: #ca630e;
+            white-space: pre;
+            line-height: 1.1;
+            margin-bottom: 15px;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(202, 99, 14, 0.5);
+            transition: all 0.2s ease;
+        }
+
+        .bicho-status-text {
+            font-family: 'Courier New', Courier, monospace;
+            color: #ca630e;
+            font-size: 0.95rem;
+            letter-spacing: 1px;
+            font-weight: bold;
+        }
+
+        /* --- GLITCH DE ALERTA DEL SISTEMA --- */
+        .alerta-glitch-box {
+            display: none;
+            background: rgba(255, 0, 0, 0.2);
+            border: 1px solid #ff0000;
+            color: #ff0000;
+            font-family: 'Courier New', Courier, monospace;
+            padding: 10px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        /* --- CONSOLA DE LOGS (HISTORIAL) --- */
+        .consola-logs {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #ca630e;
+            height: 90px;
+            padding: 10px;
+            margin-bottom: 25px;
+            overflow-y: hidden;
+            text-align: left;
+            box-sizing: border-box;
+        }
+
+        .log-line {
+            font-family: 'Courier New', Courier, monospace;
+            color: rgba(202, 99, 14, 0.7);
+            font-size: 0.8rem;
+            line-height: 1.3;
+            margin-bottom: 2px;
+        }
+
+        /* --- BOTONES DE ACCIÓN --- */
+        .panel-controles {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn-terminal {
+            display: inline-block;
+            color: #ca630e;
+            text-decoration: none;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            font-size: 0.95rem;
+            letter-spacing: 1px;
+            border: 1px dashed #ca630e;
+            padding: 9px 16px;
+            background-color: transparent;
+            transition: all 0.15s ease-in-out;
+        }
+
+        .btn-terminal:hover:not(:disabled) {
+            background-color: #ca630e;
+            color: rgb(226, 226, 226);
+            box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+        }
+
+        .btn-terminal:disabled {
+            border-color: #444;
+            color: #444;
+            cursor: not-allowed;
+        }
+
+        /* Botón de crisis de hackeo */
+        .btn-urgente {
+            border-color: #ff0000;
+            color: #ff0000;
+            display: none;
+        }
+        .btn-urgente:hover {
+            background-color: #ff0000;
+            color: #fff;
+        }
+
+        .contenedor-btn-navegacion {
+            text-align: center;
+            width: 100%;
+            margin-top: 30px;
+            margin-bottom: 50px;
+        }
+    </style>
+</head>
+<body> 
+
+    <div class="logo-container">
+        <img src="../logo_agorlab.png" alt="Agorlab" class="logo-site">
+    </div>
+    
+    <section class="prologo">
+        <p><strong>[ UNIDAD DE CAUTIVERIO BIOLÓGICO-DIGITAL ]</strong></p>
+    </section>
+
+    <section class="sala-contencion">
+        <div class="marco-observacion">
+            
+            <div class="cabecera-terminal">
+                <div>SYS_REF: AGOR-01 // LOC: SEC_P3</div>
+                <div id="alert-blink" class="parpado">🔴 MONITOR_ACTIVO</div>
+            </div>
+
+            <div id="glitch-banner" class="alerta-glitch-box class-parpado">
+                ⚠️ TRANSMISIÓN DESCALIBRADA: CONTROLES BLOQUEADOS ⚠️
+            </div>
+            
+            <div class="grid-monitores">
+                <div class="monitor-bloque">
+                    <div class="monitor-label"><span>🧬 NUTRICIÓN:</span><span id="num-nutricion">100%</span></div>
+                    <div class="barra-progreso"><div id="bar-nutricion" class="llenado"></div></div>
+                </div>
+
+                <div class="monitor-bloque">
+                    <div class="monitor-label"><span>🛡️ CONTENCIÓN EM:</span><span id="num-contencion">100%</span></div>
+                    <div class="barra-progreso"><div id="bar-contencion" class="llenado"></div></div>
+                </div>
+
+                <div class="monitor-bloque" style="grid-column: 1 / -1;">
+                    <div class="monitor-label"><span>🔋 BATERÍA DE RESPALDO:</span><span id="num-energia">100%</span></div>
+                    <div class="barra-progreso"><div id="bar-energia" class="llenado energia-bar"></div></div>
+                </div>
+            </div>
+
+            <div class="pantalla-bicho" id="pantalla-nucleo">
+                <div id="bicho-sprite" class="bicho-avatar">◤(¬‿¬)◥</div>
+                <div id="bicho-msg" class="bicho-status-text">ESTADO: COMPORTAMIENTO ESTABLE</div>
+            </div>
+
+            <div class="consola-logs" id="log-box">
+                </div>
+
+            <div class="panel-controles">
+                <button id="btn-nut" class="btn-terminal" onclick="accionar('nutricion', 12, 'INYECTANDO NUTRIENTES COMPUESTOS...')">[ ALIMENTAR ]</button>
+                <button id="btn-con" class="btn-terminal" onclick="accionar('contencion', 15, 'ESTABILIZANDO CAMPO MAGNÉTICO...')">[ FORZAR_CAMPO ]</button>
+                <button id="btn-ene" class="btn-terminal" onclick="accionar('energia', 25, 'REGENERANDO CELDAS DE RESPALDO...')">[ CARGAR_BATERÍA ]</button>
+                
+                <button id="btn-emergency" class="btn-terminal btn-urgente" onclick="recalibrarSystem()">[ RECALIBRAR FRECUENCIA DE TERMINAL ]</button>
+            </div>
+
+        </div>
+    </section>
+
+    <div class="contenedor-btn-navegacion">
+        <a href="../" class="btn-terminal">[ ABANDONAR_ÁREA ]</a>
+    </div>
+
+    <script>
+        // 1. Base de datos
+        let state = JSON.parse(localStorage.getItem('agor_scp_complex_data')) || {
+            nutricion: 100,
+            contencion: 100,
+            energia: 100,
+            ultimoAcceso: Date.now()
+        };
+
+        let systemGlitch = false; // Flag para congelar botones por falla informática
+
+        // Algoritmo offline avanzado
+        const segs = Math.floor((Date.now() - state.ultimoAcceso) / 1000);
+        if (segs > 0) {
+            const drenaje = Math.floor(segs / 15);
+            state.nutricion = Math.max(0, state.nutricion - drenaje);
+            state.contencion = Math.max(0, state.contencion - (drenaje * 1.5));
+            state.energia = Math.max(0, state.energia - drenaje);
+        }
+
+        // Agregar logs en consola interna
+        function registrarLog(mensaje) {
+            const time = new Date().toLocaleTimeString();
+            const logBox = document.getElementById('log-box');
+            logBox.innerHTML += `<div class="log-line">[${time}] ${mensaje}</div>`;
+            logBox.scrollTop = logBox.scrollHeight; // Auto scroll hacia abajo
+        }
+
+        // 2. Refresh visual de la terminal
+        function updateUI() {
+            state.ultimoAcceso = Date.now();
+            localStorage.setItem('agor_scp_complex_data', JSON.stringify(state));
+
+            // Actualizar porcentajes y barras
+            document.getElementById('num-nutricion').innerText = state.nutricion + '%';
+            document.getElementById('bar-nutricion').style.width = state.nutricion + '%';
+            document.getElementById('num-contencion').innerText = state.contencion + '%';
+            document.getElementById('bar-contencion').style.width = state.contencion + '%';
+            document.getElementById('num-energia').innerText = state.energia + '%';
+            document.getElementById('bar-energia').style.width = state.energia + '%';
+
+            const spr = document.getElementById('bicho-sprite');
+            const msg = document.getElementById('bicho-msg');
+            const alertBlink = document.getElementById('alert-blink');
+            const box = document.getElementById('pantalla-nucleo');
+
+            // --- ESCALADA DE AMENAZA (4 Niveles narrativos) ---
+            if (state.contencion === 0 || state.nutricion === 0) {
+                spr.innerText = "💀";
+                msg.innerText = "CRÍTICO: ENTIDAD EN RUPTURA INTERNA // SERVIDOR CAÍDO";
+                alertBlink.innerText = "❌ SISTEMA_APAGADO";
+                alertBlink.style.color = "#ff0000";
+                box.style.boxShadow = "inset 0 0 30px rgba(255,0,0,0.6)";
+            } else if (state.contencion < 25 || state.energia < 20) {
+                // Etapa Próxima a Escape
+                spr.innerText = "◤(◣_◢)◥";
+                msg.innerText = "AMENAZA ALTA: AGRESIVIDAD EXTREMA // IMPACTANDO VIDRIO";
+                alertBlink.innerText = "⚠️ DETECTADA BRECHA DE CONTENCIÓN";
+                alertBlink.style.color = "#ff0000";
+                box.style.boxShadow = "inset 0 0 20px rgba(255, 0, 0, 0.3)";
+            } else if (state.contencion < 55 || state.nutricion < 55) {
+                // Etapa de Alerta Inicial
+                spr.innerText = "◤(⚙_⚙)◥";
+                msg.innerText = "AMENAZA MEDIA: FLUCTUACIONES BIOLÓGICAS ANÓMALAS";
+                alertBlink.innerText = "🟨 COMPORTAMIENTO INESTABLE";
+                alertBlink.style.color = "#ffaa00";
+                box.style.boxShadow = "inset 0 0 15px rgba(255, 170, 0, 0.15)";
+            } else {
+                // Seguro
+                spr.innerText = "◤(¬‿¬)◥";
+                msg.innerText = "AMENAZA BAJA: ENTORNO CONTROLADO";
+                alertBlink.innerText = "🔴 MONITOR_ACTIVO";
+                alertBlink.style.color = "#ca630e";
+                box.style.boxShadow = "inset 0 0 15px rgba(202, 99, 14, 0.1)";
+            }
+        }
+
+        // 3. Sistema unificado de acciones
+        function accionar(parametro, incremento, logTxt) {
+            if (systemGlitch || (state.contencion === 0 && state.nutricion === 0)) return;
+            
+            state[parametro] = Math.min(100, state[parametro] + incremento);
+            registrarLog(logTxt);
+            updateUI();
+        }
+
+        // 4. Mecánica Aleatoria de Hackeo / Descalibración
+        function triggerGlitch() {
+            if (systemGlitch || (state.contencion === 0 && state.nutricion === 0)) return;
+            
+            systemGlitch = true;
+            registrarLog("❌ ALERTA: ERROR DE ENLACE. DESCALIBRACIÓN EN BOTONES.");
+            
+            // Bloquear interfaz normal
+            document.getElementById('btn-nut').disabled = true;
+            document.getElementById('btn-con').disabled = true;
+            document.getElementById('btn-ene').disabled = true;
+            
+            // Mostrar botón de crisis
+            document.getElementById('glitch-banner').style.display = "block";
+            document.getElementById('btn-emergency').style.display = "inline-block";
+        }
+
+        function recalibrarSystem() {
+            systemGlitch = false;
+            registrarLog("⚙️ SISTEMA RECALIBRADO CON ÉXITO. CONTROLES RESTAURADOS.");
+            
+            // Desbloquear botones
+            document.getElementById('btn-nut').disabled = false;
+            document.getElementById('btn-con').disabled = false;
+            document.getElementById('btn-ene').disabled = false;
+            
+            // Ocultar elementos de crisis
+            document.getElementById('glitch-banner').style.display = "none";
+            document.getElementById('btn-emergency').style.display = "none";
+            updateUI();
+        }
+
+        // 5. El Reloj de Simulación (Gameloop constante)
+        setInterval(() => {
+            if (state.nutricion > 0 && state.contencion > 0) {
+                // Si hay batería, el desgaste es normal
+                if (state.energia > 0) {
+                    state.nutricion = Math.max(0, state.nutricion - 1);
+                    state.contencion = Math.max(0, state.contencion - 2);
+                    state.energia = Math.max(0, state.energia - 1);
+                } else {
+                    // SI NO HAY BATERÍA, el campo EM cae 3 veces más rápido por falta de energía
+                    state.nutricion = Math.max(0, state.nutricion - 2);
+                    state.contencion = Math.max(0, state.contencion - 6);
+                    if(Math.random() < 0.2) registrarLog("⚠️ ALERTA INTERNA: APAGÓN EN LOS FILTROS DE CONTENCIÓN EM.");
+                }
+                
+                // Probabilidad del 6% cada ciclo de que la consola falle (Glitch)
+                if (Math.random() < 0.06 && !systemGlitch) {
+                    triggerGlitch();
+                }
+
+                updateUI();
+            }
+        }, 5000); // Actualiza cada 5 segundos de juego activo
+
+        // Logs de bienvenida y carga inicial
+        registrarLog("CONECTANDO CON EL NÚCLEO BIOLÓGICO AGOR-01...");
+        registrarLog("RECOPILANDO ESTADÍSTICAS PASIVAS DEL NAVEGADOR...");
+        updateUI();
+        registrarLog("SISTEMA ESTABLECIDO. MONITOREO INICIADO.");
+    </script>
+
+</body>
+</html>
