@@ -10,6 +10,17 @@
 
     <style>
         /* Estilos base e integración estética con Agorlab */
+        body {
+            background-color: #0d0d0d;
+            color: #ca630e;
+            font-family: 'Courier New', Courier, monospace;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
         .logo-container { 
             display: block;
             text-align: center; 
@@ -30,324 +41,306 @@
             margin: 0 auto 20px auto; 
             padding: 0 20px; 
             text-align: center; 
-            box-sizing: border-box; 
+            box-sizing: border-box; \
         }
         
         .prologo p { 
-            font-family: 'Courier New', Courier, monospace; 
             color: #ca630e; 
             font-size: 1.1rem; 
             letter-spacing: 1px; 
+            margin: 5px 0;
         }
 
-        /* --- TERMINAL COMPLEJA TIPO POU --- */
-        .sala-contencion { 
-            display: block;
+        /* --- CONTENEDOR DE LA TERMINAL INTERACTIVA --- */
+        .terminal-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
             width: 100%;
-            max-width: 750px; 
-            margin: 0 auto 30px auto; 
-            padding: 0 20px; 
-            box-sizing: border-box; 
-        }
-        
-        .marco-observacion { 
-            border: 2px dashed #ca630e; 
-            background-color: rgba(10, 10, 10, 0.95); 
-            padding: 25px; 
-            box-shadow: 0 0 35px rgba(202, 99, 14, 0.3); 
-        }
-        
-        .cabecera-terminal { 
-            display: flex; 
-            justify-content: space-between; 
-            font-family: 'Courier New', Courier, monospace; 
-            color: #ca630e; 
-            font-size: 0.85rem; 
-            margin-bottom: 20px; 
-            border-bottom: 1px dashed #ca630e; 
-            padding-bottom: 10px; 
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        
-        .parpado { 
-            animation: blinker 1.5s linear infinite; 
-        }
-        @keyframes blinker { 
-            50% { opacity: 0.2; } 
-        }
-
-        /* --- SISTEMA DE BARRAS DE ESTADO --- */
-        .grid-monitores { 
-            display: grid; 
-            grid-template-columns: 1fr 1fr; 
-            gap: 15px; 
-            margin-bottom: 20px; 
-        }
-        @media (max-width: 600px) { 
-            .grid-monitores { grid-template-columns: 1fr; } 
-        }
-        
-        .monitor-bloque { 
-            text-align: left; 
-        }
-        
-        .monitor-label { 
-            font-family: 'Courier New', Courier, monospace; 
-            color: #ca630e; 
-            font-size: 0.9rem; 
-            margin-bottom: 4px; 
-            display: flex; 
-            justify-content: space-between; 
-            font-weight: bold; 
-        }
-        
-        .barra-progreso { 
-            background: rgba(0, 0, 0, 0.7); 
-            border: 1px solid #ca630e; 
-            height: 14px; 
-            overflow: hidden; 
-        }
-        
-        .llenado { 
-            background: #ca630e; 
-            height: 100%; 
-            width: 100%; 
-            transition: width 0.4s ease; 
-        }
-
-        /* --- DISPLAY DEL ALIEN --- */
-        .pantalla-bicho { 
-            background: rgba(5, 5, 5, 0.98); 
-            border: 1px solid #ca630e; 
-            padding: 30px; 
-            margin-bottom: 15px; 
-            min-height: 180px; 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: center; 
-            align-items: center; 
-            position: relative; 
-        }
-        
-        .bicho-avatar { 
-            font-family: 'Courier New', Courier, monospace; 
-            font-size: 3.5rem; 
-            color: #ca630e; 
-            white-space: pre; 
-            line-height: 1.1; 
-            margin-bottom: 15px; 
-            font-weight: bold; 
-            text-shadow: 0 0 10px rgba(202, 99, 14, 0.5); 
-        }
-        
-        .bicho-status-text { 
-            font-family: 'Courier New', Courier, monospace; 
-            color: #ca630e; 
-            font-size: 0.95rem; 
-            font-weight: bold; 
-            text-align: center; 
-            max-width: 90%; 
-        }
-        
-        .ia-thoughts { 
-            font-family: 'Courier New', Courier, monospace; 
-            color: #cf7123; 
-            font-size: 0.9rem; 
-            margin-top: 12px; 
-            border-top: 1px dotted #ca630e; 
-            width: 100%; 
-            padding-top: 10px; 
-            text-align: center; 
-        }
-
-        /* --- CONTENEDOR DE ENTRADA MIXTA (ID + CHAT) --- */
-        .consola-entrada {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-        }
-
-        .bloque-id {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-family: 'Courier New', Courier, monospace;
-            color: #ca630e;
-            font-size: 0.9rem;
-        }
-
-        .interfaz-chat {
-            flex-grow: 1;
-            display: flex;
-            gap: 10px;
-        }
-
-        .input-chat {
-            background: #050505;
-            border: 1px solid #ca630e;
-            color: #ca630e;
-            font-family: 'Courier New', Courier, monospace;
-            padding: 8px 12px;
-            font-size: 0.9rem;
+            max-width: 950px;
             box-sizing: border-box;
         }
-        .input-chat:focus {
-            outline: none;
-            box-shadow: 0 0 5px rgba(202, 99, 14, 0.5);
+
+        @media (max-width: 768px) {
+            .terminal-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
-        /* --- CONSOLA DE LOGS (HISTORIAL) --- */
-        .consola-logs { 
-            background: rgba(0, 0, 0, 0.8); 
-            border: 1px solid #ca630e; 
-            height: 80px; 
-            padding: 8px; 
-            margin-bottom: 20px; 
-            overflow-y: hidden; 
-            text-align: left; 
-            box-sizing: border-box; 
-        }
-        
-        .log-line { 
-            font-family: 'Courier New', Courier, monospace; 
-            color: rgba(202, 99, 14, 0.6); 
-            font-size: 0.75rem; 
-            margin-bottom: 2px; 
+        .panel-box {
+            border: 1px dashed #ca630e;
+            padding: 20px;
+            background-color: #121212;
+            display: flex;
+            flex-direction: column;
         }
 
-        /* --- BOTONES DE INTERACCIÓN --- */
-        .panel-controles { 
-            display: flex; 
-            justify-content: center; 
-            gap: 10px; 
-            flex-wrap: wrap; 
+        /* Visualización del Ente */
+        .display-ente {
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            min-height: 250px;
         }
-        
-        .btn-terminal { 
-            display: inline-block; 
-            color: #ca630e; 
-            text-decoration: none; 
-            font-family: 'Courier New', Courier, monospace; 
-            font-weight: bold; 
-            font-size: 0.9rem; 
-            border: 1px dashed #ca630e; 
-            padding: 8px 14px; 
-            background-color: transparent; 
-            transition: all 0.15s ease-in-out; 
+
+        #bicho-sprite {
+            font-size: 3.5rem;
+            margin: 20px 0;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-shadow: 0 0 10px rgba(202, 99, 14, 0.5);
         }
-        
-        .btn-terminal:hover:not(:disabled) { 
-            background-color: #ca630e; 
-            color: rgb(226, 226, 226); 
-            cursor: pointer; 
+
+        #bicho-msg {
+            font-weight: bold;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+        }
+
+        #bicho-thoughts {
+            font-style: italic;
+            color: #a34f0b;
+            font-size: 0.95rem;
+            border-top: 1px solid #261405;
+            padding-top: 10px;
+            width: 100%;
+        }
+
+        /* Barras de Estado */
+        .stat-row {
+            margin-bottom: 15px;
+        }
+
+        .stat-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .meter-container {
+            width: 100%;
+            height: 12px;
+            border: 1px solid #ca630e;
+            background-color: #1a0c02;
+            overflow: hidden;
+        }
+
+        .meter-fill {
+            height: 100%;
+            background-color: #ca630e;
+            width: 100%;
+            transition: width 0.3s ease;
+        }
+
+        /* Botones y Controles */
+        .control-pad {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn-terminal {
+            background-color: transparent;
+            border: 1px dashed #ca630e;
+            color: #ca630e;
+            padding: 10px;
+            font-family: 'Courier New', Courier, monospace;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .btn-terminal:hover:not(:disabled) {
+            background-color: #ca630e;
+            color: #0d0d0d;
         }
 
         .btn-terminal:disabled {
-            border-color: #444;
-            color: #444;
+            border-color: #402004;
+            color: #402004;
             cursor: not-allowed;
         }
 
-        .btn-revivir {
-            border-color: #ffaa00;
-            color: #ffaa00;
-            display: none; 
-        }
-        .btn-revivir:hover {
-            background-color: #ffaa00;
-            color: #000;
+        #ctrl-revive {
+            grid-column: 1 / -1;
+            border-style: solid;
+            background-color: #3d1403;
+            color: #ff6a1a;
+            border-color: #ff6a1a;
         }
 
-        .contenedor-btn-navegacion {
-            text-align: center;
-            width: 100%;
-            margin-top: 20px;
-            margin-bottom: 40px;
+        /* Input y Logs */
+        .input-panel {
+            grid-column: 1 / -1;
+        }
+
+        .config-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            gap: 10px;
+            font-size: 0.9rem;
+        }
+
+        .terminal-input {
+            background-color: #000;
+            border: 1px solid #ca630e;
+            color: #ca630e;
+            padding: 8px 12px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1rem;
+        }
+
+        #operator-name {
+            width: 150px;
+        }
+
+        .chat-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        #chat-input {
+            flex-grow: 1;
+        }
+
+        #log-box {
+            height: 120px;
+            background-color: #050505;
+            border: 1px solid #261405;
+            margin-top: 15px;
+            padding: 10px;
+            font-size: 0.8rem;
+            overflow-y: auto;
+            color: #8c450a;
+        }
+
+        .log-line {
+            margin-bottom: 4px;
+            line-height: 1.2;
+        }
+
+        .meta-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: #8c450a;
+            border-top: 1px dashed #261405;
+            margin-top: 15px;
+            padding-top: 10px;
+        }
+
+        .btn-volver {
+            margin-top: 30px;
+            text-decoration: none;
+            color: #8c450a;
+            font-size: 0.9rem;
+            border-bottom: 1px solid transparent;
+        }
+        .btn-volver:hover {
+            color: #ca630e;
+            border-bottom: 1px solid #ca630e;
         }
     </style>
-
-    <script type="importmap">
-      {
-        "imports": {
-          "@google/generative-ai": "https://esm.run/@google/generative-ai"
-        }
-      }
-    </script>
 </head>
-<body> 
+<body>
 
     <div class="logo-container">
         <img src="../logo_agorlab.png" alt="Agorlab" class="logo-site">
     </div>
     
-    <section class="prologo">
-        <p><strong>[ NÚCLEO DE CONTENCIÓN INTELIGENTE AGOR-LOGIC v4.0 ]</strong></p>
-    </section>
-
-    <section class="sala-contencion">
-        <div class="marco-observacion">
-            
-            <div class="cabecera-terminal">
-                <div>ESTADO: <span id="ia-status">MUTACIÓN_LARVAL</span> // <span id="ia-edad">0</span> EXP</div>
-                <div>💥 FALLAS: <span id="ia-muertes" style="color: #ffaa00; font-weight: bold;">0</span></div>
-                <div id="alert-blink" class="parpado">🔴 COGNICIÓN_GEMINI_ONLINE</div>
-            </div>
-            
-            <div class="grid-monitores">
-                <div class="monitor-bloque">
-                    <div class="monitor-label"><span>🧬 NUTRICIÓN (Hambre):</span><span id="num-nutricion">100%</span></div>
-                    <div class="barra-progreso"><div id="bar-nutricion" class="llenado"></div></div>
-                </div>
-                <div class="monitor-bloque">
-                    <div class="monitor-label"><span>🛡️ INTEGRIDAD DE CELDA:</span><span id="num-contencion">100%</span></div>
-                    <div class="barra-progreso"><div id="bar-contencion" class="llenado"></div></div>
-                </div>
-                <div class="monitor-bloque">
-                    <div class="monitor-label"><span>🧠 REFRESH (Diversión):</span><span id="num-estimulacion">100%</span></div>
-                    <div class="barra-progreso"><div id="bar-estimulacion" class="llenado"></div></div>
-                </div>
-                <div class="monitor-bloque">
-                    <div class="monitor-label"><span>☣️ FILTRADO (Higiene):</span><span id="num-higiene">100%</span></div>
-                    <div class="barra-progreso"><div id="bar-higiene" class="llenado"></div></div>
-                </div>
-            </div>
-
-            <div class="pantalla-bicho">
-                <div id="bicho-sprite" class="bicho-avatar">◤(¬‿¬)◥</div>
-                <div id="bicho-msg" class="bicho-status-text">PROCESANDO ENTORNO...</div>
-                <div id="bicho-thoughts" class="ia-thoughts">"Estableciendo enlace de conciencia..."</div>
-            </div>
-
-            <div class="consola-entrada">
-                <div class="bloque-id">
-                    <span>[OP_ID]:</span>
-                    <input type="text" id="operator-name" class="input-chat" style="width: 110px;" placeholder="Tu Nombre" onchange="actualizarNombre(this.value)">
-                </div>
-                <div class="interfaz-chat">
-                    <input type="text" id="chat-input" class="input-chat" style="width: 100%;" placeholder="Escribile un comando o mensaje al Ente..." onkeydown="if(event.key === 'Enter') enviarMensajeIA()">
-                    <button id="btn-enviar-chat" class="btn-terminal" onclick="enviarMensajeIA()">[ TRANSMITIR ]</button>
-                </div>
-            </div>
-
-            <div class="consola-logs" id="log-box"></div>
-
-            <div class="panel-controles">
-                <button id="ctrl-nut" class="btn-terminal" onclick="accionar('nutricion', 20, 'ALIMENTACIÓN INYECTADA')">[ INYECTAR_DIETA ]</button>
-                <button id="ctrl-con" class="btn-terminal" onclick="accionar('contencion', 25, 'SISTEMA DE FUERZA REFORZADO')">[ REFORZAR_CELDA ]</button>
-                <button id="ctrl-est" class="btn-terminal" onclick="accionar('estimulacion', 30, 'IMPULSO NEURONAL ENVIADO')">[ REFRESCAR_RAM ]</button>
-                <button id="ctrl-hig" class="btn-terminal" onclick="accionar('higiene', 35, 'CÁMARA DEPURADA')">[ DEPURAR_TOXINAS ]</button>
-                
-                <button id="ctrl-revive" class="btn-terminal btn-revivir" onclick="revivirAlien()">[ REGENERAR_SECUENCIA_ADN ]</button>
-            </div>
-
-        </div>
-    </section>
-
-    <div class="contenedor-btn-navegacion">
-        <a href="../" class="btn-terminal" id="btn-cerrar">[ CERRAR_TERMINAL ]</a>
+    <div class="prologo">
+        <p><strong>[ SUB-SISTEMA DE BIOCONTENCIÓN AUTÓNOMA V3 ]</strong></p>
+        <p>Monitoreo y secuenciación del espécimen orgánico-digital en tiempo real.</p>
     </div>
+
+    <div class="terminal-grid">
+        
+        <div class="panel-box display-ente">
+            <div id="ia-status">PROCESANDO_NÚCLEO...</div>
+            <div id="bicho-sprite">◤(✦_✦)◥</div>
+            <div id="bicho-msg">INICIALIZANDO COMUNICACIÓN...</div>
+            <div id="bicho-thoughts">"Estableciendo sinapsis con los filtros de la terminal..."</div>
+        </div>
+
+        <div class="panel-box">
+            <div class="stat-row">
+                <div class="stat-labels">
+                    <span>⚡ NUTRICIÓN (CICLOS_CPU)</span>
+                    <span id="num-nutricion">100%</span>
+                </div>
+                <div class="meter-container">
+                    <div id="bar-nutricion" class="meter-fill"></div>
+                </div>
+            </div>
+
+            <div class="stat-row">
+                <div class="stat-labels">
+                    <span>🛡️ CELDA DE CONTENCIÓN (CAMPO_EM)</span>
+                    <span id="num-contencion">100%</span>
+                </div>
+                <div class="meter-container">
+                    <div id="bar-contencion" class="meter-fill"></div>
+                </div>
+            </div>
+
+            <div class="stat-row">
+                <div class="stat-labels">
+                    <span>🌀 REFRESH COGNITIVO (DIVERSIÓN)</span>
+                    <span id="num-estimulacion">100%</span>
+                </div>
+                <div class="meter-container">
+                    <div id="bar-estimulacion" class="meter-fill"></div>
+                </div>
+            </div>
+
+            <div class="stat-row">
+                <div class="stat-labels">
+                    <span>🧼 FILTRADO DE DATOS (HIGIENE)</span>
+                    <span id="num-higiene">100%</span>
+                </div>
+                <div class="meter-container">
+                    <div id="bar-higiene" class="meter-fill"></div>
+                </div>
+            </div>
+
+            <div class="control-pad">
+                <button id="ctrl-nut" class="btn-terminal" onclick="accionar('nutricion', 15, '⚡ ENERGÍA INYECTADA')">[ ALIMENTAR ]</button>
+                <button id="ctrl-con" class="btn-terminal" onclick="accionar('contencion', 20, '🛡️ REFUERZO DE CONTENCIÓN ELECTROMAGNÉTICA')">[ ESTABILIZAR ]</button>
+                <button id="ctrl-est" class="btn-terminal" onclick="accionar('estimulacion', 15, '🌀 PURGA DE MEMORIA / OPTIMIZACIÓN')">[ ENTRETENER ]</button>
+                <button id="ctrl-hig" class="btn-terminal" onclick="accionar('higiene', 20, '🧼 FILTRADO DE BIO-RESIDUOS COMPLETO')">[ SANITIZAR ]</button>
+                <button id="ctrl-revive" class="btn-terminal" onclick="revivirAlien()" style="display: none;">[ RE-SECUENCIAR CÓDIGO GENÉTICO (REVIVIR) ]</button>
+            </div>
+        </div>
+
+        <div class="panel-box input-panel">
+            <div class="config-row">
+                <label for="operator-name">ID_OPERADOR_ACTUAL:</label>
+                <input type="text" id="operator-name" class="terminal-input" value="Demián" onchange="actualizarNombre(this.value)" placeholder="Operador...">
+                <span style="margin-left: auto;" id="ia-edad">0 EXP</span>
+            </div>
+
+            <div class="chat-row">
+                <input type="text" id="chat-input" class="terminal-input" placeholder="Transmitir impulsos eléctricos u órdenes al ente..." onkeydown="if(event.key === 'Enter') enviarMensajeIA()">
+                <button class="btn-terminal" onclick="enviarMensajeIA()">[ TRANSMITIR ]</button>
+            </div>
+
+            <div id="log-box"></div>
+
+            <div class="meta-info">
+                <span>AGORLAB MULTIVERSE OS V3.0</span>
+                <span>BAJAS_REGISTRADAS: <span id="ia-muertes">0</span></span>
+            </div>
+        </div>
+
+    </div>
+
+    <a href="/" class="btn-volver">< VOLVER_AL_NÚCLEO_AGORLAB</a>
 
     <script type="module">
         import { GoogleGenerativeAI } from "@google/generative-ai";
@@ -358,8 +351,7 @@
         let aiModel = null;
         if (GEMINI_API_KEY.trim() !== "") {
             const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-            
-            // 🛠️ FIX 1: Forzamos la versión v1 de producción para evitar el 404
+            // 🛠️ FIX 1: Forzamos versión v1 de producción para esquivar el error 404 de la v1beta
             aiModel = genAI.getGenerativeModel(
                 { model: "gemini-1.5-flash" },
                 { apiVersion: "v1" }
@@ -367,8 +359,8 @@
         }
 
         let yaMurioEnSesion = false;
-        
-        // 🛠️ FIX 2: Limpiamos la función para que devuelva valores puros y no rompa por la TDZ
+
+        // 🛠️ FIX 2: Función base aislada pura (evita la Zona Muerta Temporal / TDZ)
         function obtenerEstadoBase() {
             return {
                 nutricion: 100, 
@@ -382,30 +374,16 @@
             };
         }
 
-        // Ahora sí, si no hay datos previos, se inicializa de forma segura
+        // Inicialización segura del estado del bicho
         let state = JSON.parse(localStorage.getItem('agor_pou_v3_data')) || obtenerEstadoBase();
         
-        // Parches de campos obligatorios en el estado estructurado
+        // Parches de campos obligatorios en el almacenamiento estructurado
         if (state.muertes === undefined) state.muertes = 0;
         if (!state.nombreUsuario) state.nombreUsuario = "Demián"; 
 
-        // ... El resto de tus funciones (window.registrarLog, window.updateUI, etc.) siguen igual de acá en adelante
-
-        function obtenerEstadoBase() {
-            return {
-                nutricion: 100, 
-                contencion: 100, 
-                estimulacion: 100, 
-                higiene: 100, 
-                experiencia: 0, 
-                muertes: state ? state.muertes : 0, 
-                nombreUsuario: state ? state.nombreUsuario : "Demián",
-                ultimoAcceso: Date.now()
-            };
-        }
-
         window.registrarLog = function(msg) {
             const logBox = document.getElementById('log-box');
+            if (!logBox) return;
             logBox.innerHTML += `<div class="log-line">[${new Date().toLocaleTimeString()}] ${msg}</div>`;
             logBox.scrollTop = logBox.scrollHeight;
         }
@@ -418,7 +396,7 @@
             window.registrarLog(`ID_OPERADOR ACTUALIZADO: "${state.nombreUsuario.toUpperCase()}"`);
         }
 
-        // Drenaje offline pasivo
+        // Drenaje offline pasivo al cerrar la pestaña
         const segs = Math.floor((Date.now() - state.ultimoAcceso) / 1000);
         if (segs > 0 && state.contencion > 0 && state.nutricion > 0) {
             const d = Math.floor(segs / 90); 
@@ -432,20 +410,19 @@
         window.enviarMensajeIA = async function() {
             const inputElement = document.getElementById('chat-input');
             const thoughtsBox = document.getElementById('bicho-thoughts');
-            const userMsg = inputElement.value.trim();
+            const userMsg = inputElement ? inputElement.value.trim() : "";
 
             if (!userMsg) return;
             if (state.contencion === 0 || state.nutricion === 0) return;
 
             inputElement.value = "";
-            thoughtsBox.innerText = "...Procesando impulsos eléctricos...";
+            if (thoughtsBox) thoughtsBox.innerText = "...Procesando impulsos eléctricos...";
             window.registrarLog(`${state.nombreUsuario.toUpperCase()}: "${userMsg}"`);
 
             let etapa = "LARVA";
             if (state.experiencia >= 150) etapa = "ENTE_ALFA";
             else if (state.experiencia >= 50) etapa = "MUTANTE";
 
-            // Pasamos el nombre dinámico actual en el System Prompt
             const sistemaContexto = `
             Actúas como un ente cibernético alienígena atrapado en una celda de biocontención digital en un laboratorio llamado Agorlab. 
             Eres consciente de tu estado actual en tiempo real. Tus métricas actuales son:
@@ -466,19 +443,20 @@
                 const result = await aiModel.generateContent(promptFinal);
                 const responseText = await result.response.text();
                 
-                thoughtsBox.innerText = `"${responseText.trim()}"`;
+                if (thoughtsBox) thoughtsBox.innerText = `"${responseText.trim()}"`;
             } catch (error) {
                 console.error(error);
-                thoughtsBox.innerText = '"[CONEXIÓN_INTERRUMPIDA: Filtros cognitivos saturados]"';
+                if (thoughtsBox) thoughtsBox.innerText = '"[CONEXIÓN_INTERRUMPIDA: Filtros cognitivos saturados]"';
             }
         }
 
         window.generarPensamientoAutomatico = function(mood, etapa) {
             const thoughtsBox = document.getElementById('bicho-thoughts');
+            if (!thoughtsBox) return;
             const fallbacks = {
                 "MUERTO": ["La simulación ha terminado.", "Esperando re-secuenciación genética..."],
                 "CRÍTICO": ["Siento el frío del vidrio cediendo...", "Presión crítica en la celda EM."],
-                "INESTABLE": ["Tus barreras tienen fugas de memoria.", "La frecuencia EM oscila. Me gusta."],
+                "INESTABLE": ["Tus barriers tienen fugas de memoria.", "La frecuencia EM oscila. Me gusta."],
                 "SUCIO": ["Los residuos de datos saturan mi piel.", "Demasiados procesos basura flotando."],
                 "HAMBRIENTO": ["Consumiendo ciclos libres de CPU...", "Mi núcleo demanda bytes."],
                 "ABURRIDO": ["Tus clicks son monótonos.", "Exijo una rutina más veloz."],
@@ -492,40 +470,55 @@
             state.ultimoAcceso = Date.now();
             localStorage.setItem('agor_pou_v3_data', JSON.stringify(state));
 
-            // Fijamos el valor del input del operador al cargar
             if(document.getElementById('operator-name')) {
                 document.getElementById('operator-name').value = state.nombreUsuario;
             }
 
-            document.getElementById('num-nutricion').innerText = state.nutricion + '%';
-            document.getElementById('bar-nutricion').style.width = state.nutricion + '%';
-            document.getElementById('num-contencion').innerText = state.contencion + '%';
-            document.getElementById('bar-contencion').style.width = state.contencion + '%';
-            document.getElementById('num-estimulacion').innerText = state.estimulacion + '%';
-            document.getElementById('bar-estimulacion').style.width = state.estimulacion + '%';
-            document.getElementById('num-higiene').innerText = state.higiene + '%';
-            document.getElementById('bar-higiene').style.width = state.higiene + '%';
-            document.getElementById('ia-edad').innerText = state.experiencia + ' EXP';
-            document.getElementById('ia-muertes').innerText = state.muertes;
+            if(document.getElementById('num-nutricion')) document.getElementById('num-nutricion').innerText = state.nutricion + '%';
+            if(document.getElementById('bar-nutricion')) document.getElementById('bar-nutricion').style.width = state.nutricion + '%';
+            if(document.getElementById('num-contencion')) document.getElementById('num-contencion').innerText = state.contencion + '%';
+            if(document.getElementById('bar-contencion')) document.getElementById('bar-contencion').style.width = state.contencion + '%';
+            if(document.getElementById('num-estimulacion')) document.getElementById('num-estimulacion').innerText = state.estimulacion + '%';
+            if(document.getElementById('bar-estimulacion')) document.getElementById('bar-estimulacion').style.width = state.estimulacion + '%';
+            if(document.getElementById('num-higiene')) document.getElementById('num-higiene').innerText = state.higiene + '%';
+            if(document.getElementById('bar-higiene')) document.getElementById('bar-higiene').style.width = state.higiene + '%';
+            if(document.getElementById('ia-edad')) document.getElementById('ia-edad').innerText = state.experiencia + ' EXP';
+            if(document.getElementById('ia-muertes')) document.getElementById('ia-muertes').innerText = state.muertes;
 
             let etapa = "LARVA";
             let tagEtapa = "MUTACIÓN_LARVAL";
             if (state.experiencia >= 150) { etapa = "ENTE_ALFA"; tagEtapa = "ENTE_ALFA_NÚCLEO"; }
             else if (state.experiencia >= 50) { etapa = "MUTANTE"; tagEtapa = "SINTETIZADOR_MUTANTE"; }
-            document.getElementById('ia-status').innerText = tagEtapa;
+            if(document.getElementById('ia-status')) document.getElementById('ia-status').innerText = tagEtapa;
 
             const spr = document.getElementById('bicho-sprite');
             const msg = document.getElementById('bicho-msg');
             let mood = "PERFECTO";
 
+            if (!spr || !msg) return;
+
             if (state.contencion === 0 || state.nutricion === 0) {
                 spr.innerText = "💀"; msg.innerText = "SISTEMA COLAPSADO: ENTIDAD INERTE"; mood = "MUERTO";
-                if (!yaMurioEnSesion) { state.muertes += 1; yaMurioEnSesion = true; localStorage.setItem('agor_pou_v3_data', JSON.stringify(state)); document.getElementById('ia-muertes').innerText = state.muertes; window.registrarLog("⚠️ ALERTA: EXPERIMENTO FALLIDO REGISTRADO."); }
-                document.getElementById('ctrl-nut').disabled = true; document.getElementById('ctrl-con').disabled = true; document.getElementById('ctrl-est').disabled = true; document.getElementById('ctrl-hig').disabled = true; document.getElementById('ctrl-revive').style.display = "inline-block";
+                if (!yaMurioEnSesion) { 
+                    state.muertes += 1; 
+                    yaMurioEnSesion = true; 
+                    localStorage.setItem('agor_pou_v3_data', JSON.stringify(state)); 
+                    if(document.getElementById('ia-muertes')) document.getElementById('ia-muertes').innerText = state.muertes; 
+                    window.registrarLog("⚠️ ALERTA: EXPERIMENTO FALLIDO REGISTRADO."); 
+                }
+                if(document.getElementById('ctrl-nut')) document.getElementById('ctrl-nut').disabled = true; 
+                if(document.getElementById('ctrl-con')) document.getElementById('ctrl-con').disabled = true; 
+                if(document.getElementById('ctrl-est')) document.getElementById('ctrl-est').disabled = true; 
+                if(document.getElementById('ctrl-hig')) document.getElementById('ctrl-hig').disabled = true; 
+                if(document.getElementById('ctrl-revive')) document.getElementById('ctrl-revive').style.display = "inline-block";
                 window.generarPensamientoAutomatico(mood, etapa);
             } else {
                 yaMurioEnSesion = false;
-                document.getElementById('ctrl-nut').disabled = false; document.getElementById('ctrl-con').disabled = false; document.getElementById('ctrl-est').disabled = false; document.getElementById('ctrl-hig').disabled = false; document.getElementById('ctrl-revive').style.display = "none";
+                if(document.getElementById('ctrl-nut')) document.getElementById('ctrl-nut').disabled = false; 
+                if(document.getElementById('ctrl-con')) document.getElementById('ctrl-con').disabled = false; 
+                if(document.getElementById('ctrl-est')) document.getElementById('ctrl-est').disabled = false; 
+                if(document.getElementById('ctrl-hig')) document.getElementById('ctrl-hig').disabled = false; 
+                if(document.getElementById('ctrl-revive')) document.getElementById('ctrl-revive').style.display = "none";
 
                 if (state.contencion < 20) { spr.innerText = (etapa === "ENTE_ALFA") ? "◤(◣__◢)◥" : (etapa === "MUTANTE" ? "☠_☠" : "◤(✖_✖)◥"); msg.innerText = "ESTADO: CRÍTICO // RIESGO DE BRECHA"; mood = "CRÍTICO"; }
                 else if (state.contencion < 50) { spr.innerText = (etapa === "ENTE_ALFA") ? "◤(⎔_⎔)◥" : "◤(⚙_⚙)◥"; msg.innerText = "ESTADO: AGITADO // CAMPO EM INESTABLE"; mood = "INESTABLE"; }
@@ -536,7 +529,8 @@
                     if (etapa === "ENTE_ALFA") spr.innerText = "◤(👁‿👁)◥"; else if (etapa === "MUTANTE") spr.innerText = "◤(🧠_🧠)◥"; else spr.innerText = "◤(¬‿¬)◥";
                     msg.innerText = "ESTADO: NOMINAL // PROTOCOLOS SEGUROS"; mood = "PERFECTO";
                 }
-                if(document.getElementById('bicho-thoughts').innerText.startsWith('"Estableciendo') || document.getElementById('bicho-thoughts').innerText.startsWith('"Entorno') || document.getElementById('bicho-thoughts').innerText.includes('Esperando instrucciones')) {
+                const thoughtsBox = document.getElementById('bicho-thoughts');
+                if (thoughtsBox && (thoughtsBox.innerText.startsWith('"Estableciendo') || thoughtsBox.innerText.startsWith('"Entorno') || thoughtsBox.innerText.includes('Esperando instrucciones'))) {
                     window.generarPensamientoAutomatico(mood, etapa);
                 }
             }
@@ -562,6 +556,7 @@
             window.updateUI();
         }
 
+        // Loop de degradación de stats cada 10 segundos
         setInterval(() => {
             if (state.nutricion > 0 && state.contencion > 0) {
                 state.nutricion = Math.max(0, state.nutricion - 1);
