@@ -9,56 +9,227 @@
     <link rel="stylesheet" href="/style.css">
 
     <style>
-        .logo-container { text-align: center; margin: 20px 0; }
-        .logo-site { max-width: 950px; width: 100%; height: auto; }
-        .prologo { max-width: 700px; margin: 0 auto 20px auto; padding: 0 20px; text-align: center; box-sizing: border-box; }
-        .prologo p { font-family: 'Courier New', Courier, monospace; color: #ca630e; font-size: 1.1rem; letter-spacing: 1px; }
+        /* Estilos base e integración estética con Agorlab */
+        .logo-container { 
+            display: block;
+            text-align: center; 
+            margin-top: 20px;
+            margin-bottom: 20px; 
+        }
+        
+        .logo-site { 
+            max-width: 950px; 
+            width: 100%; 
+            height: auto; 
+        }
+        
+        .prologo { 
+            display: block;
+            width: 100%;
+            max-width: 700px; 
+            margin: 0 auto 20px auto; 
+            padding: 0 20px; 
+            text-align: center; 
+            box-sizing: border-box; 
+        }
+        
+        .prologo p { 
+            font-family: 'Courier New', Courier, monospace; 
+            color: #ca630e; 
+            font-size: 1.1rem; 
+            letter-spacing: 1px; 
+        }
 
         /* --- TERMINAL COMPLEJA TIPO POU --- */
-        .sala-contencion { max-width: 750px; margin: 0 auto 30px auto; padding: 0 20px; box-sizing: border-box; }
-        .marco-observacion { border: 2px dashed #ca630e; background-color: rgba(10, 10, 10, 0.95); padding: 25px; box-shadow: 0 0 35px rgba(202, 99, 14, 0.3); }
+        .sala-contencion { 
+            display: block;
+            width: 100%;
+            max-width: 750px; 
+            margin: 0 auto 30px auto; 
+            padding: 0 20px; 
+            box-sizing: border-box; 
+        }
         
-        .cabecera-terminal { display: flex; justify-content: space-between; font-family: 'Courier New', Courier, monospace; color: #ca630e; font-size: 0.85rem; margin-bottom: 20px; border-bottom: 1px dashed #ca630e; padding-bottom: 10px; }
-        .parpado { animation: blinker 1.5s linear infinite; }
-        @keyframes blinker { 50% { opacity: 0.2; } }
-
-        /* --- SISTEMA DE 4 BARRAS (ESTILO POU) --- */
-        .grid-monitores { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-        @media (max-width: 600px) { .grid-monitores { grid-template-columns: 1fr; } }
-        .monitor-bloque { text-align: left; }
-        .monitor-label { font-family: 'Courier New', Courier, monospace; color: #ca630e; font-size: 0.9rem; margin-bottom: 4px; display: flex; justify-content: space-between; font-weight: bold; }
+        .marco-observacion { 
+            border: 2px dashed #ca630e; 
+            background-color: rgba(10, 10, 10, 0.95); 
+            padding: 25px; 
+            box-shadow: 0 0 35px rgba(202, 99, 14, 0.3); 
+        }
         
-        .barra-progreso { background: rgba(0, 0, 0, 0.7); border: 1px solid #ca630e; height: 14px; overflow: hidden; }
-        .llenado { background: #ca630e; height: 100%; width: 100%; transition: width 0.4s ease; }
-
-        /* --- DISPLAY INTELIGENTE DEL SUJETO --- */
-        .pantalla-bicho { background: rgba(5, 5, 5, 0.98); border: 1px solid #ca630e; padding: 30px; margin-bottom: 15px; min-height: 180px; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; }
-        .bicho-avatar { font-family: 'Courier New', Courier, monospace; font-size: 3.8rem; color: #ca630e; white-space: pre; line-height: 1.1; margin-bottom: 15px; font-weight: bold; text-shadow: 0 0 10px rgba(202, 99, 14, 0.5); }
-        .bicho-status-text { font-family: 'Courier New', Courier, monospace; color: #ca630e; font-size: 0.95rem; font-weight: bold; text-align: center; max-width: 90%; }
+        .cabecera-terminal { 
+            display: flex; 
+            justify-content: space-between; 
+            font-family: 'Courier New', Courier, monospace; 
+            color: #ca630e; 
+            font-size: 0.85rem; 
+            margin-bottom: 20px; 
+            border-bottom: 1px dashed #ca630e; 
+            padding-bottom: 10px; 
+        }
         
-        /* Sub-pantalla para los pensamientos de la IA */
-        .ia-thoughts { font-family: 'Courier New', Courier, monospace; color: #8a450b; font-size: 0.8rem; margin-top: 10px; font-style: italic; border-top: 1px dotted #444; width: 100%; padding-top: 8px; text-align: center; }
+        .parpado { 
+            animation: blinker 1.5s linear infinite; 
+        }
+        @keyframes blinker { 
+            50% { opacity: 0.2; } 
+        }
 
-        /* --- CONSOLA DE LOGS --- */
-        .consola-logs { background: rgba(0, 0, 0, 0.8); border: 1px solid #ca630e; height: 80px; padding: 8px; margin-bottom: 20px; overflow-y: hidden; text-align: left; box-sizing: border-box; }
-        .log-line { font-family: 'Courier New', Courier, monospace; color: rgba(202, 99, 14, 0.6); font-size: 0.75rem; margin-bottom: 2px; }
+        /* --- SISTEMA DE 4 BARRAS --- */
+        .grid-monitores { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 15px; 
+            margin-bottom: 20px; 
+        }
+        @media (max-width: 600px) { 
+            .grid-monitores { grid-template-columns: 1fr; } 
+        }
+        
+        .monitor-bloque { 
+            text-align: left; 
+        }
+        
+        .monitor-label { 
+            font-family: 'Courier New', Courier, monospace; 
+            color: #ca630e; 
+            font-size: 0.9rem; 
+            margin-bottom: 4px; 
+            display: flex; 
+            justify-content: space-between; 
+            font-weight: bold; 
+        }
+        
+        .barra-progreso { 
+            background: rgba(0, 0, 0, 0.7); 
+            border: 1px solid #ca630e; 
+            height: 14px; 
+            overflow: hidden; 
+        }
+        
+        .llenado { 
+            background: #ca630e; 
+            height: 100%; 
+            width: 100%; 
+            transition: width 0.4s ease; 
+        }
+
+        /* --- DISPLAY DEL ALIEN --- */
+        .pantalla-bicho { 
+            background: rgba(5, 5, 5, 0.98); 
+            border: 1px solid #ca630e; 
+            padding: 30px; 
+            margin-bottom: 15px; 
+            min-height: 180px; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            position: relative; 
+        }
+        
+        .bicho-avatar { 
+            font-family: 'Courier New', Courier, monospace; 
+            font-size: 3.8rem; 
+            color: #ca630e; 
+            white-space: pre; 
+            line-height: 1.1; 
+            margin-bottom: 15px; 
+            font-weight: bold; 
+            text-shadow: 0 0 10px rgba(202, 99, 14, 0.5); 
+        }
+        
+        .bicho-status-text { 
+            font-family: 'Courier New', Courier, monospace; 
+            color: #ca630e; 
+            font-size: 0.95rem; 
+            font-weight: bold; 
+            text-align: center; 
+            max-width: 90%; 
+        }
+        
+        /* Pensamientos reales generados por la IA */
+        .ia-thoughts { 
+            font-family: 'Courier New', Courier, monospace; 
+            color: #8a450b; 
+            font-size: 0.8rem; 
+            margin-top: 10px; 
+            font-style: italic; 
+            border-top: 1px dotted #444; 
+            width: 100%; 
+            padding-top: 8px; 
+            text-align: center; 
+        }
+
+        /* --- CONSOLA DE LOGS (HISTORIAL) --- */
+        .consola-logs { 
+            background: rgba(0, 0, 0, 0.8); 
+            border: 1px solid #ca630e; 
+            height: 80px; 
+            padding: 8px; 
+            margin-bottom: 20px; 
+            overflow-y: hidden; 
+            text-align: left; 
+            box-sizing: border-box; 
+        }
+        
+        .log-line { 
+            font-family: 'Courier New', Courier, monospace; 
+            color: rgba(202, 99, 14, 0.6); 
+            font-size: 0.75rem; 
+            margin-bottom: 2px; 
+        }
 
         /* --- BOTONES DE INTERACCIÓN --- */
-        .panel-controles { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
-        .btn-terminal { display: inline-block; color: #ca630e; text-decoration: none; font-family: 'Courier New', Courier, monospace; font-weight: bold; font-size: 0.9rem; border: 1px dashed #ca630e; padding: 8px 14px; background-color: transparent; transition: all 0.15s ease-in-out; }
-        .btn-terminal:hover { background-color: #ca630e; color: rgb(226, 226, 226); cursor: pointer; }
+        .panel-controles { 
+            display: flex; 
+            justify-content: center; 
+            gap: 10px; 
+            flex-wrap: wrap; 
+        }
+        
+        .btn-terminal { 
+            display: inline-block; 
+            color: #ca630e; 
+            text-decoration: none; 
+            font-family: 'Courier New', Courier, monospace; 
+            font-weight: bold; 
+            font-size: 0.9rem; 
+            border: 1px dashed #ca630e; 
+            padding: 8px 14px; 
+            background-color: transparent; 
+            transition: all 0.15s ease-in-out; 
+        }
+        
+        .btn-terminal:hover { 
+            background-color: #ca630e; 
+            color: rgb(226, 226, 226); 
+            cursor: pointer; 
+        }
+
+        .contenedor-btn-navegacion {
+            text-align: center;
+            width: 100%;
+            margin-top: 20px;
+            margin-bottom: 40px;
+        }
     </style>
 </head>
 <body> 
 
-    <div class="logo-container"><img src="../logo_agorlab.png" alt="Agorlab" class="logo-site"></div>
-    <section class="prologo><p><strong>[ NÚCLEO DE CONTENCIÓN INTELIGENTE AGOR-LOGIC ]</strong></p></section>
+    <div class="logo-container">
+        <img src="../logo_agorlab.png" alt="Agorlab" class="logo-site">
+    </div>
+    
+    <section class="prologo">
+        <p><strong>[ NÚCLEO DE CONTENCIÓN INTELIGENTE AGOR-LOGIC ]</strong></p>
+    </section>
 
     <section class="sala-contencion">
         <div class="marco-observacion">
             
             <div class="cabecera-terminal">
-                <div>CORE_V2 // COGNICIÓN: <span id="ia-status">PROCESADOR_ESTÁNDAR</span></div>
+                <div>CORE_V2 // COGNICIÓN: <span id="ia-status">PROCESANDO...</span></div>
                 <div id="alert-blink" class="parpado">🔴 MONITOREO_ACTIVO</div>
             </div>
             
@@ -99,30 +270,28 @@
         </div>
     </section>
 
-    <div class="contenedor-btn-navegacion" style="text-align: center;"><a href="../" class="btn-terminal">[ CERRAR_TERMINAL ]</a></div>
+    <div class="contenedor-btn-navegacion">
+        <a href="../" class="btn-terminal" id="btn-cerrar">[ CERRAR_TERMINAL ]</a>
+    </div>
 
     <script>
-        // 1. Estado expandido de simulación Pou
+        // 1. Estado persistente en LocalStorage
         let state = JSON.parse(localStorage.getItem('agor_pou_ia_data')) || {
-            nutricion: 100, contencion: 100, estimulacion: 100, higiene: 100, ultimoAcceso: Date.now()
+            nutricion: 100, 
+            contencion: 100, 
+            estimulacion: 100, 
+            higiene: 100, 
+            ultimoAcceso: Date.now()
         };
 
-        let aiModel = null;
-
-        // Inicializar la IA del navegador si existe
-        async function initAI() {
-            if (window.ai && window.ai.assistant) {
-                try {
-                    aiModel = await window.ai.assistant.create();
-                    document.getElementById('ia-status').innerText = "IA_LOCAL_PROMPT_CONECTADA";
-                    registrarLog("🤖 CONEXIÓN ESTABLECIDA CON LA IA INTERNA DEL NAVEGADOR.");
-                } catch(e) {
-                    console.log("IA deshabilitada o requiere flags.");
-                }
-            }
+        // Agregar eventos de texto al log inferior
+        function registrarLog(msg) {
+            const logBox = document.getElementById('log-box');
+            logBox.innerHTML += `<div class="log-line">[${new Date().toLocaleTimeString()}] ${msg}</div>`;
+            logBox.scrollTop = logBox.scrollHeight;
         }
 
-        // Drenaje pasivo por tiempo offline
+        // Simular drenaje pasivo basado en el tiempo que la web estuvo cerrada
         const segs = Math.floor((Date.now() - state.ultimoAcceso) / 1000);
         if (segs > 0) {
             const d = Math.floor(segs / 15);
@@ -132,32 +301,70 @@
             state.higiene = Math.max(0, state.higiene - d);
         }
 
-        function registrarLog(msg) {
-            const logBox = document.getElementById('log-box');
-            logBox.innerHTML += `<div class="log-line">[${new Date().toLocaleTimeString()}] ${msg}</div>`;
-            logBox.scrollTop = logBox.scrollHeight;
-        }
-
-        // Generar un monólogo o análisis del bicho vía IA o Matriz de respaldo
-        async function actualizarPensamiento(mood) {
+        // --- SISTEMA AUTÓNOMO DE CONEXIÓN CON IA PÚBLICA (DuckDuckGo Chat Api) ---
+        async function consultarIAPublica(mood) {
             const thoughtsBox = document.getElementById('bicho-thoughts');
-            const prompt = `Actúa como un alien inteligente atrapado en un laboratorio digital. Tu estado actual es: ${mood}. Escribe una sola frase corta (menos de 10 palabras) en primera persona, fría, cínica o misteriosa sobre tu cautiverio.`;
+            document.getElementById('ia-status').innerText = "CONNECTING_IA...";
 
-            if (aiModel) {
-                try {
-                    let response = await aiModel.prompt(prompt);
-                    thoughtsBox.innerText = `"${response.trim()}"`;
+            const promptSystem = "Actúa como un alien cibernético inteligente atrapado en un laboratorio informático. Tu humor actual es: " + mood + ". Escribe un pensamiento extremadamente corto (máximo 6 palabras) en primera persona. Sé cínico, misterioso o frío. No uses emojis, no uses comillas.";
+
+            try {
+                // Hacemos el bypass usando el proxy CORS inverso para producción en Netlify
+                const urlProxy = "https://cors-anywhere.herokuapp.com/https://duckduckgo.com/duckchat/v1/chat";
+                
+                // Paso 1: Inicializar handshake para capturar el token de estado x-vqd-accept
+                const initRes = await fetch("https://cors-anywhere.herokuapp.com/https://duckduckgo.com/duckchat/v1/status", {
+                    headers: { "x-requested-with": "XMLHttpRequest" }
+                });
+                const vLine = initRes.headers.get("x-vqd-accept");
+
+                // Paso 2: POST a la API pública ejecutando Llama-3 de forma libre
+                const response = await fetch(urlProxy, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "x-vqd-4": vLine,
+                        "x-requested-with": "XMLHttpRequest"
+                    },
+                    body: JSON.stringify({
+                        model: "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo",
+                        messages: [{ role: "user", content: promptSystem }]
+                    })
+                });
+
+                const textData = await response.text();
+                
+                // Parsear la respuesta tipo SSE Stream que devuelve DuckChat
+                const lineas = textData.split("\n");
+                let respuestaFinal = "";
+                for (let line of lineas) {
+                    if (line.startsWith("data: ")) {
+                        const dataStr = line.replace("data: ", "").trim();
+                        if (dataStr === "[DONE]") break;
+                        try {
+                            const parsed = JSON.parse(dataStr);
+                            if (parsed.message) respuestaFinal += parsed.message;
+                        } catch(e) {}
+                    }
+                }
+
+                if (respuestaFinal.trim().length > 0) {
+                    thoughtsBox.innerText = `"${respuestaFinal.trim()}"`;
+                    document.getElementById('ia-status').innerText = "LLAMA_3_CONNECTED";
                     return;
-                } catch (e) { /* Fallback si falla el thread */ }
+                }
+            } catch (error) {
+                console.log("Error de CORS/Red con IA pública. Activando sub-matriz interna.");
             }
 
-            // Matriz lógica tradicional de respaldo (Muchos diálogos detallados)
+            // --- MATRIZ RETROALIMENTADA LOCAL (FALLBACK INMEDIATO SI FALLA LA RED) ---
+            document.getElementById('ia-status').innerText = "MATRIZ_LOCAL_ALIVE";
             const fallbacks = {
                 "MUERTO": ["La simulación ha terminado.", "Vacío absoluto.", "Brecha total de datos."],
                 "CRÍTICO": ["Siento el frío del hardware fallando...", "Liberando mi secuencia binaria...", "Últimos ciclos de conciencia."],
                 "ABURRIDO": ["Tus comandos son primitivos.", "Exijo más procesamiento.", "Este código me asfixia."],
-                "SUCIO": ["Los residuos de datos me queman.", "Limpia la memoria caché.", "Huelo a silicio quemado."],
-                "HAMBRIENTO": ["Mi núcleo energético reclama datos.", "Consumiendo recursos del sistema...", "Hambre cuántica."],
+                "SUCIO": ["Los residuos de datos me queman.", "Limpia la memoria cache.", "Huelo a silicio quemado."],
+                "HAMBRIENTO": ["Mi núcleo energético reclama datos.", "Consumiendo recursos de CPU...", "Hambre cuántica."],
                 "INESTABLE": ["Veo fisuras en tu cortafuegos...", "La libertad está a un pulso electromagnético.", "No podrás contenerme siempre."],
                 "PERFECTO": ["Entorno óptimo. Por ahora.", "Monitoreando al humano que me observa.", "Datos fluyendo en armonía."]
             };
@@ -165,11 +372,12 @@
             thoughtsBox.innerText = `"${lista[Math.floor(Math.random() * lista.length)]}"`;
         }
 
-        // 2. Sistema Avanzado de 7 Expresiones Dinámicas
+        // 2. Manejo de las 7 Expresiones Avanzadas del Tamagotchi
         function updateUI() {
             state.ultimoAcceso = Date.now();
             localStorage.setItem('agor_pou_ia_data', JSON.stringify(state));
 
+            // Volcar datos numéricos y barras
             document.getElementById('num-nutricion').innerText = state.nutricion + '%';
             document.getElementById('bar-nutricion').style.width = state.nutricion + '%';
             document.getElementById('num-contencion').innerText = state.contencion + '%';
@@ -183,7 +391,7 @@
             const msg = document.getElementById('bicho-msg');
             let actualMood = "PERFECTO";
 
-            // Árbol lógico de los 7 estados
+            // Árbol de decisiones de estados jerárquicos
             if (state.contencion === 0 || state.nutricion === 0) {
                 spr.innerText = "💀"; msg.innerText = "SISTEMA COLAPSADO: ENTIDAD INERTE"; actualMood = "MUERTO";
             } else if (state.contencion < 20) {
@@ -191,18 +399,20 @@
             } else if (state.contencion < 50) {
                 spr.innerText = "◤(⚙_⚙)◥"; msg.innerText = "ESTADO: AGITADO // CAMPO DESESTABILIZADO"; actualMood = "INESTABLE";
             } else if (state.higiene < 35) {
-                spr.innerText = "◤(⏳_⏳)◥"; msg.innerText = "ESTADO: CONTAMINADO // PREPARANDO PURGA TOXICA"; actualMood = "SUCIO";
+                spr.innerText = "◤(⏳_⏳)◥"; msg.innerText = "ESTADO: CONTAMINADO // PREPARANDO PURGA TÓXICA"; actualMood = "SUCIO";
             } else if (state.nutricion < 40) {
-                spr.innerText = "◤(º﹃º)◥"; msg.innerText = "ESTADO: DEFICIT ENERGÉTICO // EXIGE ALIMENTO"; actualMood = "HAMBRIENTO";
+                spr.innerText = "◤(º﹃º)◥"; msg.innerText = "ESTADO: DÉFICIT ENERGÉTICO // EXIGE ALIMENTO"; actualMood = "HAMBRIENTO";
             } else if (state.estimulacion < 40) {
                 spr.innerText = "◤(🫥_🫥)◥"; msg.innerText = "ESTADO: APATÍA NEURONAL // ENTORNO ABURRIDO"; actualMood = "ABURRIDO";
             } else {
                 spr.innerText = "◤(¬‿¬)◥"; msg.innerText = "ESTADO: NOMINAL // CONDICIONES ÓPTIMAS"; actualMood = "PERFECTO";
             }
 
-            actualizarPensamiento(actualMood);
+            // Invocar la actualización cognitiva de la IA
+            consultarIAPublica(actualMood);
         }
 
+        // Registrar las interacciones de los botones
         function accionar(param, inc, log) {
             if (state.contencion === 0 || state.nutricion === 0) return;
             state[param] = Math.min(100, state[param] + inc);
@@ -210,7 +420,7 @@
             updateUI();
         }
 
-        // Gameloop dinámico de degradación (Cada 5 segundos drena stats)
+        // Loop activo de desgaste en tiempo de juego (cada 5 segundos)
         setInterval(() => {
             if (state.nutricion > 0 && state.contencion > 0) {
                 state.nutricion = Math.max(0, state.nutricion - 1);
@@ -221,8 +431,7 @@
             }
         }, 5000);
 
-        // Encendido inicial
-        initAI();
+        // Inicialización del sistema al cargar pantalla
         registrarLog("SISTEMA BIOMÉTRICO ASIGNADO A SUB-RAÍZ /PET.");
         updateUI();
     </script>
