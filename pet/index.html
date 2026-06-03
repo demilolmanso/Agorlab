@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agorlab | Sala de Contención - Espécimen Virtual</title>
+    <title>Agorlab | Terminal de Contención - Espécimen Virtual</title>
     
     <link rel="icon" type="image/png" href="/favicon.png">
     
     <link rel="stylesheet" href="/style.css">
 
     <style>
-        /* Estilos heredados y adaptados de agorlab.com main index */
+        /* Estilos heredados del main index de agorlab.com */
         .logo-container {
             display: block;
             text-align: center;
@@ -28,7 +28,7 @@
             display: block;
             width: 100%;
             max-width: 750px;    
-            margin: 0 auto 30px auto; 
+            margin: 0 auto 20px auto; 
             padding: 0 20px;     
             text-align: center;  
             box-sizing: border-box;
@@ -43,24 +43,23 @@
             margin-bottom: 1rem; 
         }
 
-        /* --- CONTENEDOR DE LA SALA DE CONTENCIÓN (Juego GDevelop) --- */
+        /* --- CONSOLA DEL TAMAGOTCHI NATIVO --- */
         .sala-contencion {
             display: block;
             width: 100%;
-            max-width: 840px; /* Ajustado al estándar de pantallas de GDevelop */
-            margin: 0 auto 40px auto;
+            max-width: 650px;
+            margin: 0 auto 30px auto;
             padding: 0 20px;
             box-sizing: border-box;
             text-align: center;
         }
 
-        /* Estructura estilo Terminal de Observación / Cámara Hiperbárica */
         .marco-observacion {
-            border: 2px dashed #ca630e; /* Manteniendo la estética de tus bordes */
-            background-color: rgba(20, 20, 20, 0.5);
-            padding: 15px;
-            box-shadow: 0 0 15px rgba(202, 99, 14, 0.15);
-            position: relative;
+            border: 2px dashed #ca630e;
+            background-color: rgba(20, 20, 20, 0.8);
+            padding: 25px;
+            box-shadow: 0 0 20px rgba(202, 99, 14, 0.15);
+            border-radius: 4px;
         }
 
         .status-terminal {
@@ -68,73 +67,76 @@
             color: #ca630e;
             font-size: 0.9rem;
             text-align: left;
-            margin-bottom: 10px;
+            margin-bottom: 20px;
             letter-spacing: 1px;
-            text-transform: uppercase;
         }
 
-        /* El iframe que renderiza tu export de GDevelop */
-        .ventana-bicho {
-            width: 100%;
-            /* Relación de aspecto estándar 16:9 para juegos web, se adapta en celular */
-            aspect-ratio: 16 / 9; 
-            max-height: 450px;
-            border: 1px solid #ca630e;
-            background: #000;
-            display: block;
-        }
-
-        /* --- BOTONERÍA DE NAVEGACIÓN --- */
-        .contenedor-btn-navegacion {
-            text-align: center;
-            width: 100%;
-            margin-top: 30px;
-            margin-bottom: 40px;
-        }
-
-        .btn-regresar {
-            display: inline-block;
-            color: #ca630e;
-            text-decoration: none;
-            font-family: 'Courier New', Courier, monospace;
-            font-weight: bold;
-            font-size: 1.1rem;
-            letter-spacing: 1px;
-            border: 1px dashed #ca630e;
-            padding: 10px 20px;
-            background-color: transparent;
-            transition: all 0.2s ease-in-out;
-        }
-
-        .btn-regresar:hover {
-            background-color: #ca630e;
-            color: rgb(226, 226, 226);
-            box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.1);
-            cursor: pointer;
-        }
-
-        /* Animación sutil de parpadeo para la alerta de terminal */
         .parpado {
             animation: blinker 2s linear infinite;
         }
         @keyframes blinker {
             50% { opacity: 0.3; }
         }
-    </style>
-</head>
-<body> 
 
-    <div class="logo-container">
-        <img src="../logo_agorlab.png" alt="Agorlab" class="logo-site">
-    </div>
-    
-    <section class="prologo">
-        <p><strong>[ ÁREA_DE_CONTENCIÓN_AGOR-01 ]</strong></p>
-        <p>Estás observando un espécimen digital en cautiverio. Este entorno hiperbárico requiere monitoreo constante para evitar brechas en el servidor.</p>
-    </section>
+        /* --- MONITORES DE ESTADO (BARRAS) --- */
+        .panel-monitores {
+            margin-bottom: 25px;
+            text-align: left;
+        }
 
-    <section class="sala-contencion">
-        <div class="marco-observacion">
-            <div class="status-terminal">
-                ⚡ SISTEMA: ONLINE // <span class="parpado">🔴 MONITOREANDO_SUJETO</span>
-            </div>
+        .monitor-label {
+            font-family: 'Courier New', Courier, monospace;
+            color: #ca630e;
+            font-size: 1rem;
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .barra-progreso {
+            background: #222;
+            border: 1px solid #ca630e;
+            height: 16px;
+            margin-bottom: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .llenado {
+            background: #ca630e;
+            height: 100%;
+            width: 100%; /* Se maneja dinámicamente con JS */
+            transition: width 0.4s ease;
+        }
+
+        /* --- EL ESPÉCIMEN (RENDER RETRO) --- */
+        .pantalla-bicho {
+            background: #0d0d0d;
+            border: 1px solid #ca630e;
+            padding: 30px;
+            margin-bottom: 25px;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .bicho-avatar {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 3.5rem;
+            color: #ca630e;
+            white-space: pre;
+            line-height: 1;
+            margin-bottom: 15px;
+        }
+
+        .bicho-status-text {
+            font-family: 'Courier New', Courier, monospace;
+            color: #ca630e;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+
+        /* --- BOTONES DE ACCIÓN DE LA TERMINAL --- */
+        .
