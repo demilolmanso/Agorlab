@@ -41,7 +41,7 @@
             margin: 0 auto 20px auto; 
             padding: 0 20px; 
             text-align: center; 
-            box-sizing: border-box; \
+            box-sizing: border-box;
         }
         
         .prologo p { 
@@ -360,7 +360,7 @@
 
         let yaMurioEnSesion = false;
 
-        // 🛠️ FIX 2: Función base aislada pura (evita la Zona Muerta Temporal / TDZ)
+        // Función base aislada pura
         function obtenerEstadoBase() {
             return {
                 nutricion: 100, 
@@ -456,7 +456,7 @@
             const fallbacks = {
                 "MUERTO": ["La simulación ha terminado.", "Esperando re-secuenciación genética..."],
                 "CRÍTICO": ["Siento el frío del vidrio cediendo...", "Presión crítica en la celda EM."],
-                "INESTABLE": ["Tus barriers tienen fugas de memoria.", "La frecuencia EM oscila. Me gusta."],
+                "INESTABLE": ["Tus barreras tienen fugas de memoria.", "La frecuencia EM oscila. Me gusta."],
                 "SUCIO": ["Los residuos de datos saturan mi piel.", "Demasiados procesos basura flotando."],
                 "HAMBRIENTO": ["Consumiendo ciclos libres de CPU...", "Mi núcleo demanda bytes."],
                 "ABURRIDO": ["Tus clicks son monótonos.", "Exijo una rutina más veloz."],
