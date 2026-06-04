@@ -3,27 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agorlab - GBA Station</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Pokémon Esmeralda - GBA Player</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-style: border-box;
+        }
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #4ade80; /* Verde Esmeralda */
+            text-shadow: 0 0 10px rgba(74, 222, 128, 0.5);
+        }
+        /* Contenedor del emulador */
+        #game-container {
+            width: 640px;
+            height: 480px;
+            max-width: 100%;
+            background: #000;
+            border: 4px solid #34d399;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.7);
+        }
+        #emulator {
+            width: 100%;
+            height: 100%;
+        }
+        footer {
+            margin-top: 15px;
+            font-size: 0.8rem;
+            color: #666;
+        }
+    </style>
 </head>
 <body>
 
-    <div class="contenedor-emulador">
-        <div id="game"></div>
+    <h1>Pokémon Edición Esmeralda</h1>
+
+    <div id="game-container">
+        <div id="emulator"></div>
     </div>
 
-   <script>
-        EJS_player = '#game';
-        EJS_core = 'gba'; 
-        EJS_startOnLoaded = true; // Que arranque solo de una
-        EJS_pathtodata = 'https://cdn.emulatorjs.org/latest/data/'; 
-        EJS_language = 'en';
-        EJS_loadIcons = true;
+    <footer>Controles: Flechas (D-Pad) | Z (Botón A) | X (Botón B) | Shift (Select) | Enter (Start)</footer>
 
-        // LA RUTA REAL CORRECTA DESDE DONDE ESTÁ EL INDEX:
+    <script>
+        // Configuración global del emulador antes de cargar el script maestro
+        EJS_player = '#emulator';
+        EJS_core = 'gba'; // Sistema: Game Boy Advance
+        
+        // REQUISITO: Aquí va la ruta a tu archivo de Pokémon Esmeralda
         EJS_gameUrl = 'roms/esmeralda.gba'; 
+
+        // Rutas a los motores del emulador (usamos un CDN público y confiable)
+        EJS_pathtodata = 'https://cdn.jsdelivr.net/gh/EmulatorJS/EmulatorJS@latest/data/';
     </script>
     
-    <script src="https://cdn.emulatorjs.org/latest/data/loader.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/EmulatorJS/EmulatorJS@latest/data/loader.js"></script>
+
 </body>
 </html>
