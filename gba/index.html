@@ -6,85 +6,71 @@
     <title>Agorlab - GBA Station</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* Estilo rápido para el botón de carga manual si no arrastran */
-        .boton-cargar {
-            background: #2563eb;
-            color: white;
-            padding: 12px 24px;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            cursor: pointer;
-            margin-top: 20px;
-            transition: background 0.2s;
-        }
-        .boton-cargar:hover { background: #1d4ed8; }
-        #zona-drop {
+        .zona-interfaz {
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100%;
-            border: 3px dashed #444;
-            border-radius: 8px;
             padding: 20px;
+            text-align: center;
+        }
+        .boton-cargar {
+            background: #2563eb;
+            color: white;
+            padding: 14px 28px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
+            transition: all 0.2s;
+        }
+        .boton-cargar:hover { 
+            background: #1d4ed8; 
+            transform: translateY(-2px);
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
         }
     </style>
 </head>
 <body>
 
     <div class="contenedor-emulador">
-        <div id="zona-drop">
-            <p style="font-size: 18px; margin-bottom: 10px; color: #aaa;">Estación Game Boy Advance</p>
-            <p style="color: #666; text-align: center;">Arrastrá tu archivo Pokémon Esmeralda (.gba) acá adentro<br>o usá el botón de abajo:</p>
-            
-            <input type="file" id="file-input" accept=".gba,.gbc,.gb" style="display: none;">
-            <button class="boton-cargar" onclick="document.getElementById('file-input').click()">Seleccionar ROM</button>
+        <div id="pantalla-emulador" style="width: 100%; height: 100%;">
+            <div class="zona-interfaz">
+                <p style="font-size: 20px; font-weight: bold; margin-bottom: 10px; color: #fff;">Estación Game Boy Advance</p>
+                <p style="color: #888; font-size: 14px; max-width: 400px; line-height: 1.5;">
+                    Cargá tu archivo de Pokémon Esmeralda (.gba) para iniciar la consola virtual local.
+                </p>
+                
+                <input type="file" id="file-input" accept=".gba" style="display: none;">
+                <button class="boton-cargar" onclick="document.getElementById('file-input').click()">Cargar Pokémon Esmeralda</button>
+            </div>
         </div>
-        
-        <canvas id="canvas" style="display: none; width: 100%; height: 100%; object-fit: contain;"></canvas>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/gh/taisel/IodineGBA/core/Cartridge.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/taisel/IodineGBA/core/GBA.js"></script>
     <script>
-        // Script simple para procesar el archivo local sin servidores de por medio
-        const fileInput = document.getElementById('file-input');
-        const zonaDrop = document.getElementById('zona-drop');
-        const canvas = document.getElementById('canvas');
-
-        fileInput.addEventListener('change', handleFile, false);
-
-        function handleFile(e) {
+        document.getElementById('file-input').addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (!file) return;
 
             const reader = new FileReader();
             reader.onload = function(event) {
-                zonaDrop.style.display = 'none';
-                canvas.style.display = 'block';
-                
-                // Inicializa el motor de GBA local directamente en tu navegador
-                try {
-                    // Carga el binario crudo del juego saltándose errores de red
-                    window.gba = new GameBoyAdvance();
-                    gba.setCanvas(canvas);
-                    gba.loadRom(event.target.result);
-                    gba.start();
-                } catch(err) {
-                    alert("Error al ejecutar el juego: " + err.message);
-                }
+                const blob = new Blob([event.target.result], { type: 'application/octet-stream' });
+                const blobURL = URL.createObjectURL(blob);
+
+                // Inyectamos un emulador web limpio encapsulado vía iframe que se traga el blob local sin errores de definición
+                const contenedor = document.getElementById('pantalla-emulador');
+                contenedor.innerHTML = `<iframe src="https://emupedia.net/emupedia-data/emulators/gba/?rom=${encodeURIComponent(blobURL)}"></iframe>`;
             };
             reader.readAsArrayBuffer(file);
-        }
-
-        // Soporte para arrastrar y soltar en pantalla
-        window.addEventListener("dragover", e => e.preventDefault(), false);
-        window.addEventListener("drop", e => {
-            e.preventDefault();
-            fileInput.files = e.dataTransfer.files;
-            handleFile({ target: fileInput });
-        }, false);
+        });
     </script>
 
 </body>
