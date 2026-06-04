@@ -41,12 +41,28 @@
             color: rgb(226, 226, 226);
         }
 
+        /* Botón de navegación a contacto */
+        .btn-ir-contacto {
+            display: inline-block;
+            margin-top: 20px;
+            color: #ca630e;
+            text-decoration: none;
+            font-weight: bold;
+            border: 1px dashed #ca630e;
+            padding: 10px 20px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-ir-contacto:hover {
+            background-color: #ca630e;
+            color: rgb(226, 226, 226);
+        }
+
         .contenedor-tweets {
             max-width: 650px;
             margin: 0 auto;
         }
 
-        /* Estilo minimalista para cada tweet */
         .tweet-card {
             background-color: rgb(33, 19, 8);
             border-left: 4px solid #ca630e;
@@ -67,7 +83,6 @@
             white-space: pre-wrap;
         }
 
-        /* Estilo personalizado y hacker para tus links internos del texto */
         .tweet-contenido a {
             color: #ca630e;
             text-decoration: underline dotted;
@@ -88,7 +103,6 @@
             box-shadow: 2px 2px 0px #ca630e; 
         }
 
-        /* Contenedor adaptado para videos */
         .tweet-video-container {
             max-width: 100%;
             margin-top: 15px;
@@ -102,60 +116,13 @@
             width: 100%;
             display: block;
             border: none;
-            aspect-ratio: 16 / 9; /* Mantiene la proporción perfecta del reproductor */
+            aspect-ratio: 16 / 9;
         }
 
         .cargando {
             text-align: center;
             font-style: italic;
         }
-        .contenedor-contacto {
-    max-width: 650px;
-    margin: 40px auto;
-    padding: 20px;
-    border: 1px solid #ca630e;
-    background-color: rgba(33, 19, 8, 0.5);
-}
-
-.form-hacker {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    margin-top: 20px;
-}
-
-.form-hacker input, .form-hacker textarea {
-    background: transparent;
-    border: 1px solid #ca630e;
-    padding: 10px;
-    color: #ca630e;
-    font-family: 'Courier New', Courier, monospace;
-}
-
-.form-hacker label {
-    font-size: 0.9rem;
-    font-weight: bold;
-}
-
-.form-hacker textarea {
-    height: 100px;
-    resize: vertical;
-}
-        .btn-full {
-    width: 100%;
-    margin-top: 10px;
-    cursor: pointer;
-    background: transparent; /* Fondo transparente */
-    border: 1px dashed #ca630e; /* Borde punteado original */
-    color: rgb(226, 226, 226); /* Color blanco/gris claro */
-    font-family: 'Courier New', Courier, monospace;
-}
-
-/* Efecto al pasar el mouse */
-.btn-full:hover {
-    background-color: #ca630e;
-    color: rgb(226, 226, 226);
-}
     </style>
 </head>
 <body>
@@ -163,19 +130,9 @@
     <div class="header-blog">
         <h1>[ LAB_LOG ]</h1>
         <a href="../" class="btn-volver"><- Volver al inicio</a>
-    <section class="contenedor-contacto">
-    <h2 style="text-align: center; font-size: 1.2rem;">[ ENVIAR_MENSAJE_AL_LAB ]</h2>
-    
-    <form action="https://formspree.io/f/mrevgnbz" method="POST" class="form-hacker">
-        <label for="email">Tu correo:</label>
-        <input type="email" name="email" id="email" required placeholder="tu@email.com">
-
-        <label for="message">Mensaje:</label>
-        <textarea name="message" id="message" required placeholder="Escribe aquí tu aporte..."></textarea>
-
-       <button style="color: #8f4710" type="submit" class="btn-interactivo btn-full">[ ENVIAR_DATOS ]</button>
-    </form>
-</section>
+        <br>
+        <a href="/contacto/" class="btn-ir-contacto">[ IR_A_CONTACTO ]</a>
+    </div>
 
     <main class="contenedor-tweets" id="feed-tweets">
         <p class="cargando">Conectando con el laboratorio público...</p>
@@ -187,7 +144,6 @@
 
         const contenedor = document.getElementById('feed-tweets');
 
-        // Convierte texto plano con http/https en links reales HTML automáticamente
         function linkificarTexto(texto) {
             const urlRegex = /(https?:\/\/[^\s]+)/g;
             return texto.replace(urlRegex, function(url) {
@@ -207,83 +163,49 @@
 
                 const archivos = await respuesta.json();
                 contenedor.innerHTML = '';
-
                 archivos.reverse();
 
                 for (let archivo of archivos) {
                     if (archivo.name.endsWith('.md')) {
                         const resPost = await fetch(archivo.download_url);
                         const textoRaw = await resPost.text();
-
                         const partes = textoRaw.split('---');
+                        
                         if (partes.length >= 3) {
                             const metadata = partes[1];
                             const cuerpoRaw = partes.slice(2).join('---').trim();
-
-                            // Aplicamos la conversión de links al cuerpo de la publicación
                             const cuerpo = linkificarTexto(cuerpoRaw);
 
-                            // Extrae la fecha
                             const matchFecha = metadata.match(/date:\s*(.+)/);
                             let fechaFormateada = "Fecha desconocida";
-                            
                             if (matchFecha) {
                                 const d = new Date(matchFecha[1]);
                                 fechaFormateada = d.toLocaleDateString('es-AR', {
-                                    day: '2-digit',
-                                    month: '2-digit',
-                                    year: 'numeric',
-                                    hour: '2-digit',
-                                    minute: '2-digit'
+                                    day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'
                                 });
                             }
 
-                            // Extrae la foto
                             const matchFoto = metadata.match(/foto:\s*["']?([^"'\n\r]+)["']?/);
                             let fotoHtml = '';
                             if (matchFoto && matchFoto[1]) {
                                 fotoHtml = `<img src="${matchFoto[1].trim()}" class="tweet-foto" alt="Imagen del laboratorio">`;
                             }
 
-                            // Extrae el video (Tu lógica funcional intacta para Drive, Iframes e Iframe de YouTube)
                             const matchVideo = metadata.match(/video:\s*["']?([\s\S]*?)["']?(?=\n\w+:|$)/);
                             let videoHtml = '';
-
                             if (matchVideo && matchVideo[1] && matchVideo[1].trim() !== "") {
                                 let urlVideo = matchVideo[1].trim();
-
                                 if (urlVideo.includes('<iframe')) {
                                     videoHtml = `<div class="tweet-video-container">${urlVideo}</div>`;
-                                } 
-                                else if (urlVideo.includes('drive.google.com')) {
-                                    let idDrive = '';
-                                    if (urlVideo.includes('/d/')) {
-                                        idDrive = urlVideo.split('/d/')[1].split('/')[0];
-                                    } else if (urlVideo.includes('id=')) {
-                                        idDrive = urlVideo.split('id=')[1].split('&')[0];
-                                    }
-
-                                    if (idDrive) {
-                                        videoHtml = `
-                                            <div class="tweet-video-container">
-                                                <iframe src="https://drive.google.com/file/d/${idDrive}/preview" allow="autoplay"></iframe>
-                                            </div>
-                                        `;
-                                    }
-                                } 
-                                else {
-                                    videoHtml = `
-                                        <div class="tweet-video-container">
-                                            <video controls playsinline preload="metadata">
-                                                <source src="${urlVideo}" type="video/mp4">
-                                                Tu navegador no soporta reproducción de video.
-                                            </video>
-                                        </div>
-                                    `;
+                                } else if (urlVideo.includes('drive.google.com')) {
+                                    let idDrive = urlVideo.includes('/d/') ? urlVideo.split('/d/')[1].split('/')[0] : urlVideo.split('id=')[1].split('&')[0];
+                                    videoHtml = `<div class="tweet-video-container"><iframe src="https://drive.google.com/file/d/${idDrive}/preview" allow="autoplay"></iframe></div>`;
+                                } else {
+                                    videoHtml = `<div class="tweet-video-container"><video controls playsinline preload="metadata"><source src="${urlVideo}" type="video/mp4"></video></div>`;
                                 }
                             }
 
-                            const tweetHtml = `
+                            contenedor.innerHTML += `
                                 <article class="tweet-card">
                                     <div class="tweet-fecha">${fechaFormateada} hs</div>
                                     <div class="tweet-contenido">${cuerpo}</div>
@@ -291,17 +213,10 @@
                                     ${videoHtml}
                                 </article>
                             `;
-                            contenedor.innerHTML += tweetHtml;
                         }
                     }
                 }
-
-                if (contenedor.innerHTML === '') {
-                    contenedor.innerHTML = "<p class='cargando'>No se encontraron posteos válidos.</p>";
-                }
-
             } catch (error) {
-                console.error(error);
                 contenedor.innerHTML = "<p class='cargando'>Error al conectar con la bitácora.</p>";
             }
         }
