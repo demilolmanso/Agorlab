@@ -6,37 +6,18 @@
     <title>Agorlab - GBA Station</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        .zona-interfaz {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100%;
-            padding: 20px;
-            text-align: center;
-        }
-        .boton-cargar {
-            background: #2563eb;
-            color: white;
-            padding: 14px 28px;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 20px;
-            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
-            transition: all 0.2s;
-        }
-        .boton-cargar:hover { 
-            background: #1d4ed8; 
-            transform: translateY(-2px);
-        }
-        #screen {
+        .contenedor-completo {
             width: 100%;
             height: 100%;
-            max-height: 100%;
-            display: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #0d0d13;
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
             background: #000;
         }
     </style>
@@ -44,62 +25,10 @@
 <body>
 
     <div class="contenedor-emulador">
-        <div id="setup" class="zona-interfaz">
-            <p style="font-size: 20px; font-weight: bold; margin-bottom: 10px; color: #fff;">Estación GBA</p>
-            <p style="color: #888; font-size: 14px; max-width: 400px; line-height: 1.5;">
-                Seleccioná tu archivo de Pokémon Esmeralda (.gba) para ejecutarlo de forma local.
-            </p>
-            <input type="file" id="file" accept=".gba" style="display: none;">
-            <button class="boton-cargar" onclick="document.getElementById('file').click()">Seleccionar ROM</button>
+        <div class="contenedor-completo">
+            <iframe src="https://webretro.github.io/webretro/webretro.html?core=gba"></iframe>
         </div>
-
-        <canvas id="screen" id="canvas"></canvas>
     </div>
 
-    <script src="https://unpkg.com/gbajs@0.1.0/dist/util.js"></script>
-    <script src="https://unpkg.com/gbajs@0.1.0/dist/core.js"></script>
-    <script src="https://unpkg.com/gbajs@0.1.0/dist/arm.js"></script>
-    <script src="https://unpkg.com/gbajs@0.1.0/dist/thumb.js"></script>
-    <script src="https://unpkg.com/gbajs@0.1.0/dist/mmu.js"></script>
-    <script src="https://unpkg.com/gbajs@0.1.0/dist/io.js"></script>
-    <script src="https://unpkg.com/gbajs@0.1.0/dist/video.js"></script>
-    <script src="https://unpkg.com/gbajs@0.1.0/dist/audio.js"></script>
-    <script src="https://unpkg.com/gbajs@0.1.0/dist/savedata.js"></script>
-    <script src="https://unpkg.com/gbajs@0.1.0/dist/bios.js"></script>
-    <script src="https://unpkg.com/gbajs@0.1.0/dist/keypad.js"></script>
-
-    <script>
-        var gba;
-        try {
-            gba = new GameBoyAdvance();
-            gba.keypad.registerHandlers();
-        } catch (exception) {
-            gba = null;
-        }
-
-        if (gba) {
-            gba.setCanvas(document.getElementById('screen'));
-            
-            document.getElementById('file').addEventListener('change', function(e) {
-                var file = e.target.files[0];
-                if (!file) return;
-
-                var reader = new FileReader();
-                reader.onload = function(event) {
-                    document.getElementById('setup').style.display = 'none';
-                    document.getElementById('screen').style.display = 'block';
-                    
-                    gba.loadRomFromFile(file, function(err) {
-                        if (err) {
-                            alert("Error al cargar la ROM");
-                            return;
-                        }
-                        gba.run();
-                    });
-                };
-                reader.readAsArrayBuffer(file);
-            });
-        }
-    </script>
 </body>
 </html>
