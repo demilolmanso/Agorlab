@@ -82,3 +82,90 @@
         Flechas (D-Pad) | Z (Botón A) | X (Botón B) <br>
         Enter (Start) | Barra Espaciadora (Select) | A (Gatillo L) | S (Gatillo R)
     </div>
+
+    <script src="https://cdn.jsdelivr.net/gh/taisel/IodineGBA@master/IodineGBA/core/Cartridge.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/taisel/IodineGBA@master/IodineGBA/core/GBA.js"></script>
+
+    <script>
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+        const labelText = document.getElementById('label-text');
+        const canvas = document.getElementById('canvas');
+        
+        // Inicializar el motor amarrado al canvas
+        const gba = new GameBoyAdvance();
+        gba.setCanvas(canvas);
+
+        // Capturar la selección de archivo nativa del navegador
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFile(e.target.files[0]);
+            }
+        });
+
+        // Evitar que el click en el canvas intente re-abrir el buscador una vez jugando
+        dropZone.addEventListener('click', (e) => {
+            if (canvas.style.display === 'block') {
+                e.stopPropagation();
+                e.preventDefault();
+            }
+        });
+
+        // Soporte para arrastrar el archivo encima
+        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); });
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            if (e.dataTransfer.files.length > 0) {
+                handleFile(e.dataTransfer.files[0]);
+            }
+        });
+
+        function handleFile(file) {
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                // Intercambiar interfaz limpia
+                labelText.style.display = 'none';
+                canvas.style.display = 'block';
+                dropZone.style.borderStyle = 'solid';
+
+                // Inyectar binario de la ROM y arrancar
+                const romBuffer = new Uint8Array(event.target.result);
+                gba.loadRom(romBuffer);
+                gba.run();
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        // Mapeo de controles por teclado directo a la API de IodineGBA
+        const keys = {
+            38: gba.KEY_UP,
+            40: gba.KEY_DOWN,
+            37: gba.KEY_LEFT,
+            39: gba.KEY_RIGHT,
+            90: gba.KEY_A,        // Z -> A
+            88: gba.KEY_B,        // X -> B
+            13: gba.KEY_START,    // Enter -> Start
+            32: gba.KEY_SELECT,   // Espacio -> Select
+            65: gba.KEY_L,        // A -> L
+            83: gba.KEY_R         // S -> R
+        };
+
+        window.addEventListener('keydown', (e) => {
+            if (keys[e.keyCode] !== undefined) {
+                gba.keyDown(keys[e.keyCode]);
+                e.preventDefault();
+            }
+        });
+
+        window.addEventListener('keyup', (e) => {
+            if (keys[e.keyCode] !== undefined) {
+                gba.keyUp(keys[e.keyCode]);
+                e.preventDefault();
+            }
+        });
+    </script>
+
+</body>
+</html>
