@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GBA Player - Agorlab</title>
+    <title>GBA Player Nativo - Agorlab</title>
     <style>
         * {
             margin: 0;
@@ -26,7 +26,7 @@
             color: #10b981;
             text-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
         }
-        #drop-zone {
+        #box-container {
             width: 480px;
             height: 320px;
             max-width: 95vw;
@@ -38,9 +38,8 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            position: relative;
         }
-        canvas {
+        #game-screen {
             display: none;
             width: 100%;
             height: 100%;
@@ -55,11 +54,7 @@
             font-size: 0.85rem;
             color: #9ca3af;
             text-align: center;
-            line-height: 1.5;
             max-width: 480px;
-        }
-        input[type="file"] {
-            display: none;
         }
     </style>
 </head>
@@ -67,104 +62,98 @@
 
     <h1>Pokémon Edición Esmeralda</h1>
 
-    <div id="drop-zone" onclick="document.getElementById('file-input').click()">
-        <div id="label-text" style="text-align: center; padding: 20px;">
-            <p style="font-size: 1.1rem; margin-bottom: 8px; font-weight: bold;">Arrastra tu archivo Pokémon Esmeralda (.gba) aquí</p>
-            <p style="font-size: 0.85rem; color: #9ca3af;">O haz clic aquí para buscarlo en tu PC</p>
-        </div>
-        <canvas id="canvas"></canvas>
-    </div>
+    <input type="file" id="rom-chooser" accept=".gba" style="display: none;">
 
-    <input type="file" id="file-input" accept=".gba">
+    <div id="box-container" id="clickable-zone">
+        <div id="text-prompt" style="text-align: center; padding: 20px;">
+            <p style="font-size: 1.1rem; margin-bottom: 8px; font-weight: bold;">Haz clic aquí para seleccionar Pokémon Esmeralda</p>
+            <p style="font-size: 0.85rem; color: #9ca3af;">(Carga directa desde tu PC)</p>
+        </div>
+        <canvas id="game-screen"></canvas>
+    </div>
 
     <div class="controls">
-        <strong>Controles del Teclado:</strong><br>
-        Flechas (D-Pad) | Z (Botón A) | X (Botón B) <br>
-        Enter (Start) | Barra Espaciadora (Select) | A (Gatillo L) | S (Gatillo R)
+        <strong>Controles:</strong> Flechas (D-Pad) | Z (A) | X (B) | Enter (Start) | Espacio (Select)
     </div>
 
-    <script src="https://cdn.jsdelivr.net/gh/taisel/IodineGBA@master/IodineGBA/core/Cartridge.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/taisel/IodineGBA@master/IodineGBA/core/GBA.js"></script>
+    <script src="https://unpkg.com/@gregarius/gbajs@1.1.0/dist/gbajs.min.js"></script>
 
     <script>
-        const dropZone = document.getElementById('drop-zone');
-        const fileInput = document.getElementById('file-input');
-        const labelText = document.getElementById('label-text');
-        const canvas = document.getElementById('canvas');
-        
-        // Inicializar el motor amarrado al canvas
-        const gba = new GameBoyAdvance();
-        gba.setCanvas(canvas);
+        const chooser = document.getElementById('rom-chooser');
+        const zone = document.getElementById('box-container');
+        const promptText = document.getElementById('text-prompt');
+        const canvas = document.getElementById('game-screen');
+        let instance = null;
 
-        // Capturar la selección de archivo nativa del navegador
-        fileInput.addEventListener('change', (e) => {
-            if (e.target.files.length > 0) {
-                handleFile(e.target.files[0]);
+        // Forzar la apertura del explorador de archivos nativo al hacer click
+        zone.addEventListener('click', function() {
+            if (!instance) {
+                chooser.click();
             }
         });
 
-        // Evitar que el click en el canvas intente re-abrir el buscador una vez jugando
-        dropZone.addEventListener('click', (e) => {
-            if (canvas.style.display === 'block') {
-                e.stopPropagation();
-                e.preventDefault();
-            }
-        });
-
-        // Soporte para arrastrar el archivo encima
-        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); });
-        dropZone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            if (e.dataTransfer.files.length > 0) {
-                handleFile(e.dataTransfer.files[0]);
-            }
-        });
-
-        function handleFile(file) {
+        // Capturar cuando el usuario elige el juego
+        chooser.addEventListener('change', function(event) {
+            const file = event.target.files[0];
             if (!file) return;
 
             const reader = new FileReader();
-            reader.onload = function(event) {
-                // Intercambiar interfaz limpia
-                labelText.style.display = 'none';
+            reader.onload = function(e) {
+                promptText.style.display = 'none';
                 canvas.style.display = 'block';
-                dropZone.style.borderStyle = 'solid';
+                zone.style.borderStyle = 'solid';
 
-                // Inyectar binario de la ROM y arrancar
-                const romBuffer = new Uint8Array(event.target.result);
-                gba.loadRom(romBuffer);
-                gba.run();
+                try {
+                    // Inicialización limpia tras la interacción del usuario (así Chrome no bloquea por HTTP)
+                    instance = new GameBoyAdvance();
+                    instance.setCanvas(canvas);
+                    
+                    const romData = new Uint8Array(e.target.result);
+                    instance.loadRom(romData, function(err) {
+                        if (err) {
+                            alert("Error al cargar el archivo de juego.");
+                            return;
+                        }
+                        instance.run();
+                    });
+
+                    // Configurar el teclado una vez que el motor está vivo
+                    setupControls(instance);
+
+                } catch (error) {
+                    alert("Tu navegador bloqueó el inicio clásico. Intenta usar Firefox o activar HTTPS.");
+                    console.error(error);
+                }
             };
             reader.readAsArrayBuffer(file);
+        });
+
+        function setupControls(gba) {
+            const keys = {
+                38: gba.KEY_UP,
+                40: gba.KEY_DOWN,
+                37: gba.KEY_LEFT,
+                39: gba.KEY_RIGHT,
+                90: gba.KEY_A,
+                88: gba.KEY_B,
+                13: gba.KEY_START,
+                32: gba.KEY_SELECT
+            };
+
+            window.addEventListener('keydown', (e) => {
+                if (keys[e.keyCode] !== undefined) {
+                    gba.keyDown(keys[e.keyCode]);
+                    e.preventDefault();
+                }
+            });
+
+            window.addEventListener('keyup', (e) => {
+                if (keys[e.keyCode] !== undefined) {
+                    gba.keyUp(keys[e.keyCode]);
+                    e.preventDefault();
+                }
+            });
         }
-
-        // Mapeo de controles por teclado directo a la API de IodineGBA
-        const keys = {
-            38: gba.KEY_UP,
-            40: gba.KEY_DOWN,
-            37: gba.KEY_LEFT,
-            39: gba.KEY_RIGHT,
-            90: gba.KEY_A,        // Z -> A
-            88: gba.KEY_B,        // X -> B
-            13: gba.KEY_START,    // Enter -> Start
-            32: gba.KEY_SELECT,   // Espacio -> Select
-            65: gba.KEY_L,        // A -> L
-            83: gba.KEY_R         // S -> R
-        };
-
-        window.addEventListener('keydown', (e) => {
-            if (keys[e.keyCode] !== undefined) {
-                gba.keyDown(keys[e.keyCode]);
-                e.preventDefault();
-            }
-        });
-
-        window.addEventListener('keyup', (e) => {
-            if (keys[e.keyCode] !== undefined) {
-                gba.keyUp(keys[e.keyCode]);
-                e.preventDefault();
-            }
-        });
     </script>
 
 </body>
