@@ -20,7 +20,7 @@
             align-items: center;
             justify-content: flex-start;
             min-height: 100vh;
-            padding: 30px 20px;
+            padding: 40px 20px;
             overflow-x: hidden;
         }
 
@@ -32,21 +32,29 @@
             font-weight: bold;
         }
 
-        /* Contenedor del Emulador con tus bordes discontinuos */
-        .emulator-container {
-            width: 640px;
-            height: 450px;
-            max-width: 100%;
-            background: #000000;
+        /* Estilo del botón interactivo de Agorlab */
+        .btn-interactivo {
+            display: inline-block;
+            color: #ca630e;
+            text-decoration: none;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            font-size: 1.2rem;
+            letter-spacing: 1px;
             border: 2px dashed #ca630e;
-            margin-bottom: 25px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+            padding: 15px 30px;
+            background-color: transparent;
+            margin-bottom: 35px;
+            transition: all 0.2s ease-in-out;
+            text-align: center;
+            box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.3);
         }
 
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
+        .btn-interactivo:hover {
+            background-color: #ca630e;
+            color: #1a1a1a;
+            box-shadow: 2px 2px 0px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
         }
 
         /* Instrucción de arranque destacada estilo consola */
@@ -56,7 +64,7 @@
             border: 1px dashed #ca630e;
             background-color: rgba(202, 99, 14, 0.05);
             padding: 15px;
-            margin-bottom: 30px;
+            margin-bottom: 35px;
             text-align: center;
             font-size: 1rem;
             line-height: 1.5;
@@ -75,12 +83,12 @@
             max-width: 640px;
             text-align: center;
             border-top: 1px dashed rgba(202, 99, 14, 0.3);
-            padding-top: 25px;
+            padding-top: 30px;
         }
 
         .controls-panel h2 {
             font-size: 1.3rem;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             letter-spacing: 1px;
         }
 
@@ -88,7 +96,7 @@
         .gba-diagram {
             width: 280px;
             height: auto;
-            margin: 0 auto 20px auto;
+            margin: 0 auto 25px auto;
             display: block;
         }
 
@@ -98,8 +106,7 @@
             display: inline-block;
             text-align: left;
             font-size: 1.1rem;
-            line-height: 1.8;
-            margin-top: 10px;
+            line-height: 1.9;
         }
 
         .keybinds-list strong {
@@ -109,19 +116,17 @@
 </head>
 <body>
 
-    <h1>[ EXPERIMENTO_GBA_EMULATOR ]</h1>
+    <h1>[ EXPERIMENTO_GBA_LAUNCHER ]</h1>
 
-    <div class="emulator-container">
-        <iframe 
-            src="https://gba.js.org/" 
-            allow="autoplay; gamepad; keyboard"
-            sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-downloads"
-            fullscreen>
-        </iframe>
-    </div>
+    <a href="https://gba.js.org/" target="_blank" class="btn-interactivo">
+        [ ARRANCAR_EMULADOR_RETRO ]
+    </a>
 
     <div class="instruccion-arranque">
-        <p>⚡ <strong>IMPORTANTE PARA INICIAR:</strong> Una vez que cargues tu archivo .gba (usando el menú "File" o arrastrándolo), tenés que hacer clic obligatoriamente en la opción <strong>Play</strong> del menú superior negro del emulador para que el juego arranque.</p>
+        <p>⚡ <strong>PASOS EN LA NUEVA PESTAÑA:</strong><br>
+        1. Al hacer clic arriba, se abrirá el emulador seguro.<br>
+        2. Ve al menú superior negro, dale a <strong>File</strong> y luego a <strong>Open</strong> para buscar tu juego (.gba).<br>
+        3. Para que empiece a correr, haz clic obligatoriamente en la opción <strong>Play</strong> del menú del emulador.</p>
     </div>
 
     <div class="controls-panel">
