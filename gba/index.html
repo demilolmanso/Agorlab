@@ -32,46 +32,74 @@
             background: #1d4ed8; 
             transform: translateY(-2px);
         }
-        iframe {
+        #screen {
             width: 100%;
             height: 100%;
-            border: none;
+            max-height: 100%;
+            display: none;
+            background: #000;
         }
     </style>
 </head>
 <body>
 
     <div class="contenedor-emulador">
-        <div id="pantalla-emulador" style="width: 100%; height: 100%;">
-            <div class="zona-interfaz">
-                <p style="font-size: 20px; font-weight: bold; margin-bottom: 10px; color: #fff;">Estación Game Boy Advance</p>
-                <p style="color: #888; font-size: 14px; max-width: 400px; line-height: 1.5;">
-                    Cargá tu archivo de Pokémon Esmeralda (.gba) para iniciar la consola virtual local.
-                </p>
-                
-                <input type="file" id="file-input" accept=".gba" style="display: none;">
-                <button class="boton-cargar" onclick="document.getElementById('file-input').click()">Cargar Pokémon Esmeralda</button>
-            </div>
+        <div id="setup" class="zona-interfaz">
+            <p style="font-size: 20px; font-weight: bold; margin-bottom: 10px; color: #fff;">Estación GBA</p>
+            <p style="color: #888; font-size: 14px; max-width: 400px; line-height: 1.5;">
+                Seleccioná tu archivo de Pokémon Esmeralda (.gba) para ejecutarlo de forma local.
+            </p>
+            <input type="file" id="file" accept=".gba" style="display: none;">
+            <button class="boton-cargar" onclick="document.getElementById('file').click()">Seleccionar ROM</button>
         </div>
+
+        <canvas id="screen" id="canvas"></canvas>
     </div>
 
+    <script src="https://unpkg.com/gbajs@0.1.0/dist/util.js"></script>
+    <script src="https://unpkg.com/gbajs@0.1.0/dist/core.js"></script>
+    <script src="https://unpkg.com/gbajs@0.1.0/dist/arm.js"></script>
+    <script src="https://unpkg.com/gbajs@0.1.0/dist/thumb.js"></script>
+    <script src="https://unpkg.com/gbajs@0.1.0/dist/mmu.js"></script>
+    <script src="https://unpkg.com/gbajs@0.1.0/dist/io.js"></script>
+    <script src="https://unpkg.com/gbajs@0.1.0/dist/video.js"></script>
+    <script src="https://unpkg.com/gbajs@0.1.0/dist/audio.js"></script>
+    <script src="https://unpkg.com/gbajs@0.1.0/dist/savedata.js"></script>
+    <script src="https://unpkg.com/gbajs@0.1.0/dist/bios.js"></script>
+    <script src="https://unpkg.com/gbajs@0.1.0/dist/keypad.js"></script>
+
     <script>
-        document.getElementById('file-input').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
+        var gba;
+        try {
+            gba = new GameBoyAdvance();
+            gba.keypad.registerHandlers();
+        } catch (exception) {
+            gba = null;
+        }
 
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                const blob = new Blob([event.target.result], { type: 'application/octet-stream' });
-                const blobURL = URL.createObjectURL(blob);
+        if (gba) {
+            gba.setCanvas(document.getElementById('screen'));
+            
+            document.getElementById('file').addEventListener('change', function(e) {
+                var file = e.target.files[0];
+                if (!file) return;
 
-                // Inyectamos un emulador web limpio encapsulado vía iframe que se traga el blob local sin errores de definición
-                const contenedor = document.getElementById('pantalla-emulador');
-                contenedor.innerHTML = `<iframe src="https://emupedia.net/emupedia-data/emulators/gba/?rom=${encodeURIComponent(blobURL)}"></iframe>`;
-            };
-            reader.readAsArrayBuffer(file);
-        });
+                var reader = new FileReader();
+                reader.onload = function(event) {
+                    document.getElementById('setup').style.display = 'none';
+                    document.getElementById('screen').style.display = 'block';
+                    
+                    gba.loadRomFromFile(file, function(err) {
+                        if (err) {
+                            alert("Error al cargar la ROM");
+                            return;
+                        }
+                        gba.run();
+                    });
+                };
+                reader.readAsArrayBuffer(file);
+            });
+        }
     </script>
-
 </body>
 </html>
