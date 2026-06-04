@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/style.css">
+    <title>Contacto | Agorlab</title>
+    <style>
+        body { background-color: rgb(226, 226, 226); color: #ca630e; font-family: 'Courier New', Courier, monospace; padding: 20px; }
+        .box { max-width: 500px; margin: 50px auto; border: 1px solid #ca630e; padding: 30px; background: rgb(33, 19, 8); }
+        .form-hacker { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
+        input, textarea { background: transparent; border: 1px solid #ca630e; padding: 10px; color: #ca630e; width: 100%; box-sizing: border-box; }
+        .btn-enviar { background: transparent; border: 1px dashed #ca630e; color: rgb(226, 226, 226); padding: 10px; cursor: pointer; font-family: inherit; }
+        .btn-enviar:hover { background: #ca630e; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h2>[ CONTACTO ]</h2>
+        <form action="https://formspree.io/f/mrevgnbz" method="POST" class="form-hacker">
+            <input type="email" name="email" required placeholder="Tu correo">
+            <textarea name="message" required placeholder="Tu mensaje..."></textarea>
+            <button type="submit" class="btn-enviar">[ ENVIAR_MENSAJE ]</button>
+        </form>
+        <p style="margin-top:20px;"><a href="/microblog/" style="color:#ca630e;"><- Volver a la bitácora</a></p>
+    </div>
+</body>
+</html>
