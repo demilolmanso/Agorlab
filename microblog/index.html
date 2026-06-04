@@ -141,6 +141,21 @@
     height: 100px;
     resize: vertical;
 }
+        .btn-full {
+    width: 100%;
+    margin-top: 10px;
+    cursor: pointer;
+    background: transparent; /* Fondo transparente */
+    border: 1px dashed #ca630e; /* Borde punteado original */
+    color: rgb(226, 226, 226); /* Color blanco/gris claro */
+    font-family: 'Courier New', Courier, monospace;
+}
+
+/* Efecto al pasar el mouse */
+.btn-full:hover {
+    background-color: #ca630e;
+    color: rgb(226, 226, 226);
+}
     </style>
 </head>
 <body>
@@ -158,9 +173,7 @@
         <label for="message">Mensaje:</label>
         <textarea name="message" id="message" required placeholder="Escribe aquí tu aporte..."></textarea>
 
-       <button type="submit" class="btn-interactivo" style="color: #8f4710; width: 100%; cursor: pointer;">
-  [ ENVIAR_DATOS ]
-</button>
+       <button type="submit" class="btn-interactivo btn-full">[ ENVIAR_DATOS ]</button>
     </form>
 </section>
 
