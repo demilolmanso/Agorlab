@@ -109,6 +109,36 @@
             text-align: center;
             font-style: italic;
         }
+        .invitacion-contacto {
+    text-align: center;
+    margin: 40px auto;
+    padding: 20px;
+    border: 1px solid #ca630e;
+    max-width: 650px;
+    background-color: rgba(202, 99, 14, 0.05);
+}
+
+.invitacion-contacto p {
+    margin-top: 0;
+    font-weight: bold;
+}
+
+.btn-contacto {
+    display: inline-block;
+    color: #ca630e;
+    text-decoration: none;
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: bold;
+    border: 1px dashed #ca630e;
+    padding: 8px 16px;
+    transition: all 0.2s ease;
+    margin-top: 10px;
+}
+
+.btn-contacto:hover {
+    background-color: #ca630e;
+    color: rgb(226, 226, 226);
+}
     </style>
 </head>
 <body>
@@ -117,6 +147,10 @@
         <h1>[ LAB_LOG ]</h1>
         <a href="../" class="btn-volver"><- Volver al inicio</a>
     </div>
+    <div class="invitacion-contacto">
+    <p>¿Tenés algo para aportar al laboratorio?</p>
+    <a href="mailto:contacto@agorlab.com" class="btn-contacto">ENVIAR_MENSAJE</a>
+</div>
 
     <main class="contenedor-tweets" id="feed-tweets">
         <p class="cargando">Conectando con el laboratorio público...</p>
