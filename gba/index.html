@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
+<!-- saved from url=(0075)file:///C:/Users/Usuario/Downloads/Agorlab%20_%20GBA%20Retro%20Station.html -->
+<html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Agorlab | GBA Retro Station</title>
     <style>
@@ -20,7 +20,7 @@
             align-items: center;
             justify-content: flex-start;
             min-height: 100vh;
-            padding: 40px 20px;
+            padding: 30px 20px;
             overflow-x: hidden;
         }
 
@@ -32,29 +32,21 @@
             font-weight: bold;
         }
 
-        /* Estilo del botón interactivo de Agorlab */
-        .btn-interactivo {
-            display: inline-block;
-            color: #ca630e;
-            text-decoration: none;
-            font-family: 'Courier New', Courier, monospace;
-            font-weight: bold;
-            font-size: 1.2rem;
-            letter-spacing: 1px;
+        /* Contenedor del Emulador con tus bordes discontinuos */
+        .emulator-container {
+            width: 640px;
+            height: 450px;
+            max-width: 100%;
+            background: #000000;
             border: 2px dashed #ca630e;
-            padding: 15px 30px;
-            background-color: transparent;
-            margin-bottom: 35px;
-            transition: all 0.2s ease-in-out;
-            text-align: center;
-            box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.3);
+            margin-bottom: 25px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
         }
 
-        .btn-interactivo:hover {
-            background-color: #ca630e;
-            color: #1a1a1a;
-            box-shadow: 2px 2px 0px rgba(0, 0, 0, 0.2);
-            cursor: pointer;
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
         }
 
         /* Instrucción de arranque destacada estilo consola */
@@ -64,7 +56,7 @@
             border: 1px dashed #ca630e;
             background-color: rgba(202, 99, 14, 0.05);
             padding: 15px;
-            margin-bottom: 35px;
+            margin-bottom: 30px;
             text-align: center;
             font-size: 1rem;
             line-height: 1.5;
@@ -83,12 +75,12 @@
             max-width: 640px;
             text-align: center;
             border-top: 1px dashed rgba(202, 99, 14, 0.3);
-            padding-top: 30px;
+            padding-top: 25px;
         }
 
         .controls-panel h2 {
             font-size: 1.3rem;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             letter-spacing: 1px;
         }
 
@@ -96,7 +88,7 @@
         .gba-diagram {
             width: 280px;
             height: auto;
-            margin: 0 auto 25px auto;
+            margin: 0 auto 20px auto;
             display: block;
         }
 
@@ -106,7 +98,8 @@
             display: inline-block;
             text-align: left;
             font-size: 1.1rem;
-            line-height: 1.9;
+            line-height: 1.8;
+            margin-top: 10px;
         }
 
         .keybinds-list strong {
@@ -116,33 +109,31 @@
 </head>
 <body>
 
-    <h1>[ EXPERIMENTO_GBA_LAUNCHER ]</h1>
+    <h1>[ EXPERIMENTO_GBA_EMULATOR ]</h1>
 
-    <a href="https://gba.js.org/" target="_blank" class="btn-interactivo">
-        [ ARRANCAR_EMULADOR_RETRO ]
-    </a>
+    <div class="emulator-container">
+        <iframe src="./Agorlab _ GBA Retro Station_files/saved_resource.html" allow="autoplay; gamepad; keyboard" fullscreen="">
+        </iframe>
+    </div>
 
     <div class="instruccion-arranque">
-        <p>⚡ <strong>PASOS EN LA NUEVA PESTAÑA:</strong><br>
-        1. Al hacer clic arriba, se abrirá el emulador seguro.<br>
-        2. Ve al menú superior negro, dale a <strong>File</strong> y luego a <strong>Open</strong> para buscar tu juego (.gba).<br>
-        3. Para que empiece a correr, haz clic obligatoriamente en la opción <strong>Play</strong> del menú del emulador.</p>
+        <p>⚡ <strong>IMPORTANTE PARA INICIAR:</strong> Una vez que cargues tu archivo .gba (usando el menú "File" o arrastrándolo), tenés que hacer clic obligatoriamente en la opción <strong>Play</strong> del menú superior negro del emulador para que el juego arranque.</p>
     </div>
 
     <div class="controls-panel">
         <h2>Mapeo de Controles (Emulator Keybinds)</h2>
         
         <svg class="gba-diagram" viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
-            <rect x="20" y="20" width="160" height="80" rx="35" fill="#6A0DAD" stroke="#ca630e" stroke-width="1.5"/>
-            <rect x="55" y="30" width="90" height="60" rx="4" fill="#333" stroke="#ca630e" stroke-width="1"/>
-            <path d="M35 55h10v-10h5v10h10v5h-10v10h-5v-10h-10z" fill="#cccccc"/>
-            <circle cx="155" cy="65" r="7" fill="#cccccc"/>
-            <circle cx="170" cy="58" r="7" fill="#cccccc"/>
+            <rect x="20" y="20" width="160" height="80" rx="35" fill="#6A0DAD" stroke="#ca630e" stroke-width="1.5"></rect>
+            <rect x="55" y="30" width="90" height="60" rx="4" fill="#333" stroke="#ca630e" stroke-width="1"></rect>
+            <path d="M35 55h10v-10h5v10h10v5h-10v10h-5v-10h-10z" fill="#cccccc"></path>
+            <circle cx="155" cy="65" r="7" fill="#cccccc"></circle>
+            <circle cx="170" cy="58" r="7" fill="#cccccc"></circle>
             <text x="153" y="80" fill="#ca630e" font-size="7" font-family="monospace">Z</text>
             <text x="168" y="73" fill="#ca630e" font-size="7" font-family="monospace">X</text>
             <text x="25" y="38" fill="#e2e2e2" font-size="6" font-family="monospace">Flechas</text>
-            <rect x="85" y="96" width="12" height="3" rx="1" fill="#cccccc" transform="rotate(-20 85 96)"/>
-            <rect x="105" y="96" width="12" height="3" rx="1" fill="#cccccc" transform="rotate(-20 105 96)"/>
+            <rect x="85" y="96" width="12" height="3" rx="1" fill="#cccccc" transform="rotate(-20 85 96)"></rect>
+            <rect x="105" y="96" width="12" height="3" rx="1" fill="#cccccc" transform="rotate(-20 105 96)"></rect>
             <text x="75" y="108" fill="#ca630e" font-size="5" font-family="monospace">SHIFT</text>
             <text x="102" y="108" fill="#ca630e" font-size="5" font-family="monospace">ENTER</text>
         </svg>
@@ -158,5 +149,5 @@
         </ul>
     </div>
 
-</body>
-</html>
+
+</body></html>
