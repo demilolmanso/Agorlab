@@ -3,48 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pokémon Esmeralda - GBA Player</title>
+    <title>GBA Web Player - Pokémon Esmeralda</title>
     <style>
         * {
             margin: 0;
             padding: 0;
-            box-style: border-box;
+            box-sizing: border-box;
         }
         body {
-            background-color: #121212;
-            color: #ffffff;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1a1a1a;
+            color: #fff;
+            font-family: system-ui, -apple-system, sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             min-height: 100vh;
-            overflow: hidden;
         }
         h1 {
-            font-size: 1.5rem;
+            font-size: 1.6rem;
             margin-bottom: 15px;
-            color: #4ade80; /* Verde Esmeralda */
-            text-shadow: 0 0 10px rgba(74, 222, 128, 0.5);
+            color: #10b981;
         }
-        /* Contenedor del emulador */
-        #game-container {
-            width: 640px;
-            height: 480px;
-            max-width: 100%;
+        #screen-container {
+            position: relative;
             background: #000;
-            border: 4px solid #34d399;
-            border-radius: 8px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.7);
+            border: 4px solid #047857;
+            border-radius: 12px;
+            padding: 10px;
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.5);
         }
-        #emulator {
-            width: 100%;
-            height: 100%;
+        canvas {
+            display: block;
+            width: 480px;
+            height: 320px;
+            max-width: 100%;
+            image-rendering: pixelated; /* Mantiene los píxeles nítidos retro */
         }
-        footer {
+        .controls-panel {
             margin-top: 15px;
-            font-size: 0.8rem;
-            color: #666;
+            background: #262626;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            text-align: center;
+            color: #a3a3a3;
+            max-width: 480px;
+        }
+        /* Botón de respaldo por si falla la carga automática */
+        .file-input-wrapper {
+            margin-top: 15px;
+        }
+        input[type="file"] {
+            background: #262626;
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px dashed #10b981;
+            color: #fff;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -52,25 +68,90 @@
 
     <h1>Pokémon Edición Esmeralda</h1>
 
-    <div id="game-container">
-        <div id="emulator"></div>
+    <div id="screen-container">
+        <canvas id="screen"></canvas>
     </div>
 
-    <footer>Controles: Flechas (D-Pad) | Z (Botón A) | X (Botón B) | Shift (Select) | Enter (Start)</footer>
+    <div class="file-input-wrapper">
+        <label>¿No cargó? Selecciona tu archivo .gba: </label>
+        <input type="file" id="select-rom" accept=".gba">
+    </div>
 
-    <script>
-        // Configuración global del emulador antes de cargar el script maestro
-        EJS_player = '#emulator';
-        EJS_core = 'gba'; // Sistema: Game Boy Advance
-        
-        // REQUISITO: Aquí va la ruta a tu archivo de Pokémon Esmeralda
-        EJS_gameUrl = 'roms/esmeralda.gba'; 
+    <div class="controls-panel">
+        <strong>Controles:</strong> Flechas (D-Pad) | Z (Botón A) | X (Botón B) | Barra Espaciadora (Select) | Enter (Start) <br>
+        A (Botón L) | S (Botón R)
+    </div>
 
-        // Rutas a los motores del emulador (usamos un CDN público y confiable)
-        EJS_pathtodata = 'https://cdn.jsdelivr.net/gh/EmulatorJS/EmulatorJS@latest/data/';
-    </script>
+    <script src="https://cdn.jsdelivr.net/gh/taisel/IodineGBA@master/IodineGBA/core/Cartridge.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/taisel/IodineGBA@master/IodineGBA/core/GBA.js"></script>
     
-    <script src="https://cdn.jsdelivr.net/gh/EmulatorJS/EmulatorJS@latest/data/loader.js"></script>
+    <script>
+        // Inicializar el emulador IodineGBA
+        const canvas = document.getElementById('screen');
+        const gba = new GameBoyAdvance();
+        
+        // Vincular el canvas para el renderizado de video
+        gba.setCanvas(canvas);
+        
+        // Intentar cargar la ROM automáticamente al iniciar la página
+        // IMPORTANTE: Cambia esta ruta por la de tu archivo
+        const romUrl = 'roms/esmeralda.gba'; 
+
+        fetch(romUrl)
+            .then(response => {
+                if (!response.ok) throw new Error("No se pudo encontrar la ROM automáticamente");
+                return response.arrayBuffer();
+            })
+            .then(buffer => {
+                gba.loadRom(new Uint8Array(buffer));
+                gba.run();
+            })
+            .catch(err => {
+                console.log(err.message + " - Usa el botón para cargarla manualmente.");
+            });
+
+        // Método de respaldo: Cargar mediante el input de archivo
+        document.getElementById('select-rom').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const buffer = event.target.result;
+                gba.loadRom(new Uint8Array(buffer));
+                gba.run();
+            };
+            reader.readAsArrayBuffer(file);
+        });
+
+        // Mapeo básico de teclado para controles
+        const keyMap = {
+            38: gba.KEY_UP,       // Flecha Arriba
+            40: gba.KEY_DOWN,     // Flecha Abajo
+            37: gba.KEY_LEFT,     // Flecha Izquierda
+            39: gba.KEY_RIGHT,    // Flecha Derecha
+            90: gba.KEY_A,        // Z
+            88: gba.KEY_B,        // X
+            13: gba.KEY_START,    // Enter
+            32: gba.KEY_SELECT,   // Espacio
+            65: gba.KEY_L,        // A
+            83: gba.KEY_R         // S
+        };
+
+        window.addEventListener('keydown', (e) => {
+            if (keyMap[e.keyCode] !== undefined) {
+                gba.keyDown(keyMap[e.keyCode]);
+                e.preventDefault();
+            }
+        });
+
+        window.addEventListener('keyup', (e) => {
+            if (keyMap[e.keyCode] !== undefined) {
+                gba.keyUp(keyMap[e.keyCode]);
+                e.preventDefault();
+            }
+        });
+    </script>
 
 </body>
 </html>
