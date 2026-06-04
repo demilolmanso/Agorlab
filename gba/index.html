@@ -15,13 +15,13 @@
    <script>
         EJS_player = '#game';
         EJS_core = 'gba'; 
-        EJS_startOnLoaded = true; // Lo volvemos a poner en true para que arranque solo
+        EJS_startOnLoaded = true; 
         EJS_pathtodata = 'https://cdn.emulatorjs.org/latest/data/'; 
         EJS_language = 'en';
         EJS_loadIcons = true;
 
-        // LA RUTA TIENE QUE SER IDÉNTICA A COMO SE VE EN GITHUB (Ojo mayúsculas y espacios)
-        EJS_gameUrl = 'gba/roms/esmeralda.gba'; 
+        // Corregido: sin el 'gba/' adelante porque ya estamos dentro de esa carpeta
+        EJS_gameUrl = 'roms/esmeralda.gba'; 
     </script>
     
     <script src="https://cdn.emulatorjs.org/latest/data/loader.js"></script>
