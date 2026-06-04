@@ -6,29 +6,92 @@
     <title>Agorlab - GBA Station</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        .contenedor-completo {
-            width: 100%;
-            height: 100%;
+        .zona-interfaz {
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
+            height: 100vh;
+            text-align: center;
             background: #0d0d13;
         }
-        iframe {
+        .boton-cargar {
+            background: #2563eb;
+            color: white;
+            padding: 14px 28px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
+            transition: all 0.2s;
+        }
+        .boton-cargar:hover { 
+            background: #1d4ed8; 
+            transform: translateY(-2px);
+        }
+        #screen {
+            display: none;
             width: 100%;
             height: 100%;
-            border: none;
+            max-width: 640px;
+            max-height: 480px;
             background: #000;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border-radius: 4px;
         }
     </style>
 </head>
 <body>
 
     <div class="contenedor-emulador">
-        <div class="contenedor-completo">
-            <iframe src="https://webretro.github.io/webretro/webretro.html?core=gba"></iframe>
+        <div id="setup" class="zona-interfaz">
+            <p style="font-size: 20px; font-weight: bold; margin-bottom: 10px; color: #fff;">Estación GBA Local</p>
+            <p style="color: #888; font-size: 14px; max-width: 400px; line-height: 1.5;">
+                Seleccioná tu juego `.gba` desde tu dispositivo. Todo corre de forma local en tu navegador.
+            </p>
+            <input type="file" id="file" accept=".gba" style="display: none;">
+            <button class="boton-cargar" onclick="document.getElementById('file').click()">Seleccionar ROM</button>
         </div>
+
+        <canvas id="screen"></canvas>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/gh/taisel/IodineGBA@master/core/Cartridge.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/taisel/IodineGBA@master/core/GBA.js"></script>
+
+    <script>
+        document.getElementById('file').addEventListener('change', function(e) {
+            var file = e.target.files[0];
+            if (!file) return;
+
+            var reader = new FileReader();
+            reader.onload = function(event) {
+                // Ocultamos el botón y prendemos la pantalla de la consola
+                document.getElementById('setup').style.display = 'none';
+                var canvas = document.getElementById('screen');
+                canvas.style.display = 'block';
+
+                try {
+                    // Inicializamos IodineGBA de forma limpia
+                    var iodine = new GameBoyAdvance();
+                    iodine.setCanvas(canvas);
+                    
+                    // Convertimos la ROM cargada en un array de bytes ejecutable
+                    var romArray = new Uint8Array(event.target.result);
+                    iodine.loadRom(romArray);
+                    iodine.start();
+                    
+                    // Mapeamos el teclado básico automáticamente
+                    iodine.keypad.registerHandlers();
+                } catch (err) {
+                    alert("Error al inicializar el motor gráfico: " + err.message);
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        });
+    </script>
 </body>
 </html>
