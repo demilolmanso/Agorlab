@@ -39,12 +39,12 @@
             justify-content: center;
             cursor: pointer;
             position: relative;
-            overflow: hidden;
         }
         canvas {
             display: none;
             width: 100%;
             height: 100%;
+            border-radius: 9px;
             image-rendering: pixelated;
         }
         .controls {
@@ -67,10 +67,10 @@
 
     <h1>Pokémon Edición Esmeralda</h1>
 
-    <div id="drop-zone">
+    <div id="drop-zone" onclick="document.getElementById('file-input').click()">
         <div id="label-text" style="text-align: center; padding: 20px;">
             <p style="font-size: 1.1rem; margin-bottom: 8px; font-weight: bold;">Arrastra tu archivo Pokémon Esmeralda (.gba) aquí</p>
-            <p style="font-size: 0.85rem; color: #9ca3af;">O haz clic para buscarlo</p>
+            <p style="font-size: 0.85rem; color: #9ca3af;">O haz clic aquí para buscarlo en tu PC</p>
         </div>
         <canvas id="canvas"></canvas>
     </div>
@@ -80,89 +80,5 @@
     <div class="controls">
         <strong>Controles del Teclado:</strong><br>
         Flechas (D-Pad) | Z (Botón A) | X (Botón B) <br>
-        Enter (Start) | Shift (Select) | A (Gatillo L) | S (Gatillo R)
+        Enter (Start) | Barra Espaciadora (Select) | A (Gatillo L) | S (Gatillo R)
     </div>
-
-    <script src="https://cdn.jsdelivr.net/gh/jakesgordon/javascript-gba@master/js/gba.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/jakesgordon/javascript-gba@master/js/cpu.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/jakesgordon/javascript-gba@master/js/video.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/jakesgordon/javascript-gba@master/js/audio.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/jakesgordon/javascript-gba@master/js/key.js"></script>
-
-    <script>
-        const dropZone = document.getElementById('drop-zone');
-        const fileInput = document.getElementById('file-input');
-        const labelText = document.getElementById('label-text');
-        const canvas = document.getElementById('canvas');
-        
-        // Inicialización segura independiente del protocolo HTTP/HTTPS
-        const gba = new GBA(canvas);
-
-        dropZone.addEventListener('click', () => {
-            if (canvas.style.display !== 'block') fileInput.click();
-        });
-
-        fileInput.addEventListener('change', (e) => handleFile(e.target.files[0]));
-
-        dropZone.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            dropZone.style.backgroundColor = "#374151";
-        });
-
-        dropZone.addEventListener('dragleave', () => {
-            dropZone.style.backgroundColor = "#1f2937";
-        });
-
-        dropZone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            dropZone.style.backgroundColor = "#1f2937";
-            handleFile(e.dataTransfer.files[0]);
-        });
-
-        function handleFile(file) {
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                labelText.style.display = 'none';
-                canvas.style.display = 'block';
-                dropZone.style.borderStyle = 'solid';
-
-                // Carga directa en memoria
-                gba.loadRom(event.target.result);
-                gba.start();
-            };
-            reader.readAsArrayBuffer(file);
-        }
-
-        // Mapeo nativo de teclas
-        const keys = {
-            38: gba.KEY_UP,
-            40: gba.KEY_DOWN,
-            37: gba.KEY_LEFT,
-            39: gba.KEY_RIGHT,
-            90: gba.KEY_A,
-            88: gba.KEY_B,
-            13: gba.KEY_START,
-            16: gba.KEY_SELECT,
-            65: gba.KEY_L,
-            83: gba.KEY_R
-        };
-
-        window.addEventListener('keydown', (e) => {
-            if (keys[e.keyCode] !== undefined) {
-                gba.keyDown(keys[e.keyCode]);
-                e.preventDefault();
-            }
-        });
-
-        window.addEventListener('keyup', (e) => {
-            if (keys[e.keyCode] !== undefined) {
-                gba.keyUp(keys[e.keyCode]);
-                e.preventDefault();
-            }
-        });
-    </script>
-
-</body>
-</html>
