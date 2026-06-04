@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GBA Web Player - Pokémon Esmeralda</title>
+    <title>GBA Player Definitivo</title>
     <style>
         * {
             margin: 0;
@@ -11,8 +11,8 @@
             box-sizing: border-box;
         }
         body {
-            background-color: #1a1a1a;
-            color: #fff;
+            background-color: #111827;
+            color: #f3f4f6;
             font-family: system-ui, -apple-system, sans-serif;
             display: flex;
             flex-direction: column;
@@ -21,46 +21,50 @@
             min-height: 100vh;
         }
         h1 {
-            font-size: 1.6rem;
-            margin-bottom: 15px;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
             color: #10b981;
+            text-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
         }
-        #screen-container {
-            position: relative;
-            background: #000;
-            border: 4px solid #047857;
-            border-radius: 12px;
-            padding: 10px;
-            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.5);
-        }
-        canvas {
-            display: block;
+        /* Zona de carga y pantalla */
+        #drop-zone {
             width: 480px;
             height: 320px;
-            max-width: 100%;
-            image-rendering: pixelated; /* Mantiene los píxeles nítidos retro */
+            max-width: 95vw;
+            background: #1f2937;
+            border: 3px dashed #10b981;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
-        .controls-panel {
-            margin-top: 15px;
-            background: #262626;
-            padding: 10px 20px;
+        #drop-zone.dragover {
+            background: #374151;
+            border-color: #34d399;
+        }
+        canvas {
+            display: none;
+            width: 100%;
+            height: 100%;
+            border-radius: 9px;
+            image-rendering: pixelated;
+        }
+        .controls {
+            margin-top: 20px;
+            background: #1f2937;
+            padding: 12px 20px;
             border-radius: 8px;
             font-size: 0.85rem;
+            color: #9ca3af;
             text-align: center;
-            color: #a3a3a3;
+            line-height: 1.5;
             max-width: 480px;
         }
-        /* Botón de respaldo por si falla la carga automática */
-        .file-input-wrapper {
-            margin-top: 15px;
-        }
         input[type="file"] {
-            background: #262626;
-            padding: 8px;
-            border-radius: 6px;
-            border: 1px dashed #10b981;
-            color: #fff;
-            cursor: pointer;
+            display: none;
         }
     </style>
 </head>
@@ -68,86 +72,116 @@
 
     <h1>Pokémon Edición Esmeralda</h1>
 
-    <div id="screen-container">
-        <canvas id="screen"></canvas>
+    <div id="drop-zone">
+        <div id="label-text" style="text-align: center; padding: 20px;">
+            <p style="font-size: 1.1rem; margin-bottom: 8px; font-weight: bold;">Arrastra tu archivo Pokémon Esmeralda (.gba) aquí</p>
+            <p style="font-size: 0.85rem; color: #9ca3af;">O haz clic para buscarlo en tu PC</p>
+        </div>
+        <canvas id="canvas"></canvas>
     </div>
 
-    <div class="file-input-wrapper">
-        <label>¿No cargó? Selecciona tu archivo .gba: </label>
-        <input type="file" id="select-rom" accept=".gba">
+    <input type="file" id="file-input" accept=".gba">
+
+    <div class="controls">
+        <strong>Controles del Teclado:</strong><br>
+        Flechas (D-Pad) | Z (Botón A) | X (Botón B) <br>
+        Enter (Start) | Shift (Select) | A (Gatillo L) | S (Gatillo R)
     </div>
 
-    <div class="controls-panel">
-        <strong>Controles:</strong> Flechas (D-Pad) | Z (Botón A) | X (Botón B) | Barra Espaciadora (Select) | Enter (Start) <br>
-        A (Botón L) | S (Botón R)
-    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gbajs/1.0.0/gba.min.js"></script>
 
-    <script src="https://cdn.jsdelivr.net/gh/taisel/IodineGBA@master/IodineGBA/core/Cartridge.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/taisel/IodineGBA@master/IodineGBA/core/GBA.js"></script>
-    
     <script>
-        // Inicializar el emulador IodineGBA
-        const canvas = document.getElementById('screen');
-        const gba = new GameBoyAdvance();
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+        const labelText = document.getElementById('label-text');
+        const canvas = document.getElementById('canvas');
         
-        // Vincular el canvas para el renderizado de video
-        gba.setCanvas(canvas);
-        
-        // Intentar cargar la ROM automáticamente al iniciar la página
-        // IMPORTANTE: Cambia esta ruta por la de tu archivo
-        const romUrl = 'roms/esmeralda.gba'; 
+        let gba;
 
-        fetch(romUrl)
-            .then(response => {
-                if (!response.ok) throw new Error("No se pudo encontrar la ROM automáticamente");
-                return response.arrayBuffer();
-            })
-            .then(buffer => {
-                gba.loadRom(new Uint8Array(buffer));
-                gba.run();
-            })
-            .catch(err => {
-                console.log(err.message + " - Usa el botón para cargarla manualmente.");
-            });
+        // Inicializar el emulador al cargar la página
+        try {
+            gba = new GameBoyAdvance();
+            gba.setCanvas(canvas);
+            gba.logLevel = gba.LOG_ERROR;
+        } catch(e) {
+            alert("Error al inicializar el emulador en este navegador.");
+        }
 
-        // Método de respaldo: Cargar mediante el input de archivo
-        document.getElementById('select-rom').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
+        // Eventos para abrir el explorador de archivos al hacer clic
+        dropZone.addEventListener('click', () => {
+            if (canvas.style.display !== 'block') fileInput.click();
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            handleFile(e.target.files[0]);
+        });
+
+        // Eventos para arrastrar y soltar (Drag and Drop)
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            handleFile(e.dataTransfer.files[0]);
+        });
+
+        // Procesar y correr la ROM
+        function handleFile(file) {
+            if (!file || !file.name.endsWith('.gba')) {
+                alert("Por favor, selecciona un archivo válido de Game Boy Advance (.gba)");
+                return;
+            }
 
             const reader = new FileReader();
             reader.onload = function(event) {
-                const buffer = event.target.result;
-                gba.loadRom(new Uint8Array(buffer));
-                gba.run();
+                // Ocultar el texto de carga y mostrar la pantalla del juego
+                labelText.style.display = 'none';
+                canvas.style.display = 'block';
+                dropZone.style.borderStyle = 'solid';
+
+                // Cargar la ROM en el emulador
+                gba.loadRom(event.target.result, function(err) {
+                    if (err) {
+                        alert("Error al parsear la ROM.");
+                        return;
+                    }
+                    gba.run();
+                });
             };
             reader.readAsArrayBuffer(file);
-        });
+        }
 
-        // Mapeo básico de teclado para controles
-        const keyMap = {
-            38: gba.KEY_UP,       // Flecha Arriba
-            40: gba.KEY_DOWN,     // Flecha Abajo
-            37: gba.KEY_LEFT,     // Flecha Izquierda
-            39: gba.KEY_RIGHT,    // Flecha Derecha
-            90: gba.KEY_A,        // Z
-            88: gba.KEY_B,        // X
-            13: gba.KEY_START,    // Enter
-            32: gba.KEY_SELECT,   // Espacio
-            65: gba.KEY_L,        // A
-            83: gba.KEY_R         // S
+        // Mapeo de teclas optimizado
+        const keys = {
+            38: gba.KEY_UP,
+            40: gba.KEY_DOWN,
+            37: gba.KEY_LEFT,
+            39: gba.KEY_RIGHT,
+            90: gba.KEY_A,      // Z
+            88: gba.KEY_B,      // X
+            13: gba.KEY_START,  // Enter
+            16: gba.KEY_SELECT, // Shift
+            65: gba.KEY_L,      // A
+            83: gba.KEY_R       // S
         };
 
         window.addEventListener('keydown', (e) => {
-            if (keyMap[e.keyCode] !== undefined) {
-                gba.keyDown(keyMap[e.keyCode]);
+            if (keys[e.keyCode] !== undefined) {
+                gba.keyDown(keys[e.keyCode]);
                 e.preventDefault();
             }
         });
 
         window.addEventListener('keyup', (e) => {
-            if (keyMap[e.keyCode] !== undefined) {
-                gba.keyUp(keyMap[e.keyCode]);
+            if (keys[e.keyCode] !== undefined) {
+                gba.keyUp(keys[e.keyCode]);
                 e.preventDefault();
             }
         });
