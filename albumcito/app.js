@@ -53,12 +53,17 @@ function entrarASala() {
 }
 
 function iniciarApp() {
-    // Lógica original de carga de usuario
+    // 1. Mostrar el registro si no hay usuario
     if (!MI_USER_ID) {
         document.getElementById('modal-registro').classList.remove('hidden');
-        // Inicializar listeners del registro aquí...
+        
+        // --- CONECTAR BOTONES DE REGISTRO ---
         document.getElementById('btn-registrar').addEventListener('click', registrarNuevoUsuario);
-        // ... (resto de tus listeners de cámara y registro que ya tenías)
+        
+        // --- CONECTAR BOTONES DE CÁMARA (Faltaba esto) ---
+        document.getElementById('btn-activar-camara').addEventListener('click', iniciarCamara);
+        document.getElementById('btn-capturar-foto').addEventListener('click', capturarFoto);
+        
     } else {
         conectarBaseDeDatos();
     }
@@ -162,3 +167,40 @@ document.getElementById('btn-cambiar-sala').addEventListener('click', () => {
         location.reload(); 
     }
 });
+
+async function iniciarCamara() {
+    try {
+        const video = document.getElementById('video-feed');
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+        streamCamara = stream;
+        video.srcObject = stream;
+        video.classList.remove('hidden');
+        document.getElementById('foto-placeholder').classList.add('hidden');
+    } catch (err) {
+        console.error("Error al acceder a la cámara:", err);
+        alert("No se pudo acceder a la cámara. Revisa los permisos.");
+    }
+}
+
+function capturarFoto() {
+    const video = document.getElementById('video-feed');
+    const canvas = document.getElementById('canvas-foto');
+    const context = canvas.getContext('2d');
+
+    // Ajustar tamaño del canvas al video
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+    
+    // Guardar en base64
+    fotoBase64 = canvas.toDataURL('image/png');
+    
+    // Mostrar resultado
+    canvas.classList.remove('hidden');
+    video.classList.add('hidden');
+    
+    // Detener cámara
+    if (streamCamara) {
+        streamCamara.getTracks().forEach(track => track.stop());
+    }
+}
