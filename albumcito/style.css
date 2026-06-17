@@ -1,14 +1,19 @@
+/* ==========================================================================
+   CSS FINAL - ÁLBUM VOS (Optimizado para Mobile)
+   ========================================================================== */
+
 * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Courier New', Courier, monospace; }
 
 body {
-    background-color: #1a1a1a; /* Color de la página del álbum */
+    background-color: #1a1a1a;
     color: #e2e2e2;
     display: flex;
     flex-direction: column;
-    height: 100dvh; /* Evita que el navegador del cel corte la botonera */
+    height: 100dvh; /* Utiliza Dynamic Viewport Height para evitar cortes en iOS/Android */
     overflow: hidden;
 }
 
+/* Header y Navegación */
 .app-header {
     padding: 15px 20px; background-color: #0d0d0d;
     display: flex; justify-content: space-between; align-items: center;
@@ -17,45 +22,41 @@ body {
 .app-header h1 { font-size: 1.2rem; color: #ca630e; font-weight: bold; }
 .stats { border: 1px solid #ca630e; padding: 5px 12px; font-size: 0.9rem; background: #050505; color: #ca630e;}
 
-/* Grid Adaptable (Sin el relleno inferior molesto) */
+.app-nav {
+    background-color: #0d0d0d; display: flex; justify-content: space-around;
+    padding: 12px 5px; border-bottom: 2px solid #ca630e; z-index: 10;
+}
+
+/* Grid del Álbum */
 .album-grid {
     flex: 1;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 20px;
+    gap: 15px;
     padding: 20px;
-    /* padding-bottom eliminado porque la parte inferior ya está libre */
-    overflow-y: auto;
+    overflow-y: auto; /* Scroll para que el contenido sea navegable */
 }
 
-/* =======================================================
-   DISEÑO DE FIGURITA FÍSICA
-   ======================================================= */
+/* Diseño de Cartas (Cromos) */
 .card {
-    background: #fdfdfd; /* Figurita blanca/brillante */
-    border: 4px solid #ffffff; /* Borde blanco de la calcomanía */
+    background: #fdfdfd;
+    border: 4px solid #ffffff;
     padding: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
     border-radius: 4px;
-    box-shadow: 2px 4px 8px rgba(0,0,0,0.5); /* Sombra para dar relieve */
+    box-shadow: 2px 4px 8px rgba(0,0,0,0.5);
     min-height: 220px;
+    position: relative; /* Necesario para el badge de repetidas */
     transition: transform 0.2s;
 }
-
-/* Rotación para dar sensación de pegado manual */
-.card:not(.locked) { transform: rotate(-2deg); }
-.card:nth-child(even):not(.locked) { transform: rotate(3deg); }
 
 .card.locked {
     background: #2a2a2a; border-color: #333;
     box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
-    transform: none; /* Las bloqueadas están derechas como una silueta */
 }
-.card.locked .card-avatar, .card.locked .card-info h3, .card.locked .card-info p {
-    color: #555;
-}
+.card.locked .card-avatar, .card.locked .card-info h3, .card.locked .card-info p { color: #555; }
 
 .card-avatar {
     width: 100%; height: 140px;
@@ -69,72 +70,71 @@ body {
 .card-info h3 { font-size: 1rem; color: #ca630e; margin-bottom: 2px; }
 .card-info p { font-size: 0.75rem; color: #555; font-weight: bold;}
 
-/* Navegación Superior (Barra de Pestañas) */
-.app-nav {
-    background-color: #0d0d0d; 
-    display: flex; 
-    justify-content: space-around;
-    padding: 12px 5px; 
-    border-bottom: 2px solid #ca630e; /* Cambiamos el borde hacia abajo */
-    z-index: 10;
-}
-.nav-btn {
-    background: none; border: none; color: #888; font-size: 0.8rem;
-    font-weight: bold; cursor: pointer; display: flex; flex-direction: column; align-items: center;
-}
-.nav-btn.active { color: #ca630e; }
-.pack-btn { background: #ca630e; color: #0d0d0d; padding: 6px 12px; border-radius: 4px; }
-
-/* Modales */
-.modal {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.9); display: flex; justify-content: center; align-items: center; z-index: 1000;
-}
-.modal.hidden { display: none !important; }
-.modal-content { background: #0d0d0d; border: 1px dashed #ca630e; color: #ca630e; padding: 25px; width: 90%; max-width: 350px; text-align: center;}
-.reg-input { width: 100%; padding: 10px; margin-bottom: 12px; background: #1a1a1a; border: 1px solid #ca630e; color: white; }
-.btn-terminal-sm { background: #ca630e; color: #000; border: none; padding: 8px 12px; cursor: pointer; font-weight: bold;}
-.close-btn { background: #333; color: white; border: none; padding: 10px; width: 100%; margin-top: 10px; cursor: pointer;}
-
-#video-feed, #canvas-foto, #foto-placeholder { width: 150px; height: 150px; border: 2px dashed #ca630e; margin: 0 auto 15px auto; object-fit: cover;}
-
-/* =======================================================
-   SISTEMA DE REPETIDAS Y TRANSFERENCIAS
-   ======================================================= */
-.card { position: relative; } /* Anclaje para el indicador de cantidad */
-
+/* Badge de Repetidas */
 .badge-cantidad {
-    position: absolute;
-    top: -10px;
-    right: -10px;
-    background: #ca630e;
-    color: #0d0d0d;
-    font-weight: bold;
-    border-radius: 50%;
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 5;
-    border: 2px solid #0d0d0d;
+    position: absolute; top: -10px; right: -10px;
+    background: #ca630e; color: #0d0d0d; font-weight: bold;
+    border-radius: 50%; width: 32px; height: 32px;
+    display: flex; align-items: center; justify-content: center;
+    z-index: 5; border: 2px solid #0d0d0d;
 }
 
 .btn-transferir {
-    background: transparent;
-    border: 1px dashed #ca630e;
-    color: #ca630e;
-    padding: 6px;
-    margin-top: 8px;
-    cursor: pointer;
-    font-size: 0.8rem;
-    width: 100%;
-    font-family: 'Courier New', Courier, monospace;
-    font-weight: bold;
-    transition: all 0.2s;
+    background: transparent; border: 1px dashed #ca630e; color: #ca630e;
+    padding: 6px; margin-top: 8px; cursor: pointer;
+    font-size: 0.8rem; width: 90%; font-weight: bold;
 }
 
-.btn-transferir:hover {
-    background: #ca630e;
-    color: #0d0d0d;
+/* =======================================================
+   MODALES (CORREGIDO PARA ADAPTATIVIDAD)
+   ======================================================= */
+.modal {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.9);
+    display: flex; justify-content: center; align-items: center;
+    z-index: 1000;
+    padding: 20px; /* Margen para que no toque los bordes del cel */
 }
+.modal.hidden { display: none !important; }
+
+.modal-content {
+    background: #0d0d0d;
+    border: 1px dashed #ca630e;
+    color: #ca630e;
+    padding: 20px;
+    width: 100%;
+    max-width: 350px;
+    max-height: 85vh; /* <--- CLAVE: Nunca ocupa más del 85% de la pantalla */
+    overflow-y: auto; /* <--- CLAVE: Permite scroll interno si el form es largo */
+    text-align: center;
+    border-radius: 4px;
+}
+
+/* Formulario dentro del modal */
+.reg-input { 
+    width: 100%; padding: 10px; margin-bottom: 12px; 
+    background: #1a1a1a; border: 1px solid #ca630e; color: white; 
+}
+
+.btn-terminal-sm { 
+    background: #ca630e; color: #000; border: none; 
+    padding: 8px 12px; cursor: pointer; font-weight: bold; margin: 5px;
+}
+
+.close-btn { 
+    background: #333; color: white; border: none; 
+    padding: 10px; width: 100%; margin-top: 10px; cursor: pointer;
+}
+
+#video-feed, #canvas-foto, #foto-placeholder { 
+    width: 120px; height: 120px; /* Reducido para que quepa en todo móvil */
+    border: 2px dashed #ca630e; margin: 10px auto; object-fit: cover;
+}
+
+/* Estilos de botones de navegación */
+.nav-btn {
+    background: none; border: none; color: #888; font-size: 0.8rem;
+    font-weight: bold; cursor: pointer;
+}
+.nav-btn.active { color: #ca630e; text-decoration: underline; }
+.pack-btn { background: #ca630e; color: #0d0d0d; padding: 6px 12px; border-radius: 4px; }
