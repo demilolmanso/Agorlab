@@ -22,20 +22,25 @@ let MI_USER_ID = localStorage.getItem('vos_user_id') || null;
 
 let datasetPersonas = {};
 let miAlbum = {};
+let fotoBase64 = null; // Almacenará el stream de la imagen optimizada
+let streamCamara = null;
 
-// CONTROL DE ARRANQUE (Paso 5.3)
+// CONTROL DE ARRANQUE (Paso 5.3 + Cámara Selfie)
 document.addEventListener("DOMContentLoaded", () => {
-    // Si no tiene ID guardado, obligamos a que se registre
     if (!MI_USER_ID) {
+        // Obligar registro si no existe sesión
         document.getElementById('modal-registro').classList.remove('hidden');
         document.getElementById('btn-guardar-perfil').addEventListener('click', registrarNuevoUsuario);
+        
+        // Listeners para el hardware de la cámara
+        document.getElementById('btn-activar-camara').addEventListener('click', activarCamaraRegistro);
+        document.getElementById('btn-capturar-foto').addEventListener('click', capturarFotoRegistro);
     } else {
-        // Si ya está registrado, ocultamos el formulario de registro y conectamos la DB
         document.getElementById('modal-registro').classList.add('hidden');
         conectarBaseDeDatos();
     }
 
-    // Inicializar el resto de eventos de la App (Sobres y QR)
+    // Inicializar listeners globales
     document.getElementById('open-pack-trigger').addEventListener('click', abrirSobre);
     document.getElementById('btn-mi-qr').addEventListener('click', mostrarMiQR);
     document.getElementById('close-qr-btn').addEventListener('click', () => {
@@ -45,35 +50,88 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById('close-scanner-btn').addEventListener('click', detenerEscaneoCamara);
 });
 
-// FUNCIÓN PARA CREAR TU PERFIL / CROMO EN LA NUBE (Paso 5.3)
+// --- SISTEMA DE CAPTURA MULTIMEDIA (CÁMARA SELFIE) ---
+
+function activarCamaraRegistro() {
+    const video = document.getElementById('video-feed');
+    const placeholder = document.getElementById('foto-placeholder');
+    const btnActivar = document.getElementById('btn-activar-camara');
+    const btnCapturar = document.getElementById('btn-capturar-foto');
+
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: false })
+    .then(stream => {
+        streamCamara = stream;
+        video.srcObject = stream;
+        video.classList.remove('hidden');
+        placeholder.classList.add('hidden');
+        btnActivar.classList.add('hidden');
+        btnCapturar.classList.remove('hidden');
+    })
+    .catch(err => {
+        console.error("Fallo de hardware en cámara frontal: ", err);
+        alert("[ERROR]: No se pudo acceder a la cámara frontal de la consola.");
+    });
+}
+
+function capturarFotoRegistro() {
+    const video = document.getElementById('video-feed');
+    const canvas = document.getElementById('canvas-foto');
+    const btnCapturar = document.getElementById('btn-capturar-foto');
+    const btnActivar = document.getElementById('btn-activar-camara');
+
+    const ctx = canvas.getContext('2d');
+    canvas.width = 300;
+    canvas.height = 300;
+
+    // Procesar encuadre simétrico (1:1 Aspect Ratio)
+    const size = Math.min(video.videoWidth, video.videoHeight);
+    const sx = (video.videoWidth - size) / 2;
+    const sy = (video.videoHeight - size) / 2;
+
+    ctx.drawImage(video, sx, sy, size, size, 0, 0, 300, 300);
+
+    // Compresión del buffer de imagen para optimizar almacenamiento en Realtime Database
+    fotoBase64 = canvas.toDataURL('image/jpeg', 0.6);
+
+    // Liberar recursos de la cámara
+    if (streamCamara) {
+        streamCamara.getTracks().forEach(track => track.stop());
+    }
+
+    video.classList.add('hidden');
+    canvas.classList.remove('hidden');
+    btnCapturar.classList.add('hidden');
+    btnActivar.classList.remove('hidden');
+    btnActivar.innerText = "> REPETIR_CAPTURA";
+}
+
+// CREACIÓN DE PERFIL E INYECCIÓN EN FIREBASE
 function registrarNuevoUsuario() {
     const nombre = document.getElementById('reg-nombre').value.trim();
     const rol = document.getElementById('reg-rol').value.trim();
-    const avatar = document.getElementById('reg-avatar').value.trim();
-    const color = document.getElementById('reg-color').value;
 
-    if (!nombre || !rol || !avatar) {
-        alert("Por favor, completa todos los campos para crear tu cromo de comunidad.");
+    if (!nombre || !rol) {
+        alert("[WARN]: Datos incompletos detectados.");
+        return;
+    }
+    if (!fotoBase64) {
+        alert("[WARN]: Se requiere captura biométrica para emitir el cromo.");
         return;
     }
 
-    // Generamos un ID único basado en el tiempo para evitar duplicados
     const nuevoId = 'user_' + Date.now();
-    const datosCromo = { nombre, rol, avatar, color };
+    const datosCromo = { nombre, rol, avatar: fotoBase64, color: "#ca630e" };
 
-    // Guardamos la nueva figurita en el nodo global 'comunidad'
     set(ref(db, `comunidad/${nuevoId}`), datosCromo).then(() => {
-        // Guardamos el ID localmente para no pedir registro de nuevo
         localStorage.setItem('vos_user_id', nuevoId);
         MI_USER_ID = nuevoId;
 
-        // Ocultamos el registro, avisamos y arrancamos la aplicación
         document.getElementById('modal-registro').classList.add('hidden');
         conectarBaseDeDatos();
-        alert("¡Tu cromo ha sido impreso y añadido al álbum global! 🎉");
+        alert("[OK]: Cromo impreso en la base de datos de Agorlab. 🎉");
     }).catch(err => {
-        console.error("Error al registrar: ", err);
-        alert("Hubo un problema con la base de datos al guardar tu perfil.");
+        console.error("Fallo de enlace con Firebase: ", err);
+        alert("[ERROR]: Fallo crítico en la inyección de datos.");
     });
 }
 
@@ -86,7 +144,6 @@ function conectarBaseDeDatos() {
             generarEstructuraVisualAlbum();
             cargarProgresoUsuario();
         } else {
-            // Si eres el primero absoluto y la DB está vacía, mete las semillas
             inicializarBaseDeDatosSemilla();
         }
     });
@@ -117,7 +174,6 @@ function cargarProgresoUsuario() {
     get(dbRefProgreso).then((snapshot) => {
         miAlbum = snapshot.exists() ? snapshot.val() : {};
         
-        // Ponemos en 'false' las que el usuario todavía no descubrió
         Object.keys(datasetPersonas).forEach(id => {
             if (miAlbum[id] === undefined) miAlbum[id] = false;
         });
@@ -126,7 +182,7 @@ function cargarProgresoUsuario() {
     });
 }
 
-// 5. PINTAR A COLOR LAS FIGUS DESBLOQUEADAS
+// 5. RENDERIZADO AVANZADO (FOTO EN BASE64 O TEXTO SEMILLA)
 function actualizarInterfazAlbum() {
     let cartasPegadas = 0;
     let totalCartas = Object.keys(datasetPersonas).length;
@@ -140,8 +196,15 @@ function actualizarInterfazAlbum() {
             const datos = datasetPersonas[id];
             
             cardElement.classList.remove('locked');
-            cardElement.style.borderColor = datos.color;
-            cardElement.querySelector('.card-avatar').innerText = datos.avatar;
+            cardElement.style.borderColor = datos.color || "#ca630e";
+            
+            // Discriminador de tipo de renderizado para el Avatar
+            if (datos.avatar && datos.avatar.startsWith('data:image')) {
+                cardElement.querySelector('.card-avatar').innerHTML = `<img src="${datos.avatar}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
+            } else {
+                cardElement.querySelector('.card-avatar').innerText = datos.avatar || "👤";
+            }
+            
             cardElement.querySelector('.card-info h3').innerText = datos.nombre;
             cardElement.querySelector('.card-info p').innerText = datos.rol;
         }
@@ -163,7 +226,6 @@ function abrirSobre() {
 
     miAlbum[idGanado] = true;
 
-    // Guardamos el progreso de este usuario directamente en tu Firebase
     set(ref(db, `albumes_usuarios/${MI_USER_ID}`), miAlbum).then(() => {
         const cardElement = document.getElementById(`card-${idGanado}`);
         if (cardElement) {
@@ -171,18 +233,17 @@ function abrirSobre() {
             setTimeout(() => {
                 cardElement.style.transform = "scale(1)";
                 actualizarInterfazAlbum();
-                alert(`🎉 ¡Te tocó en tu base de datos: ${datasetPersonas[idGanado].nombre}!`);
+                alert(`🎉 ¡Te tocó: ${datasetPersonas[idGanado].nombre}!`);
             }, 200);
         }
     });
 }
 
-// Función auxiliar para meter datos de prueba la primera vez
 function inicializarBaseDeDatosSemilla() {
     const semilla = {
-        "u1": { nombre: "Alan Agor", rol: "Fundador", avatar: "🚀", color: "#FF5733" },
-        "u2": { nombre: "Sofía Dev", rol: "Programadora", avatar: "💻", color: "#33FF57" },
-        "u3": { nombre: "Carlos UX", rol: "Diseñador", avatar: "🎨", color: "#3357FF" }
+        "u1": { nombre: "Alan Agor", rol: "Fundador", avatar: "🚀", color: "#ca630e" },
+        "u2": { nombre: "Sofía Dev", rol: "Programadora", avatar: "💻", color: "#ca630e" },
+        "u3": { nombre: "Carlos UX", rol: "Diseñador", avatar: "🎨", color: "#ca630e" }
     };
     set(ref(db, 'comunidad'), semilla);
 }
@@ -191,7 +252,6 @@ function inicializarBaseDeDatosSemilla() {
 
 let html5QrcodeScanner = null;
 
-// B. Función para mostrar tu propio QR en pantalla
 function mostrarMiQR() {
     const container = document.getElementById('qrcode-container');
     container.innerHTML = ""; 
@@ -208,10 +268,8 @@ function mostrarMiQR() {
     document.getElementById('modal-mi-qr').classList.remove('hidden');
 }
 
-// C. Función para encender la cámara del celular
 function iniciarEscaneoCamara() {
     document.getElementById('modal-scanner').classList.remove('hidden');
-    
     html5QrcodeScanner = new Html5Qrcode("reader");
     
     const qrCodeSuccessCallback = (decodedText, decodedResult) => {
@@ -223,13 +281,12 @@ function iniciarEscaneoCamara() {
     
     html5QrcodeScanner.start({ facingMode: "environment" }, config, qrCodeSuccessCallback)
     .catch((err) => {
-        console.error("Error al iniciar cámara: ", err);
-        alert("No se pudo acceder a la cámara. Asegúrate de dar los permisos.");
+        console.error("Error al iniciar cámara trasera: ", err);
+        alert("No se pudo acceder a la cámara de escaneo.");
         detenerEscaneoCamara();
     });
 }
 
-// D. Apagar la cámara de forma segura
 function detenerEscaneoCamara() {
     document.getElementById('modal-scanner').classList.add('hidden');
     if (html5QrcodeScanner) {
@@ -239,7 +296,6 @@ function detenerEscaneoCamara() {
     }
 }
 
-// E. Procesar el ID obtenido por el escáner y guardarlo en Firebase
 function procesarCromoEscaneado(idEscaneado) {
     if (idEscaneado === MI_USER_ID) {
         alert("¡No te puedes escanear a vos mismo ingenioso! 😉");
@@ -247,7 +303,7 @@ function procesarCromoEscaneado(idEscaneado) {
     }
 
     if (datasetPersonas[idEscaneado] === undefined) {
-        alert("Este código QR no pertenece a ningún miembro registrado en este álbum.");
+        alert("Este código QR no pertenece a ningún miembro registrado.");
         return;
     }
 
