@@ -132,6 +132,26 @@ function actualizarInterfazAlbum() {
 
 // (Manten el resto de tus funciones de cámara, Qr, etc. tal cual)
 
+document.addEventListener("DOMContentLoaded", () => {
+    // 1. ¿Viene un código por la URL?
+    const urlParams = new URLSearchParams(window.location.search);
+    const salaEnUrl = urlParams.get('sala');
+    
+    if (salaEnUrl) {
+        localStorage.setItem('vos_room_id', salaEnUrl.toUpperCase());
+        ROOM_ID = salaEnUrl.toUpperCase();
+        window.history.replaceState({}, document.title, "/"); // Limpiamos la URL
+    }
+
+    // 2. Lógica normal de chequeo
+    if (!ROOM_ID) {
+        document.getElementById('modal-sala').classList.remove('hidden');
+        // ... resto de tu código
+    } else {
+        iniciarApp();
+    }
+});
+
 document.getElementById('btn-cambiar-sala').addEventListener('click', () => {
     if (confirm("¿Quieres salir de esta sala? Se cerrará tu sesión actual.")) {
         // Limpiamos los rastros
