@@ -11,93 +11,63 @@
 </head>
 <body>
     <div id="modal-registro" class="modal">
-    <div class="modal-content terminal-box">
-        <h2>[ NUEVO_REGISTRO ]</h2>
-        <p>Crea tu cromo e imprímelo en la base de datos global.</p>
-        
-        <input type="text" id="reg-nombre" placeholder="> Nombre y Apellido" class="reg-input">
-        <input type="text" id="reg-rol" placeholder="> Rol / Ocupación" class="reg-input">
-        
-        <div class="foto-registro-container">
-            <video id="video-feed" autoplay playsinline class="hidden"></video>
-            <canvas id="canvas-foto" class="hidden"></canvas>
-            <div id="foto-placeholder">[ SQUUSH_FACE_HERE ]</div>
+        <div class="modal-content terminal-box">
+            <h2>[ NUEVO_REGISTRO ]</h2>
+            <p>Crea tu cromo e imprímelo en la base de datos global.</p>
             
-            <button id="btn-activar-camara" class="btn-terminal-sm">> Activar Cámara</button>
-            <button id="btn-capturar-foto" class="btn-terminal-sm hidden">> Capturar</button>
+            <input type="text" id="reg-nombre" placeholder="> Nombre y Apellido" class="reg-input">
+            <input type="text" id="reg-rol" placeholder="> Rol / Ocupación" class="reg-input">
+            
+            <div class="foto-registro-container">
+                <video id="video-feed" autoplay playsinline class="hidden"></video>
+                <canvas id="canvas-foto" class="hidden"></canvas>
+                <div id="foto-placeholder">[ SQUUSH_FACE_HERE ]</div>
+                
+                <button id="btn-activar-camara" class="btn-terminal-sm">> Activar Cámara</button>
+                <button id="btn-capturar-foto" class="btn-terminal-sm hidden">> Capturar</button>
+            </div>
+
+            <button class="close-btn btn-interactivo" id="btn-guardar-perfil" style="margin-top: 25px; width: 100%;">[ INYECTAR_CROMO ]</button>
         </div>
-
-        <button class="close-btn btn-interactivo" id="btn-guardar-perfil" style="margin-top: 25px; width: 100%;">[ INYECTAR_CROMO ]</button>
     </div>
-</div>
     
-
     <!-- Encabezado de la App -->
     <header class="app-header">
         <h1>VOS: Comunidad</h1>
-        <div class="stats">Figus: <span id="counter">0/4</span></div>
+        <div class="stats">Figus: <span id="counter">0/0</span></div>
     </header>
 
-    <!-- Contenedor del Álbum (Sección de Cromos) -->
+    <!-- Contenedor del Álbum -->
     <main class="album-grid">
-        <!-- Cromo 1 (Bloqueado / Silueta) -->
-        <div class="card locked" id="card-1">
-            <div class="card-avatar">👤</div>
-            <div class="card-info">
-                <h3>???</h3>
-                <p>Bloqueado</p>
-            </div>
-        </div>
-
-        <!-- Cromo 2 (Bloqueado) -->
-        <div class="card locked" id="card-2">
-            <div class="card-avatar">👤</div>
-            <div class="card-info">
-                <h3>???</h3>
-                <p>Bloqueado</p>
-            </div>
-        </div>
-
-        <!-- Cromo 3 (Bloqueado) -->
-        <div class="card locked" id="card-3">
-            <div class="card-avatar">👤</div>
-            <div class="card-info">
-                <h3>???</h3>
-                <p>Bloqueado</p>
-            </div>
-        </div>
-
-        <!-- Cromo 4 (Bloqueado) -->
-        <div class="card locked" id="card-4">
-            <div class="card-avatar">👤</div>
-            <div class="card-info">
-                <h3>???</h3>
-                <p>Bloqueado</p>
-            </div>
-        </div>
+        <!-- El JS inyectará las cartas aquí -->
     </main>
+
+    <!-- Modales de QR -->
     <div id="modal-mi-qr" class="modal hidden">
-        <div class="modal-content">
+        <div class="modal-content terminal-box">
             <h2>Tu Código QR</h2>
-            <p>Muestralo para que te agreguen</p>
+            <p>Muéstralo para que te agreguen</p>
             <div id="qrcode-container"></div>
             <button class="close-btn" id="close-qr-btn">Cerrar</button>
         </div>
     </div>
 
     <div id="modal-scanner" class="modal hidden">
-        <div class="modal-content">
+        <div class="modal-content terminal-box">
             <h2>Escanea a un compañero</h2>
-            <div id="reader" style="width: 100%; max-width: 300px; margin: auto;"></div>
-            <button class="close-btn" id="close-scanner-btn">Cancelar</button>
+            <div id="reader" style="width: 100%; max-width: 300px; margin: auto; background: white;"></div>
+            <button class="close-btn" id="close-scanner-btn" style="margin-top: 15px;">Cancelar</button>
         </div>
     </div>
-    <!-- Botonera Inferior Fija (Estilo App Moderna) -->
+
+    <!-- Botonera Inferior Corregida -->
     <footer class="app-nav">
-        <button class="nav-btn active">📖 Álbum</button>
-        <button class="nav-btn pack-btn" id="open-pack-trigger">✨ Abrir Sobre</button>
-        <button class="nav-btn">📷 Escanear QR</button>
+        <button class="nav-btn active" id="btn-ver-album">📖 Álbum</button>
+        <button class="nav-btn pack-btn" id="open-pack-trigger">✨ Sobre</button>
+        <button class="nav-btn" id="btn-mi-qr">🪪 Mi QR</button>
+        <button class="nav-btn" id="btn-scan-qr">📷 Escanear</button>
     </footer>
+
     <script type="module" src="app.js"></script>
 </body>
 </html>
