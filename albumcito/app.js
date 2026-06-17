@@ -246,20 +246,45 @@ function iniciarTransferencia(idCromo) {
 function iniciarEscaneoCamara() {
     document.getElementById('modal-mi-qr').classList.add('hidden');
     document.getElementById('modal-scanner').classList.remove('hidden');
-    html5QrcodeScanner = new Html5Qrcode("reader");
-    html5QrcodeScanner.start({ facingMode: "environment" }, {
-    fps: 10,
-    qrbox: { width: 250, height: 250 }
-}, (decodedText) => {
-        detenerEscaneoCamara(); 
-        procesarCromoEscaneado(decodedText);
-    }).catch(() => { alert("Error al iniciar cámara trasera."); detenerEscaneoCamara(); });
-}
-
-function detenerEscaneoCamara() {
-    document.getElementById('modal-scanner').classList.add('hidden');
+    
+    // Aseguramos que la instancia anterior se destruya si quedó basura en memoria
     if (html5QrcodeScanner) {
-        html5QrcodeScanner.stop().then(() => html5QrcodeScanner = null).catch(e => console.log(e));
+        html5QrcodeScanner.clear();
+    }
+
+    html5QrcodeScanner = new Html5Qrcode("reader");
+    
+    html5QrcodeScanner.start(
+        { facingMode: "environment" }, 
+        {
+            fps: 10,
+            qrbox: { width: 250, height: 250 }
+        }, 
+        (decodedText) => {
+            // Éxito: detén el escaneo ANTES de procesar para evitar lecturas múltiples
+            detenerEscaneoCamara(); 
+            procesarCromoEscaneado(decodedText);
+        },
+        (errorMessage) => {
+            // IMPORTANTE: Esto ocurre miles de veces mientras la cámara busca.
+            // No alertes aquí, o bloquearás el navegador. 
+            // Solo logs para depuración.
+            console.log("Buscando QR...");
+        }
+    ).catch(err => {
+        alert("Error al acceder a la cámara. Asegúrate de dar permisos y usar HTTPS.");
+        console.error(err);
+        detenerEscaneoCamara();
+    });
+function detenerEscaneoCamara() {
+    if (html5QrcodeScanner && html5QrcodeScanner.isScanning) {
+        html5QrcodeScanner.stop().then(() => {
+            html5QrcodeScanner.clear(); // Limpia visualmente el div #reader
+            html5QrcodeScanner = null;
+            document.getElementById('modal-scanner').classList.add('hidden');
+        }).catch(err => console.error("Error al detener:", err));
+    } else {
+        document.getElementById('modal-scanner').classList.add('hidden');
     }
 }
 
