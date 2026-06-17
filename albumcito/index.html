@@ -11,20 +11,26 @@
 </head>
 <body>
     <div id="modal-registro" class="modal">
-        <div class="modal-content">
-            <h2>¡Crea tu Figurita!</h2>
-            <p>Completa tus datos para unirte al álbum de la comunidad</p>
+    <div class="modal-content terminal-box">
+        <h2>[ NUEVO_REGISTRO ]</h2>
+        <p>Crea tu cromo e imprímelo en la base de datos global.</p>
+        
+        <input type="text" id="reg-nombre" placeholder="> Nombre y Apellido" class="reg-input">
+        <input type="text" id="reg-rol" placeholder="> Rol / Ocupación" class="reg-input">
+        
+        <div class="foto-registro-container">
+            <video id="video-feed" autoplay playsinline class="hidden"></video>
+            <canvas id="canvas-foto" class="hidden"></canvas>
+            <div id="foto-placeholder">[ SQUUSH_FACE_HERE ]</div>
             
-            <input type="text" id="reg-nombre" placeholder="Tu Nombre y Apellido" class="reg-input">
-            <input type="text" id="reg-rol" placeholder="¿Qué haces? (ej: Programador)" class="reg-input">
-            <input type="text" id="reg-avatar" placeholder="Elige un Emoji (ej: 🚀)" class="reg-input" maxlength="2">
-            
-            <label for="reg-color" style="display:block; margin: 10px 0 5px; font-size: 0.9rem; color: #a0a0a0;">Color del borde de tu cromo:</label>
-            <input type="color" id="reg-color" value="#6200ee" class="reg-color-picker">
-
-            <button class="close-btn" id="btn-guardar-perfil" style="background: #6200ee; margin-top: 15px;">Crear mi Cromo</button>
+            <button id="btn-activar-camara" class="btn-terminal-sm">> Activar Cámara</button>
+            <button id="btn-capturar-foto" class="btn-terminal-sm hidden">> Capturar</button>
         </div>
+
+        <button class="close-btn btn-interactivo" id="btn-guardar-perfil" style="margin-top: 25px; width: 100%;">[ INYECTAR_CROMO ]</button>
     </div>
+</div>
+    
 
     <!-- Encabezado de la App -->
     <header class="app-header">
