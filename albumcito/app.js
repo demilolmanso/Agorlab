@@ -138,3 +138,105 @@ function inicializarBaseDeDatosSemilla() {
 document.addEventListener("DOMContentLoaded", () => {
     document.getElementById('open-pack-trigger').addEventListener('click', abrirSobre);
 });
+
+// --- LÓGICA DEL PASO 4: QR e INTERCAMBIOS ---
+
+let html5QrcodeScanner = null;
+
+// A. Generar e Inicializar los eventos de los botones cuando cargue la página
+document.addEventListener("DOMContentLoaded", () => {
+    // Escuchar el botón de Abrir Sobre (Ya lo tenías)
+    document.getElementById('open-pack-trigger').addEventListener('click', abrirSobre);
+
+    // Botón para Mostrar Mi QR
+    document.getElementById('btn-mi-qr').addEventListener('click', mostrarMiQR);
+    document.getElementById('close-qr-btn').addEventListener('click', () => {
+        document.getElementById('modal-mi-qr').classList.add('hidden');
+    });
+
+    // Botón para Abrir Escáner de Cámara
+    document.getElementById('btn-scan-qr').addEventListener('click', iniciarEscaneoCamara);
+    document.getElementById('close-scanner-btn').addEventListener('click', detenerEscaneoCamara);
+});
+
+// B. Función para mostrar tu propio QR en pantalla
+function mostrarMiQR() {
+    const container = document.getElementById('qrcode-container');
+    container.innerHTML = ""; // Limpiar QR anterior si existe
+    
+    // Generar el QR apuntando a tu ID de usuario único
+    new QRCode(container, {
+        text: MI_USER_ID,
+        width: 180,
+        height: 180,
+        colorDark : "#000000",
+        colorLight : "#ffffff",
+        correctLevel : QRCode.CorrectLevel.H
+    });
+
+    document.getElementById('modal-mi-qr').classList.remove('hidden');
+}
+
+// C. Función para encender la cámara del celular
+function iniciarEscaneoCamara() {
+    document.getElementById('modal-scanner').classList.remove('hidden');
+    
+    html5QrcodeScanner = new Html5Qrcode("reader");
+    
+    const qrCodeSuccessCallback = (decodedText, decodedResult) => {
+        // decodedText contiene el ID escaneado (ej: "user_4732")
+        detenerEscaneoCamara();
+        procesarCromoEscaneado(decodedText);
+    };
+    
+    const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+    
+    // Iniciar con la cámara trasera por defecto
+    html5QrcodeScanner.start({ facingMode: "environment" }, config, qrCodeSuccessCallback)
+    .catch((err) => {
+        console.error("Error al iniciar cámara: ", err);
+        alert("No se pudo acceder a la cámara. Asegúrate de dar los permisos.");
+        detenerEscaneoCamara();
+    });
+}
+
+// D. Apagar la cámara de forma segura
+function detenerEscaneoCamara() {
+    document.getElementById('modal-scanner').classList.add('hidden');
+    if (html5QrcodeScanner) {
+        html5QrcodeScanner.stop().then(() => {
+            html5QrcodeScanner = null;
+        }).catch(err => console.log("Error apagando cámara: ", err));
+    }
+}
+
+// E. Procesar el ID obtenido por el escáner y guardarlo en Firebase
+function procesarCromoEscaneado(idEscaneado) {
+    if (idEscaneado === MI_USER_ID) {
+        alert("¡No te puedes escanear a vos mismo ingenioso! 😉");
+        return;
+    }
+
+    // Verificar si ese ID existe de verdad en la base de datos de la comunidad
+    if (datasetPersonas[idEscaneado] === undefined) {
+        alert("Este código QR no pertenece a ningún miembro registrado en este álbum.");
+        return;
+    }
+
+    // Si ya lo tenías desbloqueado
+    if (miAlbum[idEscaneado] === true) {
+        alert(`Ya tienes la figurita de ${datasetPersonas[idEscaneado].nombre} en tu álbum.`);
+        return;
+    }
+
+    // AGREGARLO AL ÁLBUM DIRECTO EN LA NUBE
+    miAlbum[idEscaneado] = true;
+    
+    // Importamos dinámicamente la base de datos para actualizarla
+    import("https://www.gstatic.com/firebasejs/12.15.0/firebase-database.js").then((FB) => {
+        FB.set(FB.ref(db, `albumes_usuarios/${MI_USER_ID}`), miAlbum).then(() => {
+            actualizarInterfazAlbum();
+            alert(`🎉 ¡ÉXITO! Escaneaste y desbloqueaste a: ${datasetPersonas[idEscaneado].nombre}`);
+        });
+    });
+}
