@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VOS: Álbum</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Encabezado de la App -->
+    <header class="app-header">
+        <h1>VOS: Comunidad</h1>
+        <div class="stats">Figus: <span id="counter">0/4</span></div>
+    </header>
+
+    <!-- Contenedor del Álbum (Sección de Cromos) -->
+    <main class="album-grid">
+        <!-- Cromo 1 (Bloqueado / Silueta) -->
+        <div class="card locked" id="card-1">
+            <div class="card-avatar">👤</div>
+            <div class="card-info">
+                <h3>???</h3>
+                <p>Bloqueado</p>
+            </div>
+        </div>
+
+        <!-- Cromo 2 (Bloqueado) -->
+        <div class="card locked" id="card-2">
+            <div class="card-avatar">👤</div>
+            <div class="card-info">
+                <h3>???</h3>
+                <p>Bloqueado</p>
+            </div>
+        </div>
+
+        <!-- Cromo 3 (Bloqueado) -->
+        <div class="card locked" id="card-3">
+            <div class="card-avatar">👤</div>
+            <div class="card-info">
+                <h3>???</h3>
+                <p>Bloqueado</p>
+            </div>
+        </div>
+
+        <!-- Cromo 4 (Bloqueado) -->
+        <div class="card locked" id="card-4">
+            <div class="card-avatar">👤</div>
+            <div class="card-info">
+                <h3>???</h3>
+                <p>Bloqueado</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Botonera Inferior Fija (Estilo App Moderna) -->
+    <footer class="app-nav">
+        <button class="nav-btn active">📖 Álbum</button>
+        <button class="nav-btn pack-btn" id="open-pack-trigger">✨ Abrir Sobre</button>
+        <button class="nav-btn">📷 Escanear QR</button>
+    </footer>
+
+</body>
+</html>
