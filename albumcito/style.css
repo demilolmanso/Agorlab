@@ -17,14 +17,14 @@ body {
 .app-header h1 { font-size: 1.2rem; color: #ca630e; font-weight: bold; }
 .stats { border: 1px solid #ca630e; padding: 5px 12px; font-size: 0.9rem; background: #050505; color: #ca630e;}
 
-/* Grid Adaptable */
+/* Grid Adaptable (Sin el relleno inferior molesto) */
 .album-grid {
     flex: 1;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); /* Se adapta a la pantalla sin romperse */
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
     gap: 20px;
     padding: 20px;
-    padding-bottom: 80px; /* Espacio para que el último cromo no quede tapado */
+    /* padding-bottom eliminado porque la parte inferior ya está libre */
     overflow-y: auto;
 }
 
@@ -69,10 +69,14 @@ body {
 .card-info h3 { font-size: 1rem; color: #ca630e; margin-bottom: 2px; }
 .card-info p { font-size: 0.75rem; color: #555; font-weight: bold;}
 
-/* Navegación Inferior */
+/* Navegación Superior (Barra de Pestañas) */
 .app-nav {
-    background-color: #0d0d0d; display: flex; justify-content: space-around;
-    padding: 12px 5px; border-top: 2px solid #ca630e; z-index: 10;
+    background-color: #0d0d0d; 
+    display: flex; 
+    justify-content: space-around;
+    padding: 12px 5px; 
+    border-bottom: 2px solid #ca630e; /* Cambiamos el borde hacia abajo */
+    z-index: 10;
 }
 .nav-btn {
     background: none; border: none; color: #888; font-size: 0.8rem;
