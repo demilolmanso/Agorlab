@@ -244,31 +244,34 @@ function iniciarTransferencia(idCromo) {
 }
 
 function iniciarEscaneoCamara() {
-    document.getElementById('modal-mi-qr').classList.add('hidden');
-    document.getElementById('modal-scanner').classList.remove('hidden');
+    console.log("Iniciando escáner...");
+    const modal = document.getElementById('modal-scanner');
+    modal.classList.remove('hidden');
     
+    // Si ya existe una instancia, la destruimos antes de crear la nueva
     if (html5QrcodeScanner) {
-        html5QrcodeScanner.clear();
+        html5QrcodeScanner.clear().catch(e => console.log("Error al limpiar:", e));
     }
 
     html5QrcodeScanner = new Html5Qrcode("reader");
     
+    // Configuración mínima necesaria
+    const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+    
     html5QrcodeScanner.start(
         { facingMode: "environment" }, 
-        {
-            fps: 10,
-            qrbox: { width: 250, height: 250 }
-        }, 
+        config, 
         (decodedText) => {
+            console.log("¡QR Detectado!:", decodedText);
             detenerEscaneoCamara(); 
             procesarCromoEscaneado(decodedText);
         },
         (errorMessage) => {
-            console.log("Buscando QR...");
+            // Esto es normal mientras la cámara busca
         }
     ).catch(err => {
-        alert("Error al acceder a la cámara. Asegúrate de dar permisos y usar HTTPS.");
-        console.error(err);
+        console.error("Error crítico de cámara:", err);
+        alert("No se pudo iniciar la cámara: " + err);
         detenerEscaneoCamara();
     });
 } // <--- ESTA LLAVE CIERRA iniciarEscaneoCamara
