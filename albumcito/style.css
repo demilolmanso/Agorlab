@@ -1,154 +1,7 @@
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-}
+/* ==========================================================================
+   ÁLBUM VOS - ESTILO RETRO TERMINAL AGORLAB (RECONSTRUIDO DESDE CERO)
+   ========================================================================== */
 
-body {
-    background-color: #121212;
-    color: #ffffff;
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    overflow: hidden;
-}
-
-/* Header */
-.app-header {
-    padding: 20px;
-    background-color: #1f1f1f;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid #2d2d2d;
-}
-
-.app-header h1 { font-size: 1.2rem; font-weight: bold; }
-.stats { background: #6200ee; padding: 5px 12px; border-radius: 20px; font-size: 0.9rem; }
-
-/* Grid del Álbum */
-.album-grid {
-    flex: 1;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
-    padding: 20px;
-    overflow-y: auto;
-}
-
-/* Estilo de los Cromos */
-.card {
-    background: #1f1f1f;
-    border-radius: 12px;
-    padding: 15px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    border: 2px solid #2d2d2d;
-    transition: all 0.3s ease;
-}
-
-/* Efecto Silueta / Bloqueado */
-.card.locked {
-    filter: grayscale(1) opacity(0.4);
-    border-style: dashed;
-}
-
-.card-avatar {
-    font-size: 3rem;
-    margin-bottom: 10px;
-}
-
-.card-info h3 { font-size: 1rem; margin-bottom: 4px; }
-.card-info p { font-size: 0.8rem; color: #a0a0a0; }
-
-/* Navegación Inferior */
-.app-nav {
-    background-color: #1f1f1f;
-    display: flex;
-    justify-content: space-around;
-    padding: 12px;
-    border-top: 1px solid #2d2d2d;
-}
-
-.nav-btn {
-    background: none;
-    border: none;
-    color: #a0a0a0;
-    font-size: 0.9rem;
-    cursor: pointer;
-}
-
-.nav-btn.active { color: #6200ee; font-weight: bold; }
-.pack-btn {
-    background: #6200ee;
-    color: white;
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-weight: bold;
-}
-/* Estilos para Ventanas Modales */
-.modal {
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.85);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-    transition: opacity 0.3s ease;
-}
-.modal.hidden { display: none !important; }
-.modal-content {
-    background: #1f1f1f;
-    padding: 25px;
-    border-radius: 16px;
-    text-align: center;
-    width: 85%;
-    max-width: 340px;
-    border: 1px solid #2d2d2d;
-}
-.modal-content h2 { font-size: 1.2rem; margin-bottom: 10px; }
-.modal-content p { font-size: 0.9rem; color: #a0a0a0; margin-bottom: 20px; }
-#qrcode-container {
-    background: white;
-    padding: 15px;
-    border-radius: 10px;
-    display: inline-block;
-    margin-bottom: 20px;
-}
-#qrcode-container img { margin: 0 auto; }
-.close-btn {
-    background: #ff3b30;
-    color: white; border: none;
-    padding: 10px 20px; border-radius: 20px;
-    font-weight: bold; cursor: pointer; width: 100%;
-}
-#btn-mi-qr { color: #a0a0a0; font-size: 0.9rem; background: none; border: none; cursor: pointer;}
-
-/* Estilos para el formulario de registro */
-.reg-input {
-    width: 100%;
-    padding: 12px;
-    margin-bottom: 12px;
-    background: #2d2d2d;
-    border: 1px solid #444;
-    border-radius: 8px;
-    color: white;
-    font-size: 1rem;
-}
-.reg-input:focus { outline: none; border-color: #6200ee; }
-.reg-color-picker {
-    width: 100%;
-    height: 40px;
-    border: none;
-    background: none;
-    cursor: pointer;
-}
-/* --- CONFIGURACIÓN ESTILO AGORLAB RETRO --- */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -157,100 +10,211 @@ body {
 }
 
 body {
-    background-color: #0d0d0d; /* Fondo ultra oscuro */
-    color: #e2e2e2;
+    background-color: #0d0d0d;
+    color: #ca630e;
     display: flex;
     flex-direction: column;
     height: 100vh;
     overflow: hidden;
+    letter-spacing: 1px;
 }
 
 /* Header */
 .app-header {
-    padding: 20px;
+    padding: 15px 20px;
     background-color: #050505;
     display: flex;
     justify-content: space-between;
     align-items: center;
     border-bottom: 1px dashed #ca630e;
 }
-.app-header h1 { font-size: 1.2rem; color: #ca630e; font-weight: bold; }
-.stats { border: 1px solid #ca630e; color: #ca630e; padding: 5px 12px; font-size: 0.9rem; }
+.app-header h1 { 
+    font-size: 1.1rem; 
+    font-weight: bold; 
+}
+.stats { 
+    border: 1px dashed #ca630e; 
+    padding: 4px 10px; 
+    font-size: 0.85rem; 
+    background-color: rgba(5, 5, 5, 0.8);
+}
 
-/* Grid del Álbum */
+/* Grid del Álbum (Figuritas en formato Grande) */
 .album-grid {
     flex: 1;
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 15px;
-    padding: 20px;
+    padding: 15px;
     overflow-y: auto;
 }
+.album-grid.hidden {
+    display: none !important;
+}
 
-/* Tarjetas Estilo Componente Electrónico */
+/* Estilo de los Cromos Grandes y Verticales */
 .card {
     background: #121212;
     border: 1px solid #ca630e;
-    padding: 15px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     text-align: center;
-    transition: all 0.2s ease-in-out;
+    border-radius: 0px; /* Bordes rectos tipo consola */
+    overflow: hidden;
+    min-height: 250px;
+    transition: transform 0.2s ease-in-out;
 }
 
-/* Tarjetas Bloqueadas (Estilo de la captura, atenuadas) */
+/* Tarjetas Bloqueadas (Siluetas atenuadas) */
 .card.locked {
-    border: 1px dashed rgba(202, 99, 14, 0.3);
+    border: 1px dashed rgba(202, 99, 14, 0.25);
     background: #080808;
 }
-.card.locked .card-avatar, .card.locked .card-info h3 {
-    color: rgba(202, 99, 14, 0.2);
+.card.locked .card-avatar {
+    color: rgba(202, 99, 14, 0.15);
+    background: #050505;
+}
+.card.locked .card-info h3, 
+.card.locked .card-info p {
+    color: rgba(202, 99, 14, 0.25);
 }
 
+/* El contenedor de la foto: ahora es gigante y ocupa el ancho */
 .card-avatar {
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
-    border: 1px dashed #ca630e;
+    width: 100%;
+    height: 170px;
+    border-bottom: 1px dashed #ca630e;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 2rem;
-    margin-bottom: 10px;
+    font-size: 3.5rem;
+    background: #161616;
     overflow: hidden;
+}
+.card-avatar img {
+    width: 100%;
+    height: 100%;
     object-fit: cover;
 }
 
-.card-info h3 { font-size: 1rem; color: #ca630e; margin-bottom: 4px; }
-.card-info p { font-size: 0.8rem; color: #a0a0a0; }
+/* Textos informativos de la figurita */
+.card-info {
+    padding: 10px 5px;
+    width: 100%;
+}
+.card-info h3 { 
+    font-size: 0.95rem; 
+    color: #ca630e; 
+    margin-bottom: 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.card-info p { 
+    font-size: 0.75rem; 
+    color: #a0a0a0; 
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Navegación Inferior Estilo Terminal */
+.app-nav {
+    background-color: #050505;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 12px;
+    border-top: 1px dashed #ca630e;
+}
+.nav-btn {
+    background: transparent;
+    border: 1px dashed transparent;
+    color: rgba(202, 99, 14, 0.6);
+    font-size: 0.9rem;
+    padding: 8px 12px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.nav-btn.active, .nav-btn:hover { 
+    color: #e2e2e2; 
+    border-color: #ca630e;
+    background-color: #ca630e;
+    color: #050505;
+}
+.pack-btn {
+    border: 1px dashed #ca630e;
+    color: #ca630e;
+}
 
 /* Ventanas Modales Terminal */
+.modal {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+.modal.hidden { display: none !important; }
+
 .modal-content.terminal-box {
     background: #0d0d0d;
     border: 1px dashed #ca630e;
     color: #ca630e;
+    padding: 25px;
+    text-align: center;
+    width: 85%;
+    max-width: 340px;
 }
+.modal-content h2 { font-size: 1.1rem; margin-bottom: 10px; }
+.modal-content p { font-size: 0.85rem; color: #a0a0a0; margin-bottom: 15px; }
+
+#qrcode-container {
+    background: #ffffff;
+    padding: 10px;
+    display: inline-block;
+    margin-bottom: 15px;
+}
+#qrcode-container img { margin: 0 auto; }
+
+.btn-interactivo {
+    background: transparent;
+    color: #ca630e;
+    border: 1px dashed #ca630e;
+    padding: 10px 15px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.2s ease-in-out;
+}
+.btn-interactivo:hover {
+    background-color: #ca630e;
+    color: #0d0d0d;
+}
+
+/* Inputs del Registro */
 .reg-input {
     width: 100%;
-    padding: 12px;
+    padding: 10px;
     margin-bottom: 12px;
     background: #121212;
     border: 1px dashed #ca630e;
     color: #e2e2e2;
-    font-size: 1rem;
+    font-size: 0.95rem;
 }
+.reg-input:focus { outline: none; background: #161616; }
 
-/* Módulo de cámara interna */
-.foto-registro-container {
-    margin: 15px 0;
-    text-align: center;
-}
+/* Cámara de fotos interna */
+.foto-registro-container { margin: 10px 0; }
 #video-feed, #canvas-foto, #foto-placeholder {
-    width: 140px;
-    height: 140px;
-    border-radius: 50%;
+    width: 130px;
+    height: 130px;
     border: 1px dashed #ca630e;
     margin: 0 auto 10px auto;
     display: flex;
@@ -263,13 +227,8 @@ body {
     background: transparent;
     border: 1px solid #ca630e;
     color: #ca630e;
-    padding: 5px 10px;
-    font-size: 0.8rem;
+    padding: 4px 10px;
+    font-size: 0.75rem;
     cursor: pointer;
-    margin: 0 4px;
 }
-.btn-terminal-sm:hover {
-    background: #ca630e;
-    color: #0d0d0d;
-}
-.hidden { display: none !important; }
+.btn-terminal-sm:hover { background: #ca630e; color: #0d0d0d; }
