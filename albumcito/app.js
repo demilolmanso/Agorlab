@@ -245,49 +245,78 @@ function iniciarTransferencia(idCromo) {
 
 function iniciarEscaneoCamara() {
     console.log("Iniciando escáner...");
+
     const modal = document.getElementById('modal-scanner');
     modal.classList.remove('hidden');
-    
-    // Si ya existe una instancia, la destruimos antes de crear la nueva
+
+    const reader = document.getElementById("reader");
+
+    if (!reader) {
+        alert("No existe el div #reader");
+        return;
+    }
+
+    reader.innerHTML = "";
+
     if (html5QrcodeScanner) {
-        html5QrcodeScanner.clear().catch(e => console.log("Error al limpiar:", e));
+        try {
+            html5QrcodeScanner.stop();
+        } catch(e) {}
+        try {
+            html5QrcodeScanner.clear();
+        } catch(e) {}
     }
 
     html5QrcodeScanner = new Html5Qrcode("reader");
-    
-    // Configuración mínima necesaria
-    const config = { fps: 10, qrbox: { width: 250, height: 250 } };
-    
+
     html5QrcodeScanner.start(
-        { facingMode: "environment" }, 
-        config, 
+        { facingMode: "environment" },
+        {
+            fps: 15,
+            qrbox: 200,
+            aspectRatio: 1.0
+        },
         (decodedText) => {
-            console.log("¡QR Detectado!:", decodedText);
-            detenerEscaneoCamara(); 
-            procesarCromoEscaneado(decodedText);
+            console.log("QR LEÍDO:", decodedText);
+
+            detenerEscaneoCamara();
+
+            setTimeout(() => {
+                procesarCromoEscaneado(decodedText.trim());
+            }, 300);
         },
         (errorMessage) => {
-            // Esto es normal mientras la cámara busca
+            console.log("Buscando QR...");
         }
-    ).catch(err => {
-        console.error("Error crítico de cámara:", err);
-        alert("No se pudo iniciar la cámara: " + err);
-        detenerEscaneoCamara();
+    )
+    .then(() => {
+        console.log("Cámara iniciada correctamente");
+    })
+    .catch(err => {
+        console.error(err);
+        alert("Error iniciando escáner: " + err);
     });
 } // <--- ESTA LLAVE CIERRA iniciarEscaneoCamara
 
 // --- AHORA LAS FUNCIONES ESTÁN FUERA, COMO DEBE SER ---
 
 function detenerEscaneoCamara() {
-    if (html5QrcodeScanner && html5QrcodeScanner.isScanning) {
-        html5QrcodeScanner.stop().then(() => {
-            html5QrcodeScanner.clear();
+    if (!html5QrcodeScanner) {
+        document.getElementById('modal-scanner').classList.add('hidden');
+        return;
+    }
+
+    html5QrcodeScanner.stop()
+        .then(() => {
+            return html5QrcodeScanner.clear();
+        })
+        .catch(err => {
+            console.log(err);
+        })
+        .finally(() => {
             html5QrcodeScanner = null;
             document.getElementById('modal-scanner').classList.add('hidden');
-        }).catch(err => console.error("Error al detener:", err));
-    } else {
-        document.getElementById('modal-scanner').classList.add('hidden');
-    }
+        });
 }
 
 function procesarCromoEscaneado(idEscaneado) {
