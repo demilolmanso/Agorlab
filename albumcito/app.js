@@ -247,7 +247,6 @@ function iniciarEscaneoCamara() {
     document.getElementById('modal-mi-qr').classList.add('hidden');
     document.getElementById('modal-scanner').classList.remove('hidden');
     
-    // Aseguramos que la instancia anterior se destruya si quedó basura en memoria
     if (html5QrcodeScanner) {
         html5QrcodeScanner.clear();
     }
@@ -261,14 +260,10 @@ function iniciarEscaneoCamara() {
             qrbox: { width: 250, height: 250 }
         }, 
         (decodedText) => {
-            // Éxito: detén el escaneo ANTES de procesar para evitar lecturas múltiples
             detenerEscaneoCamara(); 
             procesarCromoEscaneado(decodedText);
         },
         (errorMessage) => {
-            // IMPORTANTE: Esto ocurre miles de veces mientras la cámara busca.
-            // No alertes aquí, o bloquearás el navegador. 
-            // Solo logs para depuración.
             console.log("Buscando QR...");
         }
     ).catch(err => {
@@ -276,10 +271,14 @@ function iniciarEscaneoCamara() {
         console.error(err);
         detenerEscaneoCamara();
     });
+} // <--- ESTA LLAVE CIERRA iniciarEscaneoCamara
+
+// --- AHORA LAS FUNCIONES ESTÁN FUERA, COMO DEBE SER ---
+
 function detenerEscaneoCamara() {
     if (html5QrcodeScanner && html5QrcodeScanner.isScanning) {
         html5QrcodeScanner.stop().then(() => {
-            html5QrcodeScanner.clear(); // Limpia visualmente el div #reader
+            html5QrcodeScanner.clear();
             html5QrcodeScanner = null;
             document.getElementById('modal-scanner').classList.add('hidden');
         }).catch(err => console.error("Error al detener:", err));
