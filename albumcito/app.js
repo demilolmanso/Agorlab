@@ -228,7 +228,11 @@ function abrirSobre() {
 function mostrarMiQR() {
     const container = document.getElementById('qrcode-container');
     container.innerHTML = ""; 
-    new QRCode(container, { text: MI_USER_ID, width: 180, height: 180 });
+    new QRCode(container, {
+    text: MI_USER_ID,
+    width: 300,
+    height: 300
+});
     document.getElementById('modal-mi-qr').classList.remove('hidden');
 }
 
@@ -243,7 +247,10 @@ function iniciarEscaneoCamara() {
     document.getElementById('modal-mi-qr').classList.add('hidden');
     document.getElementById('modal-scanner').classList.remove('hidden');
     html5QrcodeScanner = new Html5Qrcode("reader");
-    html5QrcodeScanner.start({ facingMode: "environment" }, { fps: 10, qrbox: { width: 250, height: 250 } }, (decodedText) => {
+    html5QrcodeScanner.start({ facingMode: "environment" }, {
+    fps: 10,
+    qrbox: { width: 250, height: 250 }
+}, (decodedText) => {
         detenerEscaneoCamara(); 
         procesarCromoEscaneado(decodedText);
     }).catch(() => { alert("Error al iniciar cámara trasera."); detenerEscaneoCamara(); });
