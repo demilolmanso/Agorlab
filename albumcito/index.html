@@ -6,6 +6,8 @@
     <title>VOS: Álbum</title>
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode"></script>
 </head>
 <body>
 
@@ -53,7 +55,22 @@
             </div>
         </div>
     </main>
+    <div id="modal-mi-qr" class="modal hidden">
+        <div class="modal-content">
+            <h2>Tu Código QR</h2>
+            <p>Muestralo para que te agreguen</p>
+            <div id="qrcode-container"></div>
+            <button class="close-btn" id="close-qr-btn">Cerrar</button>
+        </div>
+    </div>
 
+    <div id="modal-scanner" class="modal hidden">
+        <div class="modal-content">
+            <h2>Escanea a un compañero</h2>
+            <div id="reader" style="width: 100%; max-width: 300px; margin: auto;"></div>
+            <button class="close-btn" id="close-scanner-btn">Cancelar</button>
+        </div>
+    </div>
     <!-- Botonera Inferior Fija (Estilo App Moderna) -->
     <footer class="app-nav">
         <button class="nav-btn active">📖 Álbum</button>
