@@ -36,7 +36,12 @@
         <h1>VOS: Comunidad</h1>
         <div class="stats">Figus: <span id="counter">0/0</span></div>
     </header>
-
+<nav class="app-nav">
+        <button class="nav-btn active" id="btn-ver-album">📖 Álbum</button>
+        <button class="nav-btn pack-btn" id="open-pack-trigger">✨ Sobre</button>
+        <button class="nav-btn" id="btn-mi-qr">🪪 Mi QR</button>
+        <button class="nav-btn" id="btn-scan-qr">📷 Escanear</button>
+    </nav>
     <!-- Contenedor del Álbum -->
     <main class="album-grid">
         <!-- El JS inyectará las cartas aquí -->
@@ -59,14 +64,6 @@
             <button class="close-btn" id="close-scanner-btn" style="margin-top: 15px;">Cancelar</button>
         </div>
     </div>
-
-    <!-- Botonera Inferior Corregida -->
-    <footer class="app-nav">
-        <button class="nav-btn active" id="btn-ver-album">📖 Álbum</button>
-        <button class="nav-btn pack-btn" id="open-pack-trigger">✨ Sobre</button>
-        <button class="nav-btn" id="btn-mi-qr">🪪 Mi QR</button>
-        <button class="nav-btn" id="btn-scan-qr">📷 Escanear</button>
-    </footer>
 
     <script type="module" src="app.js"></script>
 </body>
