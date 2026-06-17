@@ -131,3 +131,14 @@ function actualizarInterfazAlbum() {
 }
 
 // (Manten el resto de tus funciones de cámara, Qr, etc. tal cual)
+
+document.getElementById('btn-cambiar-sala').addEventListener('click', () => {
+    if (confirm("¿Quieres salir de esta sala? Se cerrará tu sesión actual.")) {
+        // Limpiamos los rastros
+        localStorage.removeItem('vos_room_id');
+        localStorage.removeItem('vos_user_id');
+        
+        // Recargamos la app para que vuelva a pedir la sala
+        location.reload(); 
+    }
+});
