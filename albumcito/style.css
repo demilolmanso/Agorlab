@@ -148,3 +148,128 @@ body {
     background: none;
     cursor: pointer;
 }
+/* --- CONFIGURACIÓN ESTILO AGORLAB RETRO --- */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+body {
+    background-color: #0d0d0d; /* Fondo ultra oscuro */
+    color: #e2e2e2;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* Header */
+.app-header {
+    padding: 20px;
+    background-color: #050505;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px dashed #ca630e;
+}
+.app-header h1 { font-size: 1.2rem; color: #ca630e; font-weight: bold; }
+.stats { border: 1px solid #ca630e; color: #ca630e; padding: 5px 12px; font-size: 0.9rem; }
+
+/* Grid del Álbum */
+.album-grid {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+/* Tarjetas Estilo Componente Electrónico */
+.card {
+    background: #121212;
+    border: 1px solid #ca630e;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    transition: all 0.2s ease-in-out;
+}
+
+/* Tarjetas Bloqueadas (Estilo de la captura, atenuadas) */
+.card.locked {
+    border: 1px dashed rgba(202, 99, 14, 0.3);
+    background: #080808;
+}
+.card.locked .card-avatar, .card.locked .card-info h3 {
+    color: rgba(202, 99, 14, 0.2);
+}
+
+.card-avatar {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    border: 1px dashed #ca630e;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    margin-bottom: 10px;
+    overflow: hidden;
+    object-fit: cover;
+}
+
+.card-info h3 { font-size: 1rem; color: #ca630e; margin-bottom: 4px; }
+.card-info p { font-size: 0.8rem; color: #a0a0a0; }
+
+/* Ventanas Modales Terminal */
+.modal-content.terminal-box {
+    background: #0d0d0d;
+    border: 1px dashed #ca630e;
+    color: #ca630e;
+}
+.reg-input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 12px;
+    background: #121212;
+    border: 1px dashed #ca630e;
+    color: #e2e2e2;
+    font-size: 1rem;
+}
+
+/* Módulo de cámara interna */
+.foto-registro-container {
+    margin: 15px 0;
+    text-align: center;
+}
+#video-feed, #canvas-foto, #foto-placeholder {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    border: 1px dashed #ca630e;
+    margin: 0 auto 10px auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #121212;
+    object-fit: cover;
+}
+.btn-terminal-sm {
+    background: transparent;
+    border: 1px solid #ca630e;
+    color: #ca630e;
+    padding: 5px 10px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    margin: 0 4px;
+}
+.btn-terminal-sm:hover {
+    background: #ca630e;
+    color: #0d0d0d;
+}
+.hidden { display: none !important; }
