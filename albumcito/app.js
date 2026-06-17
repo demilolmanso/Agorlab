@@ -6,7 +6,7 @@ import { getDatabase, ref, set, get, onValue } from "https://www.gstatic.com/fir
 const firebaseConfig = {
     apiKey: "AIzaSyBm8N4Rw03An_kOUJNXqw_XZFh2ovlFIE0",
     authDomain: "vos-album.firebaseapp.com",
-    databaseURL: "https://vos-album-default-rtdb.firebaseio.com", // Agregamos la URL estándar de tu DB
+    databaseURL: "https://vos-album-default-rtdb.firebaseio.com", 
     projectId: "vos-album",
     storageBucket: "vos-album.firebasestorage.app",
     messagingSenderId: "327624238972",
@@ -17,27 +17,80 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-// Creamos un ID de usuario simulado para rastrear quién está abriendo la app en este celular
-if (!localStorage.getItem('vos_user_id')) {
-    localStorage.setItem('vos_user_id', 'user_' + Math.floor(Math.random() * 10000));
-}
-const MI_USER_ID = localStorage.getItem('vos_user_id');
+// Revisamos si el usuario ya se registró alguna vez en este dispositivo
+let MI_USER_ID = localStorage.getItem('vos_user_id') || null;
 
 let datasetPersonas = {};
 let miAlbum = {};
 
-// 3. ESCUCHAR LA BASE DE DATOS EN TIEMPO REAL
-const dbRefComunidad = ref(db, 'comunidad');
-onValue(dbRefComunidad, (snapshot) => {
-    if (snapshot.exists()) {
-        datasetPersonas = snapshot.val();
-        generarEstructuraVisualAlbum();
-        cargarProgresoUsuario();
+// CONTROL DE ARRANQUE (Paso 5.3)
+document.addEventListener("DOMContentLoaded", () => {
+    // Si no tiene ID guardado, obligamos a que se registre
+    if (!MI_USER_ID) {
+        document.getElementById('modal-registro').classList.remove('hidden');
+        document.getElementById('btn-guardar-perfil').addEventListener('click', registrarNuevoUsuario);
     } else {
-        // Si entras y tu Firebase está totalmente vacío, creamos 3 figus iniciales para testear
-        inicializarBaseDeDatosSemilla();
+        // Si ya está registrado, ocultamos el formulario de registro y conectamos la DB
+        document.getElementById('modal-registro').classList.add('hidden');
+        conectarBaseDeDatos();
     }
+
+    // Inicializar el resto de eventos de la App (Sobres y QR)
+    document.getElementById('open-pack-trigger').addEventListener('click', abrirSobre);
+    document.getElementById('btn-mi-qr').addEventListener('click', mostrarMiQR);
+    document.getElementById('close-qr-btn').addEventListener('click', () => {
+        document.getElementById('modal-mi-qr').classList.add('hidden');
+    });
+    document.getElementById('btn-scan-qr').addEventListener('click', iniciarEscaneoCamara);
+    document.getElementById('close-scanner-btn').addEventListener('click', detenerEscaneoCamara);
 });
+
+// FUNCIÓN PARA CREAR TU PERFIL / CROMO EN LA NUBE (Paso 5.3)
+function registrarNuevoUsuario() {
+    const nombre = document.getElementById('reg-nombre').value.trim();
+    const rol = document.getElementById('reg-rol').value.trim();
+    const avatar = document.getElementById('reg-avatar').value.trim();
+    const color = document.getElementById('reg-color').value;
+
+    if (!nombre || !rol || !avatar) {
+        alert("Por favor, completa todos los campos para crear tu cromo de comunidad.");
+        return;
+    }
+
+    // Generamos un ID único basado en el tiempo para evitar duplicados
+    const nuevoId = 'user_' + Date.now();
+    const datosCromo = { nombre, rol, avatar, color };
+
+    // Guardamos la nueva figurita en el nodo global 'comunidad'
+    set(ref(db, `comunidad/${nuevoId}`), datosCromo).then(() => {
+        // Guardamos el ID localmente para no pedir registro de nuevo
+        localStorage.setItem('vos_user_id', nuevoId);
+        MI_USER_ID = nuevoId;
+
+        // Ocultamos el registro, avisamos y arrancamos la aplicación
+        document.getElementById('modal-registro').classList.add('hidden');
+        conectarBaseDeDatos();
+        alert("¡Tu cromo ha sido impreso y añadido al álbum global! 🎉");
+    }).catch(err => {
+        console.error("Error al registrar: ", err);
+        alert("Hubo un problema con la base de datos al guardar tu perfil.");
+    });
+}
+
+// CONECTAR Y ESCUCHAR LOS CAMBIOS DE LA COMUNIDAD EN TIEMPO REAL
+function conectarBaseDeDatos() {
+    const dbRefComunidad = ref(db, 'comunidad');
+    onValue(dbRefComunidad, (snapshot) => {
+        if (snapshot.exists()) {
+            datasetPersonas = snapshot.val();
+            generarEstructuraVisualAlbum();
+            cargarProgresoUsuario();
+        } else {
+            // Si eres el primero absoluto y la DB está vacía, mete las semillas
+            inicializarBaseDeDatosSemilla();
+        }
+    });
+}
 
 // Generar los espacios en el álbum dinámicamente según la gente que haya en la nube
 function generarEstructuraVisualAlbum() {
@@ -134,37 +187,15 @@ function inicializarBaseDeDatosSemilla() {
     set(ref(db, 'comunidad'), semilla);
 }
 
-// Escuchar el botón del HTML
-document.addEventListener("DOMContentLoaded", () => {
-    document.getElementById('open-pack-trigger').addEventListener('click', abrirSobre);
-});
-
 // --- LÓGICA DEL PASO 4: QR e INTERCAMBIOS ---
 
 let html5QrcodeScanner = null;
 
-// A. Generar e Inicializar los eventos de los botones cuando cargue la página
-document.addEventListener("DOMContentLoaded", () => {
-    // Escuchar el botón de Abrir Sobre (Ya lo tenías)
-    document.getElementById('open-pack-trigger').addEventListener('click', abrirSobre);
-
-    // Botón para Mostrar Mi QR
-    document.getElementById('btn-mi-qr').addEventListener('click', mostrarMiQR);
-    document.getElementById('close-qr-btn').addEventListener('click', () => {
-        document.getElementById('modal-mi-qr').classList.add('hidden');
-    });
-
-    // Botón para Abrir Escáner de Cámara
-    document.getElementById('btn-scan-qr').addEventListener('click', iniciarEscaneoCamara);
-    document.getElementById('close-scanner-btn').addEventListener('click', detenerEscaneoCamara);
-});
-
 // B. Función para mostrar tu propio QR en pantalla
 function mostrarMiQR() {
     const container = document.getElementById('qrcode-container');
-    container.innerHTML = ""; // Limpiar QR anterior si existe
+    container.innerHTML = ""; 
     
-    // Generar el QR apuntando a tu ID de usuario único
     new QRCode(container, {
         text: MI_USER_ID,
         width: 180,
@@ -184,14 +215,12 @@ function iniciarEscaneoCamara() {
     html5QrcodeScanner = new Html5Qrcode("reader");
     
     const qrCodeSuccessCallback = (decodedText, decodedResult) => {
-        // decodedText contiene el ID escaneado (ej: "user_4732")
         detenerEscaneoCamara();
         procesarCromoEscaneado(decodedText);
     };
     
     const config = { fps: 10, qrbox: { width: 250, height: 250 } };
     
-    // Iniciar con la cámara trasera por defecto
     html5QrcodeScanner.start({ facingMode: "environment" }, config, qrCodeSuccessCallback)
     .catch((err) => {
         console.error("Error al iniciar cámara: ", err);
@@ -217,22 +246,18 @@ function procesarCromoEscaneado(idEscaneado) {
         return;
     }
 
-    // Verificar si ese ID existe de verdad en la base de datos de la comunidad
     if (datasetPersonas[idEscaneado] === undefined) {
         alert("Este código QR no pertenece a ningún miembro registrado en este álbum.");
         return;
     }
 
-    // Si ya lo tenías desbloqueado
     if (miAlbum[idEscaneado] === true) {
         alert(`Ya tienes la figurita de ${datasetPersonas[idEscaneado].nombre} en tu álbum.`);
         return;
     }
 
-    // AGREGARLO AL ÁLBUM DIRECTO EN LA NUBE
     miAlbum[idEscaneado] = true;
     
-    // Importamos dinámicamente la base de datos para actualizarla
     import("https://www.gstatic.com/firebasejs/12.15.0/firebase-database.js").then((FB) => {
         FB.set(FB.ref(db, `albumes_usuarios/${MI_USER_ID}`), miAlbum).then(() => {
             actualizarInterfazAlbum();
