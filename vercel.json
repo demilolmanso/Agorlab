@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/agoralbum/(.*)",
+      "destination": "/agoralbum/dist/$1"
+    }
+  ]
+}
