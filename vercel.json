@@ -1,6 +1,12 @@
 {
   "rewrites": [
-    { "source": "/agoralbum", "destination": "https://agoralbum.vercel.app" },
-    { "source": "/agoralbum/:path*", "destination": "https://agoralbum.vercel.app/:path*" }
+    {
+      "source": "/agoralbum/(.*)",
+      "destination": "https://agoralbum.vercel.app/agoralbum/$1"
+    },
+    {
+      "source": "/agoralbum",
+      "destination": "https://agoralbum.vercel.app/agoralbum/"
+    }
   ]
 }
