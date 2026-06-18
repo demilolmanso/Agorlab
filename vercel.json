@@ -2,11 +2,11 @@
   "rewrites": [
     {
       "source": "/agoralbum/(.*)",
-      "destination": "https://agoralbum.vercel.app/agoralbum/$1"
+      "destination": "https://agoralbum.vercel.app/$1"
     },
     {
       "source": "/agoralbum",
-      "destination": "https://agoralbum.vercel.app/agoralbum/"
+      "destination": "https://agoralbum.vercel.app/"
     }
   ]
 }
