@@ -1,0 +1,15 @@
+[build]
+  # 1. Compila tu web principal.
+  # 2. Entra a 'agoralbum', instala sus dependencias y lo compila con Vite.
+  # 3. Mueve la carpeta final 'dist' del álbum adentro de la carpeta 'dist' principal.
+  command = "npm run build && cd agoralbum && npm install && npm run build && mv dist ../dist/agoralbum"
+  
+  # La carpeta que Netlify va a subir a producción (debe ser la de tu web principal)
+  publish = "dist"
+
+# REGLA DE REDIRECCIÓN: Evita que el álbum tire error 404 al recargar la página
+[[redirects]]
+  from = "/agoralbum/*"
+  to = "/agoralbum/index.html"
+  status = 200
+  force = true
